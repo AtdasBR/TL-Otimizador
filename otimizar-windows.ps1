@@ -4,33 +4,34 @@ if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir
 $scriptUrl = "https://is.gd/tlotimizador"
 
 function Get-SystemSpecs {
-    if ($script:specsCache) { return $script:specsCache }
-    try { $os = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption -replace 'Microsoft ','' } catch { $os = "Windows" }
-    try { $cpu = (Get-CimInstance Win32_Processor -ErrorAction Stop).Name -replace '\s+',' ' } catch { $cpu = "N/A" }
-    try { $cores = (Get-CimInstance Win32_Processor -ErrorAction Stop).NumberOfCores } catch { $cores = 0 }
-    try { $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1) } catch { $ram = "N/A" }
+    if (-not $script:specsCache) {
+        try { $os = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption -replace 'Microsoft ','' } catch { $os = "Windows" }
+        try { $cpu = (Get-CimInstance Win32_Processor -ErrorAction Stop).Name -replace '\s+',' ' } catch { $cpu = "N/A" }
+        try { $cores = (Get-CimInstance Win32_Processor -ErrorAction Stop).NumberOfCores } catch { $cores = 0 }
+        try { $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1) } catch { $ram = "N/A" }
+        try { $gpu = ((Get-CimInstance Win32_VideoController -ErrorAction Stop).Name -join ', ') } catch { $gpu = "N/A" }
+        $discos = @()
+        try { 
+            $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop
+            foreach ($d in $drives) {
+                $total = [math]::Round($d.Size/1GB)
+                $livre = [math]::Round($d.FreeSpace/1GB)
+                $pct = [math]::Round(($total - $livre) / $total * 100)
+                $cheio = [math]::Round($pct / 100 * 8)
+                $bar = "$([char]0x2588)" * [Math]::Min($cheio, 8) + "$([char]0x2591)" * (8 - [Math]::Min($cheio, 8))
+                $discos += @{ Letra = $d.DeviceID -replace ':'; Total = $total; Livre = $livre; Pct = $pct; Bar = $bar }
+            }
+        } catch { $discos = @() }
+        $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Discos = $discos }
+    }
     try { $ramLivre = [math]::Round((Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).FreePhysicalMemory / 1MB, 1) } catch { $ramLivre = 0 }
-    try { 
+    try {
         $boot = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).LastBootUpTime
         $uptime = [DateTime]::Now - $boot
         $dias = $uptime.Days; $horas = $uptime.Hours
         $uptimeStr = if ($dias -gt 0) { "$dias dia(s) $horas h" } else { "$horas h" }
     } catch { $uptimeStr = "N/A" }
-    try { $gpu = ((Get-CimInstance Win32_VideoController -ErrorAction Stop).Name -join ', ') } catch { $gpu = "N/A" }
-    $discos = @()
-    try { 
-        $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop
-        foreach ($d in $drives) {
-            $total = [math]::Round($d.Size/1GB)
-            $livre = [math]::Round($d.FreeSpace/1GB)
-            $pct = [math]::Round(($total - $livre) / $total * 100)
-            $cheio = [math]::Round($pct / 100 * 8)
-            $bar = "$([char]0x2588)" * [Math]::Min($cheio, 8) + "$([char]0x2591)" * (8 - [Math]::Min($cheio, 8))
-            $discos += @{ Letra = $d.DeviceID -replace ':'; Total = $total; Livre = $livre; Pct = $pct; Bar = $bar }
-        }
-    } catch { $discos = @() }
-    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB ($ramLivre GB livre)"; GPU = $gpu; Discos = $discos; Uptime = $uptimeStr }
-    return $script:specsCache
+    return @{ OS = $script:specsCache.OS; CPU = $script:specsCache.CPU; RAM = "$($script:specsCache.RAM) ($ramLivre GB livre)"; GPU = $script:specsCache.GPU; Discos = $script:specsCache.Discos; Uptime = $uptimeStr }
 }
 
 function Show-Banner {
