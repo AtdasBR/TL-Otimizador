@@ -13,6 +13,59 @@ function Show-Banner {
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor Cyan
     Write-Host ""
 }
+function Show-Help {
+    Clear-Host
+    $c=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514;$r=[char]0x2510;$e=[char]0x2518
+    $top = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $bot = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
+
+    Write-Host $top -ForegroundColor Cyan
+    Write-Host "  $v  1. LIMPEZA SIMPLES                              $v" -ForegroundColor Green
+    Write-Host "  $v  Remove arquivos temporarios, cache do sistema,   $v" -ForegroundColor DarkGray
+    Write-Host "  $v  lixeira e flush de DNS. Leve e rapido.           $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  2. LIMPEZA EXTREMA (SEGURA)                      $v" -ForegroundColor Magenta
+    Write-Host "  $v  Limpeza profunda: prefetch, winsxs, cache de     $v" -ForegroundColor DarkGray
+    Write-Host "  $v  browsers, logs Windows, ServicePack, DISM.       $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  3. DESATIVAR SERVICOS                            $v" -ForegroundColor Green
+    Write-Host "  $v  Submenu com checkboxes. Digite o numero para     $v" -ForegroundColor DarkGray
+    Write-Host "  $v  alternar ON/OFF. [A]plica, [T] marca todos,      $v" -ForegroundColor DarkGray
+    Write-Host "  $v  [V]olta. Itens marcados = DESATIVA,              $v" -ForegroundColor DarkGray
+    Write-Host "  $v  desmarcados = REATIVA (Automatic + Start).       $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  4. OTIMIZAR REDE                                 $v" -ForegroundColor Green
+    Write-Host "  $v  Libera/renova IP, Winsock reset, DNS Cloudflare  $v" -ForegroundColor DarkGray
+    Write-Host "  $v  (1.1.1.1), auto-tuning TCP. Itens desmarcados    $v" -ForegroundColor DarkGray
+    Write-Host "  $v  sao revertidos via backup salvo automaticamente. $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  5. AJUSTES VISUAIS                               $v" -ForegroundColor Green
+    Write-Host "  $v  Modo desempenho, desativar transparencia,        $v" -ForegroundColor DarkGray
+    Write-Host "  $v  animacoes, sombras/efeitos. Desmarcados sao      $v" -ForegroundColor DarkGray
+    Write-Host "  $v  revertidos ao valor original (via backup).       $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  6. EXECUTAR TUDO                                 $v" -ForegroundColor Magenta
+    Write-Host "  $v  Roda servicos, rede e visual com TUDO marcado,   $v" -ForegroundColor DarkGray
+    Write-Host "  $v  sem interacao. Backups salvos automaticamente.   $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  7. CRIAR PONTO RESTAURACAO                       $v" -ForegroundColor Yellow
+    Write-Host "  $v  Cria ponto de restauracao do Windows antes de    $v" -ForegroundColor DarkGray
+    Write-Host "  $v  qualquer alteracao. Exige Protecao do Sistema.   $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  8/9/10. DESFAZER (Servicos/Rede/Visual)          $v" -ForegroundColor Cyan
+    Write-Host "  $v  Restaura cada categoria a partir do ultimo       $v" -ForegroundColor DarkGray
+    Write-Host "  $v  backup salvo automaticamente antes da alteracao. $v" -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor Cyan
+    Write-Host "  $v  11. AJUDA                                        $v" -ForegroundColor Yellow
+    Write-Host "  $v  Esta tela.                                       $v" -ForegroundColor DarkGray
+    Write-Host $bot -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  USO: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor Cyan
+    Write-Host "  Quando instalado (tl), reexecuta como admin automaticamente." -ForegroundColor DarkGray
+    Write-Host "  Todos os backups ficam em: %LOCALAPPDATA%\Otimizador" -ForegroundColor DarkGray
+}
+
 function Show-Menu {
     Show-Banner
     $t=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514
@@ -44,6 +97,10 @@ function Show-Menu {
     Write-Host ("  $v" + ($fmt -f "8", $d, "Desfazer - Servicos") + "$v") -ForegroundColor Cyan
     Write-Host ("  $v" + ($fmt -f "9", $d, "Desfazer - Rede") + "$v") -ForegroundColor Cyan
     Write-Host ("  $v" + ($fmt -f "10", $d, "Desfazer - Visual") + "$v") -ForegroundColor Cyan
+    Write-Host $mid -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "11", $d, "Ajuda (explicacoes)") + "$v") -ForegroundColor Yellow
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
@@ -776,6 +833,7 @@ do {
         "8" { Undo-Servicos }
         "9" { Undo-Rede }
         "10" { Undo-Visual }
+        "11" { Show-Help; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
