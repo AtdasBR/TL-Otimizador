@@ -622,6 +622,24 @@ function Run-Tudo {
     Wait-Key
 }
 
+# === ADMIN CHECK ===
+$isAdmin = [Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
+if (-not $isAdmin.IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    if ($PSCommandPath) {
+        Write-Host "Reiniciando como ADMINISTRADOR..." -ForegroundColor Yellow
+        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        exit
+    } else {
+        Write-Host "ERRO: TL Optimizer precisa de privilegios de ADMINISTRADOR." -ForegroundColor Red
+        Write-Host "Feche este PowerShell e abra como Administrador:" -ForegroundColor Yellow
+        Write-Host "  1. Clique em Iniciar, digite 'PowerShell'" -ForegroundColor Yellow
+        Write-Host "  2. Clique com direito > Executar como administrador" -ForegroundColor Yellow
+        Write-Host "  3. Cole o comando novamente" -ForegroundColor Yellow
+        Write-Host ""; $null = Read-Host "Pressione ENTER para sair"
+        exit
+    }
+}
+
 # === WELCOME (modo portatil via iex) ===
 if (-not $PSCommandPath) {
     do {
@@ -635,11 +653,6 @@ if (-not $PSCommandPath) {
 # === MAIN LOOP ===
 do {
     Show-Menu
-
-    if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-        Write-Host "AVISO: Execute como ADMINISTRADOR para melhores resultados!" -ForegroundColor Red
-        Write-Host ""
-    }
 
     $opcao = Read-Host "Digite o numero da opcao"
 
