@@ -1,21 +1,3 @@
-# TL Optimizer - only the optimization tool files
-
-# Old discord bot stuff
-bot.log
-config.json
-data/
-deploy-commands.js
-index.js
-node_modules/
-package-lock.json
-package.json
-README.md
-src/
-stderr_check.log
-stderr.log
-stdout.log
-teste_atestado.jpeg
-
 # OS
 Thumbs.db
 .DS_Store
