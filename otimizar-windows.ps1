@@ -101,7 +101,11 @@ function Show-Help {
     Write-Host "  $v   Lista todos os programas instalados, desinstala    $v" -ForegroundColor DarkGray
     Write-Host "  $v   e limpa arquivos e registros residuais.            $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
-    Write-Host "  $v   13. AJUDA (esta tela)                              $v" -ForegroundColor Yellow
+    Write-Host "  $v   13. DRIVER UPDATER                                 $v" -ForegroundColor Green
+    Write-Host "  $v   Baixa instaladores de Driver Easy, Driver Booster   $v" -ForegroundColor DarkGray
+    Write-Host "  $v   e Snappy Driver Installer Lite.                     $v" -ForegroundColor DarkGray
+    Write-Host $sep -ForegroundColor Cyan
+    Write-Host "  $v   14. AJUDA (esta tela)                               $v" -ForegroundColor Yellow
     Write-Host "  $v   0. SAIR                                         $v" -ForegroundColor Red
     Write-Host $bot -ForegroundColor Cyan
     Write-Host ""
@@ -196,7 +200,12 @@ function Show-Menu {
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
-    Write-Host ("  $v" + ($fmt -f "13", $d, "Ajuda") + "$v") -ForegroundColor Yellow
+    Write-Host ("  $v" + ($fmt -f "13", $d, "Driver Updater") + "$v") -ForegroundColor Green
+    Write-Host ($df -f "Baixa atualizadores de drivers") -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "14", $d, "Ajuda") + "$v") -ForegroundColor Yellow
     Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
@@ -856,6 +865,36 @@ function Run-Browsers {
     Write-Host ""; Write-Host "Instalacao concluida!" -ForegroundColor Green; Wait-Key
 }
 
+function Run-DriverUpdater {
+    $itens = @(
+        @{Nome = "Driver Easy";       Desc = "Driver Easy";        Selected = $false; URL = "https://www.drivereasy.com/Drivereasy_Setup.exe"; Detalhe = "Escaneia o PC e encontra drivers desatualizados. Versao gratuita baixa um driver por vez. Interface simples e intuitiva."}
+        @{Nome = "Driver Booster";    Desc = "Driver Booster";     Selected = $false; URL = "https://download.iobit.com/driver_booster_setup.exe"; Detalhe = "Da IObit. Atualiza drivers com um clique, tem modo game e faz backup antes de atualizar. Versao gratuita tem limite de velocidade."}
+        @{Nome = "Snappy Driver Installer Lite"; Desc = "SDI Lite"; Selected = $false; URL = "https://www.snappy-driver-installer.org/download/"; Detalhe = "Ferramenta offline que baixa pacote de drivers. Versao Lite baixa so os drivers necessarios. Codigo aberto e sem propagandas."}
+    )
+    $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "BAIXAR ATUALIZADOR DE DRIVERS"
+    if ($selecionados -eq $null) { return }
+    $paraInstalar = $selecionados | Where-Object { $_.Selected }
+    if ($paraInstalar.Count -eq 0) { Write-Host "Nenhum selecionado." -ForegroundColor Yellow; Wait-Key; return }
+    Show-Banner
+    Write-Host ">>> BAIXANDO ATUALIZADORES DE DRIVER <<<" -ForegroundColor Magenta
+    Write-Host ""
+    foreach ($b in $paraInstalar) {
+        Write-Host "[$($b.Nome)] Baixando..." -NoNewline
+        $dest = "$env:TEMP\driver_$($b.Nome -replace ' ','').exe"
+        try {
+            Invoke-WebRequest -Uri $b.URL -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            Write-Host " OK" -ForegroundColor Green
+            Write-Host "         Iniciando instalador..." -NoNewline
+            Start-Process -FilePath $dest -Wait -ErrorAction SilentlyContinue
+            Write-Host " OK" -ForegroundColor Green
+            Remove-Item $dest -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+    Write-Host ""; Write-Host "Concluido!" -ForegroundColor Green; Wait-Key
+}
+
 function Run-UniversalUninstaller {
     $paths = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
     $todos = @()
@@ -1061,7 +1100,7 @@ if (-not $PSCommandPath) {
 do {
     Show-Menu
 
-    $opcao = Read-Host "Escolha uma opcao (ou 13 para ajuda)"
+    $opcao = Read-Host "Escolha uma opcao (ou 14 para ajuda)"
 
     switch ($opcao) {
         "1" { Show-Banner; Run-Limpeza; Wait-Key }
@@ -1076,7 +1115,8 @@ do {
         "10" { Undo-Visual }
         "11" { Show-Banner; Run-Browsers }
         "12" { Show-Banner; Run-UniversalUninstaller }
-        "13" { Show-Help; Wait-Key }
+        "13" { Show-Banner; Run-DriverUpdater }
+        "14" { Show-Help; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
