@@ -10,8 +10,19 @@ function Get-SystemSpecs {
     try { $cores = (Get-CimInstance Win32_Processor -ErrorAction Stop).NumberOfCores } catch { $cores = 0 }
     try { $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1) } catch { $ram = "N/A" }
     try { $gpu = ((Get-CimInstance Win32_VideoController -ErrorAction Stop).Name -join ', ') } catch { $gpu = "N/A" }
-    try { $dc = Get-PSDrive -Name C -ErrorAction Stop; $disco = "$([math]::Round($dc.Free/1GB)) GB livre de $([math]::Round(($dc.Used+$dc.Free)/1GB)) GB" } catch { $disco = "N/A" }
-    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Disco = $disco }
+    $discos = @()
+    try { 
+        $drives = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction Stop
+        foreach ($d in $drives) {
+            $total = [math]::Round($d.Size/1GB)
+            $livre = [math]::Round($d.FreeSpace/1GB)
+            $pct = [math]::Round(($total - $livre) / $total * 100)
+            $cheio = [math]::Round($pct / 100 * 8)
+            $bar = "$([char]0x2588)" * [Math]::Min($cheio, 8) + "$([char]0x2591)" * (8 - [Math]::Min($cheio, 8))
+            $discos += @{ Letra = $d.DeviceID -replace ':'; Total = $total; Livre = $livre; Pct = $pct; Bar = $bar }
+        }
+    } catch { $discos = @() }
+    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Discos = $discos }
     return $script:specsCache
 }
 
@@ -30,11 +41,14 @@ function Show-Banner {
     $sb = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
     $sf = "  $v  {0,-38} $v"
     Write-Host $st -ForegroundColor DarkGray
-    Write-Host ($sf -f "SO: $($sp.OS)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "SO:  $($sp.OS)") -ForegroundColor DarkGray
     Write-Host ($sf -f "CPU: $($sp.CPU)") -ForegroundColor DarkGray
     Write-Host ($sf -f "RAM: $($sp.RAM)") -ForegroundColor DarkGray
     Write-Host ($sf -f "GPU: $($sp.GPU)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "Disco C: $($sp.Disco)") -ForegroundColor DarkGray
+    foreach ($d in $sp.Discos) {
+        $linha = "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%"
+        Write-Host ($sf -f $linha) -ForegroundColor DarkGray
+    }
     Write-Host $sb -ForegroundColor DarkGray
     Write-Host ""
 }
