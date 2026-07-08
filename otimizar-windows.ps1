@@ -187,6 +187,7 @@ function Show-ServicosSubmenu {
 }
 
 function Run-Servicos {
+    param([switch]$SkipMenu)
     $servicos = @(
         @{Nome = "XblAuthManager"; Desc = "Autenticacao Xbox"; Selected = $true},
         @{Nome = "XblGameSave"; Desc = "Save game Xbox"; Selected = $true},
@@ -205,7 +206,8 @@ function Run-Servicos {
         @{Nome = "WbioSrvc"; Desc = "Biometria"; Selected = $true}
     )
 
-    $selecionados = Show-ServicosSubmenu -Servicos $servicos -Titulo "DESATIVAR SERVICOS"
+    if ($SkipMenu) { $selecionados = $servicos }
+    else { $selecionados = Show-ServicosSubmenu -Servicos $servicos -Titulo "DESATIVAR SERVICOS" }
     if ($selecionados -eq $null) { return }
 
     Show-Banner
@@ -231,6 +233,7 @@ function Run-Servicos {
 }
 
 function Run-Rede {
+    param([switch]$SkipMenu)
     $itens = @(
         @{Nome = "LiberarRenovarIP"; Desc = "Liberar e renovar IP"; Selected = $true}
         @{Nome = "ResetWinsock"; Desc = "Resetar Winsock e TCP/IP"; Selected = $true}
@@ -238,7 +241,8 @@ function Run-Rede {
         @{Nome = "AutoTuning"; Desc = "Ajustar auto-tuning TCP"; Selected = $true}
     )
 
-    $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "OTIMIZAR REDE"
+    if ($SkipMenu) { $selecionados = $itens }
+    else { $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "OTIMIZAR REDE" }
     if ($selecionados -eq $null) { return }
 
     Show-Banner
@@ -309,6 +313,7 @@ function Show-GenericoSubmenu {
 }
 
 function Run-Visual {
+    param([switch]$SkipMenu)
     $itens = @(
         @{Nome = "ModoDesempenho"; Desc = "Modo desempenho (VisualFX)"; Selected = $true}
         @{Nome = "Transparencia"; Desc = "Desativar transparencia"; Selected = $true}
@@ -316,7 +321,8 @@ function Run-Visual {
         @{Nome = "SombrasEfeitos"; Desc = "Desativar sombras e efeitos"; Selected = $true}
     )
 
-    $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "AJUSTES VISUAIS"
+    if ($SkipMenu) { $selecionados = $itens }
+    else { $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "AJUSTES VISUAIS" }
     if ($selecionados -eq $null) { return }
 
     Show-Banner
@@ -615,7 +621,7 @@ function Run-Tudo {
     Write-Host "Backups serao salvos automaticamente." -ForegroundColor Yellow
     Write-Host ""
     Backup-Servicos; Backup-Rede; Backup-Visual
-    Write-Host ""; Run-LimpezaExtrema; Write-Host ""; Run-Servicos; Write-Host ""; Run-Rede; Write-Host ""; Run-Visual
+    Write-Host ""; Run-LimpezaExtrema; Write-Host ""; Run-Servicos -SkipMenu; Write-Host ""; Run-Rede -SkipMenu; Write-Host ""; Run-Visual -SkipMenu
     Write-Host ""; Write-Host "TODAS AS OTIMIZACOES CONCLUIDAS!" -ForegroundColor Green
     Write-Host "Use [8], [9] e [10] no menu para desfazer cada categoria." -ForegroundColor Yellow
     Write-Host "Recomendado reiniciar o PC." -ForegroundColor Yellow
@@ -671,7 +677,3 @@ do {
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
 } while ($opcao -ne "0")
-
-
-
-
