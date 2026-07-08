@@ -190,7 +190,7 @@ function Show-ServicosSubmenu {
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
-        if ($choice -eq "A" -or $choice -eq "a") { return $Servicos | Where-Object { $_.Selected } }
+        if ($choice -eq "A" -or $choice -eq "a") { return $Servicos }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($s in $Servicos) { $s.Selected = $true }; continue }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Servicos.Count) {
@@ -224,11 +224,14 @@ function Run-Servicos {
     if ($selecionados -eq $null) { return }
 
     Show-Banner
-    Write-Host ">>> DESATIVANDO SERVICOS SELECIONADOS <<<" -ForegroundColor Magenta
+    Write-Host ">>> ATIVANDO/DESATIVANDO SERVICOS <<<" -ForegroundColor Magenta
     Write-Host ""; Backup-Servicos
 
-    foreach ($s in $selecionados) {
-        Write-Host "[$($s.Desc)] ($($s.Nome))..." -NoNewline
+    $paraDesativar = $selecionados | Where-Object { $_.Selected }
+    $paraAtivar = $selecionados | Where-Object { -not $_.Selected }
+
+    foreach ($s in $paraDesativar) {
+        Write-Host "DESATIVAR  [$($s.Desc)] ($($s.Nome))..." -NoNewline
         $svc = Get-Service -Name $s.Nome -ErrorAction SilentlyContinue
         if ($svc -and $svc.Status -eq "Running") {
             Stop-Service -Name $s.Nome -Force -ErrorAction SilentlyContinue
@@ -237,6 +240,20 @@ function Run-Servicos {
         } elseif ($svc) {
             Set-Service -Name $s.Nome -StartupType Disabled -ErrorAction SilentlyContinue
             Write-Host " JA DESATIVADO" -ForegroundColor Yellow
+        } else {
+            Write-Host " NAO ENCONTRADO" -ForegroundColor Gray
+        }
+    }
+
+    foreach ($s in $paraAtivar) {
+        Write-Host "REATIVAR   [$($s.Desc)] ($($s.Nome))..." -NoNewline
+        $svc = Get-Service -Name $s.Nome -ErrorAction SilentlyContinue
+        if ($svc) {
+            Set-Service -Name $s.Nome -StartupType Automatic -ErrorAction SilentlyContinue
+            if ($svc.Status -ne "Running") {
+                Start-Service -Name $s.Nome -ErrorAction SilentlyContinue
+            }
+            Write-Host " ATIVADO" -ForegroundColor Cyan
         } else {
             Write-Host " NAO ENCONTRADO" -ForegroundColor Gray
         }
@@ -262,7 +279,11 @@ function Run-Rede {
     Write-Host ">>> APLICANDO OTIMIZACOES DE REDE <<<" -ForegroundColor Magenta
     Write-Host ""; Backup-Rede
 
-    foreach ($item in $selecionados) {
+    $paraOtimizar = $selecionados | Where-Object { $_.Selected }
+    $paraReverter = $selecionados | Where-Object { -not $_.Selected }
+    $backupRede = Get-Content "$backupDir\rede_backup.json" | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    foreach ($item in $paraOtimizar) {
         switch ($item.Nome) {
             "LiberarRenovarIP" {
                 Write-Host "[Liberando e renovando IP]..." -NoNewline
@@ -286,6 +307,41 @@ function Run-Rede {
                 Write-Host "[Ajustando auto-tuning TCP]..." -NoNewline
                 netsh int tcp set global autotuninglevel=normal | Out-Null
                 Write-Host " OK" -ForegroundColor Green
+            }
+        }
+    }
+
+    foreach ($item in $paraReverter) {
+        switch ($item.Nome) {
+            "LiberarRenovarIP" {
+                Write-Host "[Liberar/renovar IP - NAO REVERTIVEL]..." -ForegroundColor DarkGray
+            }
+            "ResetWinsock" {
+                Write-Host "[Reset Winsock - NAO REVERTIVEL]..." -ForegroundColor DarkGray
+            }
+            "DNSCloudflare" {
+                if ($backupRede -and $backupRede.Dns) {
+                    Write-Host "[Restaurando DNS original]..." -NoNewline
+                    foreach ($d in $backupRede.Dns) {
+                        if ($d.DnsServers -and $d.DnsServers.Count -gt 0) {
+                            Set-DnsClientServerAddress -InterfaceIndex $d.InterfaceIndex -ServerAddresses $d.DnsServers -ErrorAction SilentlyContinue
+                        } else {
+                            Set-DnsClientServerAddress -InterfaceIndex $d.InterfaceIndex -ResetServerAddresses -ErrorAction SilentlyContinue
+                        }
+                    }
+                    Write-Host " RESTAURADO" -ForegroundColor Cyan
+                } else {
+                    Write-Host "[DNS - SEM BACKUP]" -ForegroundColor DarkGray
+                }
+            }
+            "AutoTuning" {
+                if ($backupRede -and $backupRede.AutoTuning) {
+                    Write-Host "[Restaurando auto-tuning ($($backupRede.AutoTuning))]..." -NoNewline
+                    netsh int tcp set global autotuninglevel=$($backupRede.AutoTuning) | Out-Null
+                    Write-Host " RESTAURADO" -ForegroundColor Cyan
+                } else {
+                    Write-Host "[Auto-tuning - SEM BACKUP]" -ForegroundColor DarkGray
+                }
             }
         }
     }
@@ -323,7 +379,7 @@ function Show-GenericoSubmenu {
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
-        if ($choice -eq "A" -or $choice -eq "a") { return $Itens | Where-Object { $_.Selected } }
+        if ($choice -eq "A" -or $choice -eq "a") { return $Itens }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($item in $Itens) { $item.Selected = $true }; continue }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Itens.Count) {
@@ -349,7 +405,11 @@ function Run-Visual {
     Write-Host ">>> APLICANDO AJUSTES VISUAIS <<<" -ForegroundColor Magenta
     Write-Host ""; Backup-Visual
 
-    foreach ($item in $selecionados) {
+    $paraAplicar = $selecionados | Where-Object { $_.Selected }
+    $paraReverter = $selecionados | Where-Object { -not $_.Selected }
+    $backupVisual = Get-Content "$backupDir\visual_backup.json" | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    foreach ($item in $paraAplicar) {
         switch ($item.Nome) {
             "ModoDesempenho" {
                 Write-Host "[Modo desempenho]..." -NoNewline
@@ -373,6 +433,29 @@ function Run-Visual {
                 Write-Host " OK" -ForegroundColor Green
             }
         }
+    }
+
+    foreach ($item in $paraReverter) {
+        if (-not $backupVisual) { Write-Host "[$($item.Desc) - SEM BACKUP]" -ForegroundColor DarkGray; continue }
+        $mapa = @{ModoDesempenho="VisualFXSetting"; Transparencia="EnableTransparency"; Animacoes="UserPreferencesMask"; SombrasEfeitos="ListviewShadow"}
+        $regName = $mapa[$item.Nome]
+        $reg = $backupVisual | Where-Object { $_.Name -eq $regName }
+        if (-not $reg) { Write-Host "[$($item.Desc) - SEM BACKUP]" -ForegroundColor DarkGray; continue }
+        Write-Host "[Restaurando $($item.Desc)]..." -NoNewline
+        $val = $reg.Value
+        if ($val -match '^[0-9A-F ]+$') {
+            $bytes = $val -split ' ' | ForEach-Object { [byte]("0x$_") }
+            Set-ItemProperty -Path $reg.Path -Name $reg.Name -Value $bytes -ErrorAction SilentlyContinue
+        } else {
+            Set-ItemProperty -Path $reg.Path -Name $reg.Name -Value ([int]$val) -ErrorAction SilentlyContinue
+        }
+        if ($item.Nome -eq "SombrasEfeitos") {
+            $reg2 = $backupVisual | Where-Object { $_.Name -eq "TaskbarAnimations" }
+            if ($reg2) {
+                Set-ItemProperty -Path $reg2.Path -Name $reg2.Name -Value ([int]$reg2.Value) -ErrorAction SilentlyContinue
+            }
+        }
+        Write-Host " RESTAURADO" -ForegroundColor Cyan
     }
 
     Write-Host ""; Write-Host "Ajustes visuais aplicados! Use [10] no menu para desfazer." -ForegroundColor Green
