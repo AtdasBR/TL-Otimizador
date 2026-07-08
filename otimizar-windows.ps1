@@ -93,7 +93,11 @@ function Show-Help {
     Write-Host "  $v   Restaura o que foi alterado em cada categoria   $v" -ForegroundColor DarkGray
     Write-Host "  $v   usando o backup salvo automaticamente.          $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
-    Write-Host "  $v   11. AJUDA (esta tela)                           $v" -ForegroundColor Yellow
+    Write-Host "  $v   11. GERENCIAR NAVEGADORES                        $v" -ForegroundColor Yellow
+    Write-Host "  $v   Detecta navegadores instalados e permite         $v" -ForegroundColor DarkGray
+    Write-Host "  $v   desinstalar varios de uma vez.                    $v" -ForegroundColor DarkGray
+    Write-Host $sep -ForegroundColor Cyan
+    Write-Host "  $v   12. AJUDA (esta tela)                            $v" -ForegroundColor Yellow
     Write-Host "  $v   0. SAIR                                         $v" -ForegroundColor Red
     Write-Host $bot -ForegroundColor Cyan
     Write-Host ""
@@ -178,7 +182,12 @@ function Show-Menu {
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
-    Write-Host ("  $v" + ($fmt -f "11", $d, "Ajuda") + "$v") -ForegroundColor Yellow
+    Write-Host ("  $v" + ($fmt -f "11", $d, "Gerenciar navegadores") + "$v") -ForegroundColor Yellow
+    Write-Host ($df -f "Lista e desinstala navegadores") -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "12", $d, "Ajuda") + "$v") -ForegroundColor Yellow
     Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
@@ -802,6 +811,42 @@ function Run-LimpezaExtrema {
     Write-Host ""; Write-Host "LIMPEZA EXTREMA CONCLUIDA!" -ForegroundColor Green
     Write-Host "Alguns GB de espaco foram liberados." -ForegroundColor Yellow
 }
+function Run-Browsers {
+    $itens = @(
+        @{Nome = "Microsoft Edge";  Desc = "Microsoft Edge";    Selected = $false; URL = "https://www.microsoft.com/edge/download"; Detalhe = "Navegador padrao do Windows. Leve e integrado ao sistema. Recomendado para uso basico."}
+        @{Nome = "Google Chrome";   Desc = "Google Chrome";     Selected = $false; URL = "https://dl.google.com/chrome/install/standalonesetup64.exe"; Detalhe = "O navegador mais popular do mundo. Rapido, com muitas extensoes e sincronizacao de conta Google."}
+        @{Nome = "Mozilla Firefox"; Desc = "Mozilla Firefox";   Selected = $false; URL = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"; Detalhe = "Navegador focado em privacidade e codigo aberto. Bloqueador de rastreadores nativo."}
+        @{Nome = "Brave";           Desc = "Brave";             Selected = $false; URL = "https://laptop-updates.brave.com/latest/winx64"; Detalhe = "Navegador com bloqueador de anuncios e rastreadores nativo. Recompensa usuarios com criptomoedas."}
+        @{Nome = "Opera";           Desc = "Opera";             Selected = $false; URL = "https://net.geo.opera.com/opera/stable/windows"; Detalhe = "Navegador com VPN gratuita integrada, bloqueador de anuncios e Messenger na barra lateral."}
+        @{Nome = "Opera GX";        Desc = "Opera GX";          Selected = $false; URL = "https://net.geo.opera.com/opera_gx/stable/windows"; Detalhe = "Navegador para gamers com limitador de CPU/RAM, integracao com Twitch e Discord."}
+        @{Nome = "Vivaldi";         Desc = "Vivaldi";           Selected = $false; URL = "https://downloads.vivaldi.com/stable/VivaldiSetup.exe"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
+        @{Nome = "Tor Browser";     Desc = "Tor Browser";       Selected = $false; URL = "https://www.torproject.org/dist/torbrowser/latest/torbrowser-install-win64.exe"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
+    )
+    $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "INSTALAR NAVEGADORES"
+    if ($selecionados -eq $null) { return }
+    $paraInstalar = $selecionados | Where-Object { $_.Selected }
+    if ($paraInstalar.Count -eq 0) { Write-Host "Nenhum navegador selecionado." -ForegroundColor Yellow; Wait-Key; return }
+    Show-Banner
+    Write-Host ">>> BAIXANDO E INSTALANDO NAVEGADORES <<<" -ForegroundColor Magenta
+    Write-Host "NOTA: A instalacao pode abrir janelas de confirmacao." -ForegroundColor Yellow
+    Write-Host ""
+    foreach ($b in $paraInstalar) {
+        Write-Host "[$($b.Nome)] Baixando..." -NoNewline
+        $dest = "$env:TEMP\install_$($b.Nome -replace ' ','').exe"
+        try {
+            Invoke-WebRequest -Uri $b.URL -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            Write-Host " OK" -ForegroundColor Green
+            Write-Host "         Instalando..." -NoNewline
+            Start-Process -FilePath $dest -ArgumentList "/silent /install" -Wait -ErrorAction SilentlyContinue
+            Write-Host " OK" -ForegroundColor Green
+            Remove-Item $dest -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor Red
+        }
+    }
+    Write-Host ""; Write-Host "Instalacao concluida!" -ForegroundColor Green; Wait-Key
+}
+
 function Wait-Key {
     Write-Host ""; Write-Host "Pressione ENTER para voltar ao menu..." -ForegroundColor Gray
     $null = Read-Host
@@ -918,7 +963,7 @@ if (-not $PSCommandPath) {
 do {
     Show-Menu
 
-    $opcao = Read-Host "Escolha uma opcao (ou 11 para ajuda)"
+    $opcao = Read-Host "Escolha uma opcao (ou 12 para ajuda)"
 
     switch ($opcao) {
         "1" { Show-Banner; Run-Limpeza; Wait-Key }
@@ -931,7 +976,8 @@ do {
         "8" { Undo-Servicos }
         "9" { Undo-Rede }
         "10" { Undo-Visual }
-        "11" { Show-Help; Wait-Key }
+        "11" { Show-Banner; Run-Browsers }
+        "12" { Show-Help; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
