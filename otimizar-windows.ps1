@@ -1,6 +1,7 @@
 $ErrorActionPreference = "SilentlyContinue"
 $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
+$repoUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master"
 
 function Show-Banner {
     Clear-Host
@@ -542,6 +543,59 @@ function Wait-Key {
     $null = Read-Host
 }
 
+function Show-Welcome {
+    Clear-Host
+    $b = [char]0x2554; $b2 = [char]0x2557; $b3 = [char]0x255A; $b4 = [char]0x255D; $h2 = [char]0x2550; $v2 = [char]0x2551
+    Write-Host "  $b$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b2" -ForegroundColor Cyan
+    Write-Host "  $v2       T L   O P T I M I Z E R         $v2" -ForegroundColor Cyan
+    Write-Host "  $b3$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b4" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "   TL Optimizer foi carregado via iwr | iex." -ForegroundColor Yellow
+    Write-Host "   Escolha como deseja usa-lo:" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "   [P] Portatil  - Roda agora, nada e salvo no PC." -ForegroundColor Green
+    Write-Host "                  Use quando quiser testar ou usar" -ForegroundColor DarkGray
+    Write-Host "                  uma unica vez. Comando sempre funciona." -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "   [I] Instalar  - Salva em $env:USERPROFILE\TL-Optimizer" -ForegroundColor Cyan
+    Write-Host "                  e registra no perfil do PowerShell." -ForegroundColor Cyan
+    Write-Host "                  Depois e so digitar 'tl' de qualquer lugar." -ForegroundColor DarkGray
+    Write-Host ""
+}
+
+function Install-Local {
+    $targetDir = "$env:USERPROFILE\TL-Optimizer"
+    $scriptPath = "$targetDir\otimizar-windows.ps1"
+    Write-Host "Instalando em $targetDir..." -ForegroundColor Cyan
+    New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    try {
+        iwr -useb "$repoUrl/otimizar-windows.ps1" -OutFile $scriptPath -ErrorAction Stop
+        Write-Host "Script salvo." -ForegroundColor Green
+    } catch {
+        Write-Host "Erro ao baixar o script. Salvando da memoria..." -ForegroundColor Yellow
+        if ($global:MyInvocation.MyCommand.ScriptContents) {
+            $global:MyInvocation.MyCommand.ScriptContents | Set-Content -Path $scriptPath -Force
+        } else {
+            Write-Host "Nao foi possivel salvar. Verifique a conexao." -ForegroundColor Red
+            Wait-Key; return
+        }
+    }
+    $profileLine = "`n# TL Optimizer`nfunction tl-optimizer { & `"$scriptPath`" }`nSet-Alias -Name tl -Value tl-optimizer -Force"
+    $profilePath = $PROFILE.CurrentUserAllHosts
+    $dir = Split-Path $profilePath -Parent
+    if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    if (-not (Test-Path $profilePath) -or (Get-Content $profilePath -Raw) -notmatch '# TL Optimizer') {
+        Add-Content -Path $profilePath -Value $profileLine -Force
+        Write-Host "Alias 'tl' adicionado ao perfil PowerShell." -ForegroundColor Green
+    } else {
+        Write-Host "Alias 'tl' ja existe no perfil." -ForegroundColor Yellow
+    }
+    Write-Host "`nInstalacao concluida! Reinicie o PowerShell e digite 'tl'." -ForegroundColor Green
+    Wait-Key
+    & $scriptPath
+    exit
+}
+
 function Run-Tudo {
     Show-Banner
     Write-Host "Executando TODAS as otimizacoes..." -ForegroundColor Magenta
@@ -553,6 +607,16 @@ function Run-Tudo {
     Write-Host "Use [8], [9] e [10] no menu para desfazer cada categoria." -ForegroundColor Yellow
     Write-Host "Recomendado reiniciar o PC." -ForegroundColor Yellow
     Wait-Key
+}
+
+# === WELCOME (modo portatil via iex) ===
+if (-not $PSCommandPath) {
+    do {
+        Show-Welcome
+        $modo = Read-Host "Digite P (Portatil) ou I (Instalar)"
+        if ($modo -eq "P" -or $modo -eq "p") { break }
+        if ($modo -eq "I" -or $modo -eq "i") { Install-Local; break }
+    } while ($true)
 }
 
 # === MAIN LOOP ===
