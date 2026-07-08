@@ -1,7 +1,7 @@
 $ErrorActionPreference = "SilentlyContinue"
 $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
-$repoUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master"
+$scriptUrl = "https://is.gd/otimizador"
 
 function Show-Banner {
     Clear-Host
@@ -575,7 +575,7 @@ function Install-Local {
     Write-Host "Instalando em $targetDir..." -ForegroundColor Cyan
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     try {
-        iwr -useb "$repoUrl/otimizar-windows.ps1" -OutFile $scriptPath -ErrorAction Stop
+        iwr -useb "$scriptUrl" -OutFile $scriptPath -ErrorAction Stop
         Write-Host "Script salvo." -ForegroundColor Green
     } catch {
         Write-Host "Erro ao baixar o script. Salvando da memoria..." -ForegroundColor Yellow
