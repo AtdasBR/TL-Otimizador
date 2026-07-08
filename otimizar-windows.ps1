@@ -43,23 +43,6 @@ function Show-Banner {
     Write-Host "  $v              v1.0                      $v" -ForegroundColor DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor Cyan
     Write-Host ""
-
-    $sp = Get-SystemSpecs
-    $st = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
-    $sb = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
-    $sf = "  $v  {0,-38} $v"
-    Write-Host $st -ForegroundColor DarkGray
-    Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "RAM:    $($sp.RAM)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "GPU:    $($sp.GPU)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "Uptime: $($sp.Uptime)") -ForegroundColor DarkGray
-    foreach ($d in $sp.Discos) {
-        $linha = "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%"
-        Write-Host ($sf -f $linha) -ForegroundColor DarkGray
-    }
-    Write-Host $sb -ForegroundColor DarkGray
-    Write-Host ""
 }
 function Show-Help {
     Clear-Host
@@ -119,6 +102,23 @@ function Show-Help {
 
 function Show-Menu {
     Show-Banner
+    $sp = Get-SystemSpecs
+    $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
+    $st = "  $tt$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$tr"
+    $sb = "  $tb$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$te"
+    $sf = "  $tv  {0,-38} $tv"
+    Write-Host $st -ForegroundColor DarkGray
+    Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "RAM:    $($sp.RAM)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "GPU:    $($sp.GPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "Uptime: $($sp.Uptime)") -ForegroundColor DarkGray
+    foreach ($d in $sp.Discos) {
+        Write-Host ($sf -f "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%") -ForegroundColor DarkGray
+    }
+    Write-Host $sb -ForegroundColor DarkGray
+    Write-Host ""
+
     $t=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514
     $r=[char]0x2510;$e=[char]0x2518;$d=[char]0x25CF;$s=[char]0x25C9
     $c=[char]0x250C;$a=[char]0x2510;$l=[char]0x2514;$k=[char]0x2518
