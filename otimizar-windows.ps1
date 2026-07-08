@@ -66,7 +66,7 @@ function Show-Help {
     Write-Host "  $v   Mostra uma lista de servicos do Windows.        $v" -ForegroundColor DarkGray
     Write-Host "  $v   Digite o NUMERO para marcar/desmarcar.          $v" -ForegroundColor DarkGray
     Write-Host "  $v   [X] = vai ser desligado | [ ] = vai ser ligado  $v" -ForegroundColor DarkGray
-    Write-Host "  $v   [A] Aplica | [T] Marca tudo | [D] Detalhes | [V] Voltar  $v" -ForegroundColor DarkGray
+    Write-Host "  $v   [A] Aplica | [T] Marca tudo | [V] Voltar                $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
     Write-Host "  $v   4. MELHORAR INTERNET                            $v" -ForegroundColor Green
     Write-Host "  $v   Troca o DNS para Cloudflare (mais rapido),      $v" -ForegroundColor DarkGray
@@ -127,40 +127,41 @@ function Show-Menu {
     $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $bot = "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $fmt = "     {0,-2}. {1}  {2,-27} "
+    $df = "  $v {0,-38} $v"
 
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "1", $d, "Limpeza rapida") + "$v") -ForegroundColor Green
-    Write-Host "  $v    Remove arquivos temporarios e libera espaco    $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Remove arquivos temporarios") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "2", $s, "Limpeza profunda") + "$v") -ForegroundColor Magenta
-    Write-Host "  $v    Limpa bem mais fundo, libera varios GBs        $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Limpa bem mais fundo, libera GBs") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "3", $d, "Desligar servicos") + "$v") -ForegroundColor Green
-    Write-Host "  $v    Acelera o PC desligando coisas desnecessarias  $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Acelera o PC desligando servicos") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "4", $d, "Melhorar internet") + "$v") -ForegroundColor Green
-    Write-Host "  $v    DNS Cloudflare, reset de rede, ajuste TCP      $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "DNS Cloudflare, reset de rede, TCP") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "5", $d, "Acelerar visual") + "$v") -ForegroundColor Green
-    Write-Host "  $v    Desliga animacoes e efeitos visuais            $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Desliga animacoes e efeitos visuais") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "6", $s, "EXECUTAR TUDO") + "$v") -ForegroundColor Magenta
-    Write-Host "  $v    Roda servicos + internet + visual de uma vez   $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Roda servicos + internet + visual") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "7", $d, "Ponto de restauracao") + "$v") -ForegroundColor Yellow
-    Write-Host "  $v    Cria um checkpoint para voltar se der problema $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Cria checkpoint pra voltar se der erro") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
@@ -171,7 +172,7 @@ function Show-Menu {
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
     Write-Host ("  $v" + ($fmt -f "11", $d, "Ajuda") + "$v") -ForegroundColor Yellow
-    Write-Host "  $v    Explica cada opcao em detalhes                $v" -ForegroundColor DarkGray
+    Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
@@ -318,42 +319,24 @@ function Show-ServicosSubmenu {
             $cor = if ($s.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor Cyan
-                Write-Host "  $v  NUMERO=marca/desmarca  D+NUMERO=ver detalhes      $v" -ForegroundColor DarkCyan
+                Write-Host "  $v  Digite NUMERO para marcar/desmarcar               $v" -ForegroundColor DarkCyan
                 Write-Host $sep -ForegroundColor Cyan
             }
             Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-30}" -f $s.Desc) $("{0,-12}" -f $status) $v" -ForegroundColor $cor
+            foreach ($linha in (Wrap-Texto -Texto $s.Detalhe -Largura 48)) {
+                Write-Host "  $v  $("{0,-50}" -f "  $linha") $v" -ForegroundColor DarkGray
+            }
             $i++
         }
 
         Write-Host $sub -ForegroundColor Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [D] Detalhes  [V] Voltar  $v" -ForegroundColor Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [V] Voltar                $v" -ForegroundColor Yellow
         Write-Host $bot -ForegroundColor Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Servicos }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($s in $Servicos) { $s.Selected = $true }; continue }
-        if ($choice -eq "D" -or $choice -eq "d") {
-            $dn = Read-Host "Digite o NUMERO do item para ver detalhes"
-            $dnum = [int]::TryParse($dn, [ref]$null)
-            if ($dnum -and [int]$dn -ge 1 -and [int]$dn -le $Servicos.Count) {
-                $item = $Servicos[[int]$dn - 1]
-                Clear-Host; Show-Banner
-                $w = 54
-                $dt = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-                $ds = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
-                $db = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
-                Write-Host $dt -ForegroundColor Cyan
-                Write-Host "  $v  $("{0,-2}" -f $dn). $($item.Desc) ($("{0,-24}" -f $item.Nome)) $v" -ForegroundColor Cyan
-                Write-Host $ds -ForegroundColor Cyan
-                foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 47)) {
-                    Write-Host "  $v  $("{0,-50}" -f $linha) $v" -ForegroundColor DarkGray
-                }
-                Write-Host $db -ForegroundColor Cyan
-                Write-Host ""; $null = Read-Host "Pressione ENTER para voltar"
-            }
-            continue
-        }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Servicos.Count) {
             $Servicos[[int]$choice - 1].Selected = -not $Servicos[[int]$choice - 1].Selected
@@ -528,42 +511,24 @@ function Show-GenericoSubmenu {
             $cor = if ($item.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor Cyan
-                Write-Host "  $v  NUMERO=marca/desmarca  D+NUMERO=ver detalhes   $v" -ForegroundColor DarkCyan
+                Write-Host "  $v  Digite NUMERO para marcar/desmarcar          $v" -ForegroundColor DarkCyan
                 Write-Host $sep -ForegroundColor Cyan
             }
             Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-35}" -f $item.Desc) $v" -ForegroundColor $cor
+            foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
+                Write-Host "  $v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor DarkGray
+            }
             $i++
         }
 
         Write-Host $sub -ForegroundColor Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [D] Detalhes  [V] Voltar $v" -ForegroundColor Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [V] Voltar           $v" -ForegroundColor Yellow
         Write-Host $bot -ForegroundColor Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Itens }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($item in $Itens) { $item.Selected = $true }; continue }
-        if ($choice -eq "D" -or $choice -eq "d") {
-            $dn = Read-Host "Digite o NUMERO do item para ver detalhes"
-            $dnum = [int]::TryParse($dn, [ref]$null)
-            if ($dnum -and [int]$dn -ge 1 -and [int]$dn -le $Itens.Count) {
-                $item = $Itens[[int]$dn - 1]
-                Clear-Host; Show-Banner
-                $w = 44
-                $dt = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-                $ds = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
-                $db = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
-                Write-Host $dt -ForegroundColor Cyan
-                Write-Host "  $v  $dn. $($item.Desc)                         $v" -ForegroundColor Cyan
-                Write-Host $ds -ForegroundColor Cyan
-                foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
-                    Write-Host "  $v  $("{0,-42}" -f $linha)   $v" -ForegroundColor DarkGray
-                }
-                Write-Host $db -ForegroundColor Cyan
-                Write-Host ""; $null = Read-Host "Pressione ENTER para voltar"
-            }
-            continue
-        }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Itens.Count) {
             $Itens[[int]$choice - 1].Selected = -not $Itens[[int]$choice - 1].Selected
