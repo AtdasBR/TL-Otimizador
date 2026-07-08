@@ -2,6 +2,27 @@ $ErrorActionPreference = "SilentlyContinue"
 $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
 $scriptUrl = "https://is.gd/tlotimizador"
+$rawUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master/otimizar-windows.ps1"
+$script:versao = "1.1"
+
+function VerificarAtualizacao {
+    param([switch]$Silencioso)
+    if (-not $PSCommandPath) { if (-not $Silencioso) { Write-Host "Modo portatil - sem atualizacao automatica." -ForegroundColor Yellow }; return }
+    try {
+        $resp = Invoke-WebRequest -Uri $rawUrl -UseBasicParsing -ErrorAction Stop
+        if ($resp.Content -match '\$script:versao\s*=\s*"([^"]+)"') {
+            $novaVer = $Matches[1]
+            if ($novaVer -ne $script:versao) {
+                Write-Host "Nova versao ($novaVer) disponivel! Atualizando..." -ForegroundColor Yellow
+                $resp.Content | Set-Content -Path $PSCommandPath -Force
+                Write-Host "Atualizado! Execute novamente o comando 'tl'." -ForegroundColor Green
+                Start-Sleep -Seconds 3; exit
+            } elseif (-not $Silencioso) {
+                Write-Host "Voce ja esta na versao mais recente ($script:versao)." -ForegroundColor Green
+            }
+        }
+    } catch { if (-not $Silencioso) { Write-Host "Nao foi possivel verificar atualizacao." -ForegroundColor Yellow } }
+}
 
 function Get-SystemSpecs {
     if (-not $script:specsCache) {
@@ -43,7 +64,7 @@ function Show-Banner {
     $ln = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
     Write-Host $ln -ForegroundColor Cyan
     Write-Host "  $v            TL OPTIMIZER                $v" -ForegroundColor Cyan
-    Write-Host "  $v              v1.0                      $v" -ForegroundColor DarkGray
+    Write-Host "  $v              v1.1                      $v" -ForegroundColor DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor Cyan
     Write-Host ""
 }
@@ -105,7 +126,11 @@ function Show-Help {
     Write-Host "  $v   Baixa instaladores de Driver Easy, Driver Booster   $v" -ForegroundColor DarkGray
     Write-Host "  $v   e Snappy Driver Installer Lite.                     $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
-    Write-Host "  $v   14. AJUDA (esta tela)                               $v" -ForegroundColor Yellow
+    Write-Host "  $v   14. VERIFICAR ATUALIZACAO                           $v" -ForegroundColor Green
+    Write-Host "  $v   Checa se ha versao nova no GitHub e baixa            $v" -ForegroundColor DarkGray
+    Write-Host "  $v   automaticamente.                                     $v" -ForegroundColor DarkGray
+    Write-Host $sep -ForegroundColor Cyan
+    Write-Host "  $v   15. AJUDA (esta tela)                                $v" -ForegroundColor Yellow
     Write-Host "  $v   0. SAIR                                         $v" -ForegroundColor Red
     Write-Host $bot -ForegroundColor Cyan
     Write-Host ""
@@ -205,7 +230,12 @@ function Show-Menu {
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
-    Write-Host ("  $v" + ($fmt -f "14", $d, "Ajuda") + "$v") -ForegroundColor Yellow
+    Write-Host ("  $v" + ($fmt -f "14", $d, "Verificar atualizacao") + "$v") -ForegroundColor Green
+    Write-Host ($df -f "Checa e baixa versao mais recente") -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "15", $d, "Ajuda") + "$v") -ForegroundColor Yellow
     Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
@@ -1096,11 +1126,14 @@ if (-not $PSCommandPath) {
     } while ($true)
 }
 
+# === AUTO-UPDATE (silencioso, somente versao instalada) ===
+VerificarAtualizacao -Silencioso
+
 # === MAIN LOOP ===
 do {
     Show-Menu
 
-    $opcao = Read-Host "Escolha uma opcao (ou 14 para ajuda)"
+    $opcao = Read-Host "Escolha uma opcao (ou 15 para ajuda)"
 
     switch ($opcao) {
         "1" { Show-Banner; Run-Limpeza; Wait-Key }
@@ -1116,7 +1149,8 @@ do {
         "11" { Show-Banner; Run-Browsers }
         "12" { Show-Banner; Run-UniversalUninstaller }
         "13" { Show-Banner; Run-DriverUpdater }
-        "14" { Show-Help; Wait-Key }
+        "14" { Show-Banner; VerificarAtualizacao; Wait-Key }
+        "15" { Show-Help; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
