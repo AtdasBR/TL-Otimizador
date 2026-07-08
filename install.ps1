@@ -1,5 +1,5 @@
 # TL Optimizer - Bootstrap (via iwr | iex)
-$repoUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/main"
+$repoUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master"
 $targetDir = "$env:USERPROFILE\TL-Optimizer"
 $scriptPath = "$targetDir\otimizar-windows.ps1"
 
