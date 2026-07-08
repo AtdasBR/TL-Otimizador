@@ -3,15 +3,39 @@ $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
 $scriptUrl = "https://is.gd/tlotimizador"
 
+function Get-SystemSpecs {
+    if ($script:specsCache) { return $script:specsCache }
+    try { $os = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption -replace 'Microsoft ','' } catch { $os = "Windows" }
+    try { $cpu = (Get-CimInstance Win32_Processor -ErrorAction Stop).Name -replace '\s+',' ' } catch { $cpu = "N/A" }
+    try { $cores = (Get-CimInstance Win32_Processor -ErrorAction Stop).NumberOfCores } catch { $cores = 0 }
+    try { $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1) } catch { $ram = "N/A" }
+    try { $gpu = ((Get-CimInstance Win32_VideoController -ErrorAction Stop).Name -join ', ') } catch { $gpu = "N/A" }
+    try { $dc = Get-PSDrive -Name C -ErrorAction Stop; $disco = "$([math]::Round($dc.Free/1GB)) GB livre de $([math]::Round(($dc.Used+$dc.Free)/1GB)) GB" } catch { $disco = "N/A" }
+    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Disco = $disco }
+    return $script:specsCache
+}
+
 function Show-Banner {
     Clear-Host
     $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
     $ln = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
     Write-Host $ln -ForegroundColor Cyan
     Write-Host "  $v            TL OPTIMIZER                $v" -ForegroundColor Cyan
-    Write-Host "  $v     Deixe seu Windows mais rapido!    $v" -ForegroundColor DarkCyan
-    Write-Host "  $v            v1.0                        $v" -ForegroundColor DarkGray
+    Write-Host "  $v              v1.0                      $v" -ForegroundColor DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor Cyan
+    Write-Host ""
+
+    $sp = Get-SystemSpecs
+    $st = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $sb = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
+    $sf = "  $v  {0,-38} $v"
+    Write-Host $st -ForegroundColor DarkGray
+    Write-Host ($sf -f "SO: $($sp.OS)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "CPU: $($sp.CPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "RAM: $($sp.RAM)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "GPU: $($sp.GPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "Disco C: $($sp.Disco)") -ForegroundColor DarkGray
+    Write-Host $sb -ForegroundColor DarkGray
     Write-Host ""
 }
 function Show-Help {
@@ -36,7 +60,7 @@ function Show-Help {
     Write-Host "  $v   Mostra uma lista de servicos do Windows.        $v" -ForegroundColor DarkGray
     Write-Host "  $v   Digite o NUMERO para marcar/desmarcar.          $v" -ForegroundColor DarkGray
     Write-Host "  $v   [X] = vai ser desligado | [ ] = vai ser ligado  $v" -ForegroundColor DarkGray
-    Write-Host "  $v   [A] Aplica | [T] Marca tudo | [V] Voltar       $v" -ForegroundColor DarkGray
+    Write-Host "  $v   [A] Aplica | [T] Marca tudo | [D] Detalhes | [V] Voltar  $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
     Write-Host "  $v   4. MELHORAR INTERNET                            $v" -ForegroundColor Green
     Write-Host "  $v   Troca o DNS para Cloudflare (mais rapido),      $v" -ForegroundColor DarkGray
@@ -239,6 +263,19 @@ function Run-Limpeza {
     Write-Host ""; Write-Host "Limpeza concluida!" -ForegroundColor Green
 }
 
+function Wrap-Texto {
+    param([string]$Texto, [int]$Largura = 48)
+    $linhas = @()
+    while ($Texto.Length -gt $Largura) {
+        $quebra = $Texto.LastIndexOf(' ', $Largura)
+        if ($quebra -le 0) { $quebra = $Largura }
+        $linhas += $Texto.Substring(0, $quebra).TrimEnd()
+        $Texto = $Texto.Substring($quebra).TrimStart()
+    }
+    if ($Texto) { $linhas += $Texto }
+    return $linhas
+}
+
 function Show-ServicosSubmenu {
     param([array]$Servicos, [string]$Titulo)
 
@@ -258,7 +295,7 @@ function Show-ServicosSubmenu {
             $cor = if ($s.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor Cyan
-                Write-Host "  $v  Digite o NUMERO para marcar/desmarcar              $v" -ForegroundColor DarkCyan
+                Write-Host "  $v  NUMERO=marca/desmarca  D+NUMERO=ver detalhes      $v" -ForegroundColor DarkCyan
                 Write-Host $sep -ForegroundColor Cyan
             }
             Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-30}" -f $s.Desc) $("{0,-12}" -f $status) $v" -ForegroundColor $cor
@@ -266,13 +303,34 @@ function Show-ServicosSubmenu {
         }
 
         Write-Host $sub -ForegroundColor Cyan
-        Write-Host "  $v  [A] Aplicar     [T] Marcar todos     [V] Voltar     $v" -ForegroundColor Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [D] Detalhes  [V] Voltar  $v" -ForegroundColor Yellow
         Write-Host $bot -ForegroundColor Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Servicos }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($s in $Servicos) { $s.Selected = $true }; continue }
+        if ($choice -eq "D" -or $choice -eq "d") {
+            $dn = Read-Host "Digite o NUMERO do item para ver detalhes"
+            $dnum = [int]::TryParse($dn, [ref]$null)
+            if ($dnum -and [int]$dn -ge 1 -and [int]$dn -le $Servicos.Count) {
+                $item = $Servicos[[int]$dn - 1]
+                Clear-Host; Show-Banner
+                $w = 54
+                $dt = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
+                $ds = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
+                $db = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
+                Write-Host $dt -ForegroundColor Cyan
+                Write-Host "  $v  $("{0,-2}" -f $dn). $($item.Desc) ($("{0,-24}" -f $item.Nome)) $v" -ForegroundColor Cyan
+                Write-Host $ds -ForegroundColor Cyan
+                foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 47)) {
+                    Write-Host "  $v  $("{0,-50}" -f $linha) $v" -ForegroundColor DarkGray
+                }
+                Write-Host $db -ForegroundColor Cyan
+                Write-Host ""; $null = Read-Host "Pressione ENTER para voltar"
+            }
+            continue
+        }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Servicos.Count) {
             $Servicos[[int]$choice - 1].Selected = -not $Servicos[[int]$choice - 1].Selected
@@ -283,21 +341,21 @@ function Show-ServicosSubmenu {
 function Run-Servicos {
     param([switch]$SkipMenu)
     $servicos = @(
-        @{Nome = "XblAuthManager"; Desc = "Autenticacao Xbox"; Selected = $true},
-        @{Nome = "XblGameSave"; Desc = "Save game Xbox"; Selected = $true},
-        @{Nome = "XboxNetApiSvc"; Desc = "Rede Xbox"; Selected = $true},
-        @{Nome = "XboxGipSvc"; Desc = "Perifericos Xbox"; Selected = $true},
-        @{Nome = "DiagTrack"; Desc = "Tracking de diagnosticos"; Selected = $true},
-        @{Nome = "dmwappushservice"; Desc = "Roteamento WAP"; Selected = $true},
-        @{Nome = "WSearch"; Desc = "Windows Search (indexacao)"; Selected = $true},
-        @{Nome = "SysMain"; Desc = "SysMain (Superfetch)"; Selected = $true},
-        @{Nome = "TabletInputService"; Desc = "Entrada Tablet"; Selected = $true},
-        @{Nome = "RemoteRegistry"; Desc = "Registro Remoto"; Selected = $true},
-        @{Nome = "RemoteDesktopServices"; Desc = "Area de Trabalho Remota"; Selected = $true},
-        @{Nome = "TermService"; Desc = "Servico Terminal"; Selected = $true},
-        @{Nome = "lfsvc"; Desc = "Servico Geolocalizacao"; Selected = $true},
-        @{Nome = "MapsBroker"; Desc = "Download Mapas"; Selected = $true},
-        @{Nome = "WbioSrvc"; Desc = "Biometria"; Selected = $true}
+        @{Nome = "XblAuthManager"; Desc = "Autenticacao Xbox"; Selected = $true; Detalhe = "Autenticacao de contas Xbox Live. Desligar: jogos Xbox podem perder acesso online, mas outros jogos e o sistema continuam normais."}
+        @{Nome = "XblGameSave"; Desc = "Save game Xbox"; Selected = $true; Detalhe = "Salva jogos Xbox na nuvem. Desligar: voce perde salvamento na nuvem, mas saves locais continuam funcionando."}
+        @{Nome = "XboxNetApiSvc"; Desc = "Rede Xbox"; Selected = $true; Detalhe = "Conecta jogos Xbox a internet. Desligar: multiplayer em jogos Xbox para de funcionar. Jogos de outras plataformas nao sao afetados."}
+        @{Nome = "XboxGipSvc"; Desc = "Perifericos Xbox"; Selected = $true; Detalhe = "Suporte a controles Xbox. Desligar: controle Xbox pode nao funcionar corretamente no PC."}
+        @{Nome = "DiagTrack"; Desc = "Tracking Microsoft"; Selected = $true; Detalhe = "Coleta dados de uso e envia para a Microsoft. Desligar: mais privacidade e menos consumo de recursos. Recomendado para todos."}
+        @{Nome = "dmwappushservice"; Desc = "Roteamento WAP"; Selected = $true; Detalhe = "Roteamento de mensagens de operadoras. Desligar: nenhum impacto para usuarios comuns. Servico desnecessario."}
+        @{Nome = "WSearch"; Desc = "Windows Search"; Selected = $true; Detalhe = "Indexa arquivos para buscas rapidas. Desligar: pesquisas ficam mais lentas, mas libera CPU e RAM significativamente."}
+        @{Nome = "SysMain"; Desc = "SysMain (Superfetch)"; Selected = $true; Detalhe = "Pre-carrega programas na memoria. Desligar: em SSD nao faz diferenca. Em HD pode deixar abertura de programas um pouco mais lenta."}
+        @{Nome = "TabletInputService"; Desc = "Entrada Tablet"; Selected = $true; Detalhe = "Suporte a caneta e toque. Desligar: sem impacto em PCs sem tela touch ou caneta."}
+        @{Nome = "RemoteRegistry"; Desc = "Registro Remoto"; Selected = $true; Detalhe = "Permite editar o registro do Windows pela rede. Desligar: mais seguro, impede acesso remoto ao registro."}
+        @{Nome = "RemoteDesktopServices"; Desc = "Area Remota"; Selected = $true; Detalhe = "Permite acessar este PC de outro lugar. Desligar: nao sera possivel usar area de trabalho remota (RDP)."}
+        @{Nome = "TermService"; Desc = "Servico Terminal"; Selected = $true; Detalhe = "Necessario para area de trabalho remota (RDP). Desligar: mesmo efeito do item acima, impede acesso remoto."}
+        @{Nome = "lfsvc"; Desc = "Geolocalizacao"; Selected = $true; Detalhe = "Servico de localizacao do Windows. Desligar: apps como Mapas e Clima nao detectam sua localizacao automaticamente."}
+        @{Nome = "MapsBroker"; Desc = "Download Mapas"; Selected = $true; Detalhe = "Gerenciador de mapas baixados. Desligar: app Windows Maps pode nao funcionar direito, mas nao afeta Google Maps ou outros."}
+        @{Nome = "WbioSrvc"; Desc = "Biometria"; Selected = $true; Detalhe = "Leitor de digital e reconhecimento facial. Desligar: Windows Hello e leitor de digital param de funcionar."}
     )
 
     if ($SkipMenu) { $selecionados = $servicos }
@@ -346,10 +404,10 @@ function Run-Servicos {
 function Run-Rede {
     param([switch]$SkipMenu)
     $itens = @(
-        @{Nome = "LiberarRenovarIP"; Desc = "Liberar e renovar IP"; Selected = $true}
-        @{Nome = "ResetWinsock"; Desc = "Resetar Winsock e TCP/IP"; Selected = $true}
-        @{Nome = "DNSCloudflare"; Desc = "DNS Cloudflare (1.1.1.1)"; Selected = $true}
-        @{Nome = "AutoTuning"; Desc = "Ajustar auto-tuning TCP"; Selected = $true}
+        @{Nome = "LiberarRenovarIP"; Desc = "Liberar e renovar IP"; Selected = $true; Detalhe = "Libera o endereco IP atual e pega um novo do roteador. Resolve problemas de conexao quando a internet para de funcionar do nada."}
+        @{Nome = "ResetWinsock"; Desc = "Resetar Winsock e TCP/IP"; Selected = $true; Detalhe = "Reseta a pilha de rede do Windows. Corrige erros de conexao, DNS e rede que outros metodos nao resolvem."}
+        @{Nome = "DNSCloudflare"; Desc = "DNS Cloudflare (1.1.1.1)"; Selected = $true; Detalhe = "Troca o DNS do Windows para Cloudflare (1.1.1.1). Navegacao mais rapida, mais privacidade e acesso a sites bloqueados pelo provedor."}
+        @{Nome = "AutoTuning"; Desc = "Ajustar auto-tuning TCP"; Selected = $true; Detalhe = "Ajusta o algoritmo de auto-tuning TCP para o padrao (normal). Pode melhorar velocidade de download em conexoes com latencia alta."}
     )
 
     if ($SkipMenu) { $selecionados = $itens }
@@ -447,7 +505,7 @@ function Show-GenericoSubmenu {
             $cor = if ($item.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor Cyan
-                Write-Host "  $v  Digite o NUMERO para marcar/desmarcar       $v" -ForegroundColor DarkCyan
+                Write-Host "  $v  NUMERO=marca/desmarca  D+NUMERO=ver detalhes   $v" -ForegroundColor DarkCyan
                 Write-Host $sep -ForegroundColor Cyan
             }
             Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-35}" -f $item.Desc) $v" -ForegroundColor $cor
@@ -455,13 +513,34 @@ function Show-GenericoSubmenu {
         }
 
         Write-Host $sub -ForegroundColor Cyan
-        Write-Host "  $v  [A] Aplicar   [T] Marcar todos   [V] Voltar $v" -ForegroundColor Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [D] Detalhes  [V] Voltar $v" -ForegroundColor Yellow
         Write-Host $bot -ForegroundColor Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "V" -or $choice -eq "v") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Itens }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($item in $Itens) { $item.Selected = $true }; continue }
+        if ($choice -eq "D" -or $choice -eq "d") {
+            $dn = Read-Host "Digite o NUMERO do item para ver detalhes"
+            $dnum = [int]::TryParse($dn, [ref]$null)
+            if ($dnum -and [int]$dn -ge 1 -and [int]$dn -le $Itens.Count) {
+                $item = $Itens[[int]$dn - 1]
+                Clear-Host; Show-Banner
+                $w = 44
+                $dt = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
+                $ds = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
+                $db = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
+                Write-Host $dt -ForegroundColor Cyan
+                Write-Host "  $v  $dn. $($item.Desc)                         $v" -ForegroundColor Cyan
+                Write-Host $ds -ForegroundColor Cyan
+                foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
+                    Write-Host "  $v  $("{0,-42}" -f $linha)   $v" -ForegroundColor DarkGray
+                }
+                Write-Host $db -ForegroundColor Cyan
+                Write-Host ""; $null = Read-Host "Pressione ENTER para voltar"
+            }
+            continue
+        }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $Itens.Count) {
             $Itens[[int]$choice - 1].Selected = -not $Itens[[int]$choice - 1].Selected
@@ -472,10 +551,10 @@ function Show-GenericoSubmenu {
 function Run-Visual {
     param([switch]$SkipMenu)
     $itens = @(
-        @{Nome = "ModoDesempenho"; Desc = "Modo desempenho (VisualFX)"; Selected = $true}
-        @{Nome = "Transparencia"; Desc = "Desativar transparencia"; Selected = $true}
-        @{Nome = "Animacoes"; Desc = "Desativar animacoes"; Selected = $true}
-        @{Nome = "SombrasEfeitos"; Desc = "Desativar sombras e efeitos"; Selected = $true}
+        @{Nome = "ModoDesempenho"; Desc = "Modo desempenho (VisualFX)"; Selected = $true; Detalhe = "Muda o Windows para o modo de melhor desempenho. Desliga todas as animacoes, sombras e efeitos de uma vez. O sistema fica mais leve e responsivo."}
+        @{Nome = "Transparencia"; Desc = "Desativar transparencia"; Selected = $true; Detalhe = "Desliga o efeito de transparencia nas janelas e barra de tarefas (Acrylic). Reduz o uso da placa de video e melhora desempenho."}
+        @{Nome = "Animacoes"; Desc = "Desativar animacoes"; Selected = $true; Detalhe = "Desliga animacoes de abrir, fechar e minimizar janelas. Tudo fica mais instantaneo, o PC parece mais rapido no dia a dia."}
+        @{Nome = "SombrasEfeitos"; Desc = "Desativar sombras e efeitos"; Selected = $true; Detalhe = "Desliga sombras de janelas e animacoes da barra de tarefas. Ganho pequeno de desempenho, mas em PCs fracos faz diferenca."}
     )
 
     if ($SkipMenu) { $selecionados = $itens }
