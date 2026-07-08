@@ -590,6 +590,19 @@ function Install-Local {
     } else {
         Write-Host "Alias 'tl' ja existe no perfil." -ForegroundColor Yellow
     }
+    $shortcutPath = "$env:USERPROFILE\Desktop\TL Optimizer.lnk"
+    try {
+        $wshell = New-Object -ComObject WScript.Shell
+        $shortcut = $wshell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = "powershell.exe"
+        $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`""
+        $shortcut.WorkingDirectory = $targetDir
+        $shortcut.Description = "TL Optimizer - Otimizador de Windows"
+        $shortcut.Save()
+        Write-Host "Atalho criado na Area de Trabalho." -ForegroundColor Green
+    } catch {
+        Write-Host "Nao foi possivel criar atalho na Area de Trabalho." -ForegroundColor DarkGray
+    }
     Write-Host "`nInstalacao concluida! Reinicie o PowerShell e digite 'tl'." -ForegroundColor Green
     Wait-Key
     & $scriptPath
