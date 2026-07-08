@@ -5,44 +5,50 @@ $scriptUrl = "https://is.gd/tlotimizador"
 
 function Show-Banner {
     Clear-Host
-    $b = [char]0x2554; $b2 = [char]0x2557; $b3 = [char]0x255A; $b4 = [char]0x255D; $h2 = [char]0x2550; $v2 = [char]0x2551
-    Write-Host "  $b$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b2" -ForegroundColor Cyan
-    Write-Host "  $v2       T L   O P T I M I Z E R         $v2" -ForegroundColor Cyan
-    Write-Host "  $v2     Otimizador de Windows v1.0        $v2" -ForegroundColor DarkCyan
-    Write-Host "  $b3$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b4" -ForegroundColor Cyan
+    $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
+    $ln = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    Write-Host $ln -ForegroundColor Cyan
+    Write-Host "  $v            TL OPTIMIZER                $v" -ForegroundColor Cyan
+    Write-Host "  $v     Otimizador de Windows v1.0        $v" -ForegroundColor DarkCyan
+    Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor Cyan
     Write-Host ""
 }
 function Show-Menu {
     Show-Banner
-    $t = [char]0x250C; $h = [char]0x2500; $v = [char]0x2502; $b = [char]0x2514
-    $r = [char]0x2510; $e = [char]0x2518; $d = [char]0x25CF; $s = [char]0x25C9
-    $c = [char]0x250C; $a = [char]0x2510; $l = [char]0x2514; $k = [char]0x2518
+    $t=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514
+    $r=[char]0x2510;$e=[char]0x2518;$d=[char]0x25CF;$s=[char]0x25C9
+    $c=[char]0x250C;$a=[char]0x2510;$l=[char]0x2514;$k=[char]0x2518
 
-    Write-Host "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a" -ForegroundColor DarkCyan
-    Write-Host "  $v     [1] $d  Limpeza Simples              $v" -ForegroundColor Green
-    Write-Host "  $v     [2] $s  Limpeza Extrema (Segura)    $v" -ForegroundColor Magenta
-    Write-Host "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k" -ForegroundColor DarkCyan
+    $top = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a"
+    $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
+    $bot = "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
+    $fmt = "     {0,-2}. {1}  {2,-27} "
+
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "1", $d, "Limpeza Simples") + "$v") -ForegroundColor Green
+    Write-Host ("  $v" + ($fmt -f "2", $s, "Limpeza Extrema (Segura)") + "$v") -ForegroundColor Magenta
+    Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
-    Write-Host "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a" -ForegroundColor DarkCyan
-    Write-Host "  $v     [3] $d  Desativar Servicos          $v" -ForegroundColor Green
-    Write-Host "  $v     [4] $d  Otimizar Rede               $v" -ForegroundColor Green
-    Write-Host "  $v     [5] $d  Ajustes Visuais             $v" -ForegroundColor Green
-    Write-Host "  $v     [6] $s  EXECUTAR TUDO               $v" -ForegroundColor Magenta
-    Write-Host "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k" -ForegroundColor DarkCyan
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "3", $d, "Desativar Servicos") + "$v") -ForegroundColor Green
+    Write-Host ("  $v" + ($fmt -f "4", $d, "Otimizar Rede") + "$v") -ForegroundColor Green
+    Write-Host ("  $v" + ($fmt -f "5", $d, "Ajustes Visuais") + "$v") -ForegroundColor Green
+    Write-Host ("  $v" + ($fmt -f "6", $s, "EXECUTAR TUDO") + "$v") -ForegroundColor Magenta
+    Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
-    Write-Host "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a" -ForegroundColor DarkCyan
-    Write-Host "  $v     [7] $d  Criar Ponto Restauracao     $v" -ForegroundColor Yellow
-    Write-Host "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k" -ForegroundColor DarkCyan
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "7", $d, "Criar Ponto Restauracao") + "$v") -ForegroundColor Yellow
+    Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
-    Write-Host "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a" -ForegroundColor DarkCyan
-    Write-Host "  $v     [8] $d  Desfazer - Servicos         $v" -ForegroundColor Cyan
-    Write-Host "  $v     [9] $d  Desfazer - Rede             $v" -ForegroundColor Cyan
-    Write-Host "  $v    [10] $d  Desfazer - Visual           $v" -ForegroundColor Cyan
-    Write-Host "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k" -ForegroundColor DarkCyan
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "8", $d, "Desfazer - Servicos") + "$v") -ForegroundColor Cyan
+    Write-Host ("  $v" + ($fmt -f "9", $d, "Desfazer - Rede") + "$v") -ForegroundColor Cyan
+    Write-Host ("  $v" + ($fmt -f "10", $d, "Desfazer - Visual") + "$v") -ForegroundColor Cyan
+    Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
-    Write-Host "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a" -ForegroundColor DarkCyan
-    Write-Host "  $v          [0]  X  Sair               $v" -ForegroundColor Red
-    Write-Host "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k" -ForegroundColor DarkCyan
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host "  $v             [0]  X  Sair                  $v" -ForegroundColor Red
+    Write-Host $bot -ForegroundColor DarkCyan
     Write-Host ""
 }
 
