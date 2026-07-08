@@ -1,7 +1,7 @@
 $ErrorActionPreference = "SilentlyContinue"
 $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
-$scriptUrl = "https://is.gd/otimizador"
+$scriptUrl = "https://is.gd/tlotimizador"
 
 function Show-Banner {
     Clear-Host
