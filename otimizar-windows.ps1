@@ -22,7 +22,10 @@ function Get-SystemSpecs {
                 $discos += @{ Letra = $d.DeviceID -replace ':'; Total = $total; Livre = $livre; Pct = $pct; Bar = $bar }
             }
         } catch { $discos = @() }
-        $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Discos = $discos }
+        try { $tpm = if ((Get-CimInstance Win32_Tpm -ErrorAction Stop).IsEnabled_InitialValue -eq $true) { "2.0" } else { "Ausente" } } catch { $tpm = "N/A" }
+        try { $net4 = if ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" -ErrorAction Stop).Install -eq 1) { "Ativado" } else { "Ausente" } } catch { $net4 = "N/A" }
+        try { $fuso = (Get-TimeZone).DisplayName -replace '.*UTC.*UTC','UTC' } catch { $fuso = "N/A" }
+        $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Discos = $discos; Usuario = $env:USERNAME; PC = $env:COMPUTERNAME; TPM = $tpm; Net4 = $net4; Fuso = $fuso }
     }
     try { $ramLivre = [math]::Round((Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).FreePhysicalMemory / 1MB, 1) } catch { $ramLivre = 0 }
     try {
@@ -31,7 +34,7 @@ function Get-SystemSpecs {
         $dias = $uptime.Days; $horas = $uptime.Hours
         $uptimeStr = if ($dias -gt 0) { "$dias dia(s) $horas h" } else { "$horas h" }
     } catch { $uptimeStr = "N/A" }
-    return @{ OS = $script:specsCache.OS; CPU = $script:specsCache.CPU; RAM = "$($script:specsCache.RAM) ($ramLivre GB livre)"; GPU = $script:specsCache.GPU; Discos = $script:specsCache.Discos; Uptime = $uptimeStr }
+    return @{ OS = $script:specsCache.OS; CPU = $script:specsCache.CPU; RAM = "$($script:specsCache.RAM) ($ramLivre GB livre)"; GPU = $script:specsCache.GPU; Discos = $script:specsCache.Discos; Uptime = $uptimeStr; Usuario = $script:specsCache.Usuario; PC = $script:specsCache.PC; TPM = $script:specsCache.TPM; Net4 = $script:specsCache.Net4; Fuso = $script:specsCache.Fuso }
 }
 
 function Show-Banner {
@@ -113,6 +116,10 @@ function Show-Menu {
     Write-Host ($sf -f "RAM:    $($sp.RAM)") -ForegroundColor DarkGray
     Write-Host ($sf -f "GPU:    $($sp.GPU)") -ForegroundColor DarkGray
     Write-Host ($sf -f "Uptime: $($sp.Uptime)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "Usuario: $($sp.Usuario)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "PC: $($sp.PC)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "TPM: $($sp.TPM)   NET 4: $($sp.Net4)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "Fuso: $($sp.Fuso)") -ForegroundColor DarkGray
     foreach ($d in $sp.Discos) {
         Write-Host ($sf -f "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%") -ForegroundColor DarkGray
     }
