@@ -97,7 +97,11 @@ function Show-Help {
     Write-Host "  $v   Detecta navegadores instalados e permite         $v" -ForegroundColor DarkGray
     Write-Host "  $v   desinstalar varios de uma vez.                    $v" -ForegroundColor DarkGray
     Write-Host $sep -ForegroundColor Cyan
-    Write-Host "  $v   12. AJUDA (esta tela)                            $v" -ForegroundColor Yellow
+    Write-Host "  $v   12. DESINSTALADOR UNIVERSAL                       $v" -ForegroundColor Magenta
+    Write-Host "  $v   Lista todos os programas instalados, desinstala    $v" -ForegroundColor DarkGray
+    Write-Host "  $v   e limpa arquivos e registros residuais.            $v" -ForegroundColor DarkGray
+    Write-Host $sep -ForegroundColor Cyan
+    Write-Host "  $v   13. AJUDA (esta tela)                              $v" -ForegroundColor Yellow
     Write-Host "  $v   0. SAIR                                         $v" -ForegroundColor Red
     Write-Host $bot -ForegroundColor Cyan
     Write-Host ""
@@ -187,7 +191,12 @@ function Show-Menu {
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor DarkCyan
-    Write-Host ("  $v" + ($fmt -f "12", $d, "Ajuda") + "$v") -ForegroundColor Yellow
+    Write-Host ("  $v" + ($fmt -f "12", $s, "Desinstalador universal") + "$v") -ForegroundColor Magenta
+    Write-Host ($df -f "Remove programas e limpa residuos") -ForegroundColor DarkGray
+    Write-Host $mid -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host $top -ForegroundColor DarkCyan
+    Write-Host ("  $v" + ($fmt -f "13", $d, "Ajuda") + "$v") -ForegroundColor Yellow
     Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor DarkGray
     Write-Host $mid -ForegroundColor DarkCyan
     Write-Host ""
@@ -847,6 +856,95 @@ function Run-Browsers {
     Write-Host ""; Write-Host "Instalacao concluida!" -ForegroundColor Green; Wait-Key
 }
 
+function Run-UniversalUninstaller {
+    $paths = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
+    $todos = @()
+    foreach ($p in $paths) {
+        Get-ItemProperty $p -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -and $_.UninstallString } | ForEach-Object {
+            $todos += @{ Nome = $_.DisplayName; Uninst = $_.UninstallString -replace '"',''; Pub = $_.Publisher }
+        }
+    }
+    $todos = $todos | Sort-Object Nome
+    if ($todos.Count -eq 0) { Write-Host "Nenhum programa encontrado." -ForegroundColor Yellow; Wait-Key; return }
+
+    $filtro = ""; $sel = -1; $pag = 0; $porPag = 20
+    do {
+        Clear-Host; Show-Banner
+        $lista = if ($filtro) { $todos | Where-Object { $_.Nome -match $filtro } } else { $todos }
+        $totalPag = [math]::Max(0, [math]::Floor(($lista.Count - 1) / $porPag))
+        $ini = $pag * $porPag
+        $fim = [math]::Min($ini + $porPag - 1, $lista.Count - 1)
+        $h=[char]0x2550;$v=[char]0x2551
+        $top = "  $([char]0x2554)$($h*58)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$($h*58)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$($h*58)$([char]0x255D)"
+        Write-Host $top -ForegroundColor Magenta
+        Write-Host "  $v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor Magenta
+        Write-Host $sep -ForegroundColor Magenta
+        Write-Host "  $v  /texto = buscar   [N] proxima   [P] anterior         $v" -ForegroundColor DarkCyan
+        Write-Host "  $v  NUMERO = selecionar   [U] Desinstalar   [V] Voltar   $v" -ForegroundColor DarkCyan
+        Write-Host "  $v  Filtro: $(if ($filtro) { $filtro } else { '(todos)' })                          $v" -ForegroundColor Yellow
+        Write-Host $sep -ForegroundColor Magenta
+        if ($lista.Count -eq 0) {
+            Write-Host "  $v  Nenhum programa encontrado com esse filtro.         $v" -ForegroundColor DarkGray
+        } else {
+            for ($i = $ini; $i -le $fim; $i++) {
+                $item = $lista[$i]
+                $mark = if ($i -eq $sel) { ">>" } else { "  " }
+                Write-Host "  $v  $mark $("{0,3}" -f ($i+1)). $("{0,-47}" -f $(if ($item.Nome.Length -gt 47) { $item.Nome.Substring(0,44) + '...' } else { $item.Nome }))$v" -ForegroundColor $(if ($i -eq $sel) { "Cyan" } else { "Gray" })
+            }
+            $resto = $porPag - ($fim - $ini + 1)
+            for ($r = 0; $r -lt $resto; $r++) { Write-Host "  $v                                                               $v" -ForegroundColor DarkGray }
+            Write-Host $sep -ForegroundColor Magenta
+            Write-Host "  $v  Pagina $($pag+1) de $($totalPag+1) - $($lista.Count) programa(s)                    $v" -ForegroundColor DarkGray
+        }
+        Write-Host $bot -ForegroundColor Magenta
+        Write-Host ""
+        $cmd = Read-Host "Comando"
+        if ($cmd -eq "V" -or $cmd -eq "v") { return }
+        if ($cmd -eq "N" -or $cmd -eq "n") { if ($pag -lt $totalPag) { $pag++ }; continue }
+        if ($cmd -eq "P" -or $cmd -eq "p") { if ($pag -gt 0) { $pag-- }; continue }
+        if ($cmd -eq "U" -or $cmd -eq "u") {
+            if ($sel -lt 0 -or $sel -ge $lista.Count) { Write-Host "Selecione um programa primeiro." -ForegroundColor Yellow; Start-Sleep 1; continue }
+            $prog = $lista[$sel]
+            Write-Host "`nDESINSTALAR: $($prog.Nome)?" -ForegroundColor Yellow
+            $conf = Read-Host "Confirmar? (S/N)"
+            if ($conf -ne "S" -and $conf -ne "s") { continue }
+            Show-Banner
+            Write-Host ">>> DESINSTALANDO $($prog.Nome) <<<" -ForegroundColor Magenta
+            Write-Host ""
+            Write-Host "[1/3] Executando desinstalador..." -NoNewline
+            try {
+                if ($prog.Uninst -match 'msiexec') {
+                    Start-Process "msiexec.exe" -ArgumentList "/x $($prog.Uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart" -Wait -ErrorAction Stop
+                } else {
+                    Start-Process -FilePath $prog.Uninst -Wait -ErrorAction Stop
+                }
+                Write-Host " OK" -ForegroundColor Green
+            } catch { Write-Host " FALHOU" -ForegroundColor Red }
+            $nomeBase = $prog.Nome -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
+            $pubBase = if ($prog.Pub) { $prog.Pub -replace '[\s\,]+$','' } else { "" }
+            Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
+            $pastas = @("$env:PROGRAMFILES\$nomeBase*", "$env:ProgramFiles(x86)\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
+            foreach ($pasta in $pastas) { Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue }
+            if ($pubBase) { Remove-Item "$env:PROGRAMDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "$env:LOCALAPPDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "$env:APPDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue }
+            Write-Host " OK" -ForegroundColor Green
+            Write-Host "[3/3] Limpando registros..." -NoNewline
+            $regs = @("HKCU:\Software\$nomeBase", "HKLM:\Software\$nomeBase", "HKLM:\Software\WOW6432Node\$nomeBase")
+            foreach ($r in $regs) { Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue }
+            if ($pubBase) { Remove-Item "HKCU:\Software\$pubBase" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "HKLM:\Software\$pubBase" -Recurse -Force -ErrorAction SilentlyContinue }
+            Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$($prog.Nome)" -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host " OK" -ForegroundColor Green
+            Write-Host ""; Write-Host "Desinstalacao e limpeza concluidas!" -ForegroundColor Green; Wait-Key; return
+        }
+        if ($cmd -match '^/\s*(.+)$') { $filtro = $Matches[1]; $pag = 0; $sel = -1; continue }
+        $num = [int]::TryParse($cmd, [ref]$null)
+        if ($num -and [int]$cmd -ge 1 -and [int]$cmd -le $lista.Count) { $sel = [int]$cmd - 1; continue }
+        if ($cmd -eq "") { continue }
+        Write-Host "Comando invalido!" -ForegroundColor Red; Start-Sleep 1
+    } while ($true)
+}
+
 function Wait-Key {
     Write-Host ""; Write-Host "Pressione ENTER para voltar ao menu..." -ForegroundColor Gray
     $null = Read-Host
@@ -963,7 +1061,7 @@ if (-not $PSCommandPath) {
 do {
     Show-Menu
 
-    $opcao = Read-Host "Escolha uma opcao (ou 12 para ajuda)"
+    $opcao = Read-Host "Escolha uma opcao (ou 13 para ajuda)"
 
     switch ($opcao) {
         "1" { Show-Banner; Run-Limpeza; Wait-Key }
@@ -977,7 +1075,8 @@ do {
         "9" { Undo-Rede }
         "10" { Undo-Visual }
         "11" { Show-Banner; Run-Browsers }
-        "12" { Show-Help; Wait-Key }
+        "12" { Show-Banner; Run-UniversalUninstaller }
+        "13" { Show-Help; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor Red; Start-Sleep -Seconds 1 }
     }
