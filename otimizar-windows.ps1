@@ -9,6 +9,13 @@ function Get-SystemSpecs {
     try { $cpu = (Get-CimInstance Win32_Processor -ErrorAction Stop).Name -replace '\s+',' ' } catch { $cpu = "N/A" }
     try { $cores = (Get-CimInstance Win32_Processor -ErrorAction Stop).NumberOfCores } catch { $cores = 0 }
     try { $ram = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1) } catch { $ram = "N/A" }
+    try { $ramLivre = [math]::Round((Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).FreePhysicalMemory / 1MB, 1) } catch { $ramLivre = 0 }
+    try { 
+        $boot = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).LastBootUpTime
+        $uptime = [DateTime]::Now - $boot
+        $dias = $uptime.Days; $horas = $uptime.Hours
+        $uptimeStr = if ($dias -gt 0) { "$dias dia(s) $horas h" } else { "$horas h" }
+    } catch { $uptimeStr = "N/A" }
     try { $gpu = ((Get-CimInstance Win32_VideoController -ErrorAction Stop).Name -join ', ') } catch { $gpu = "N/A" }
     $discos = @()
     try { 
@@ -22,7 +29,7 @@ function Get-SystemSpecs {
             $discos += @{ Letra = $d.DeviceID -replace ':'; Total = $total; Livre = $livre; Pct = $pct; Bar = $bar }
         }
     } catch { $discos = @() }
-    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB"; GPU = $gpu; Discos = $discos }
+    $script:specsCache = @{ OS = $os; CPU = "$cpu ($cores nucleos)"; RAM = "$ram GB ($ramLivre GB livre)"; GPU = $gpu; Discos = $discos; Uptime = $uptimeStr }
     return $script:specsCache
 }
 
@@ -41,10 +48,11 @@ function Show-Banner {
     $sb = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
     $sf = "  $v  {0,-38} $v"
     Write-Host $st -ForegroundColor DarkGray
-    Write-Host ($sf -f "SO:  $($sp.OS)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "CPU: $($sp.CPU)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "RAM: $($sp.RAM)") -ForegroundColor DarkGray
-    Write-Host ($sf -f "GPU: $($sp.GPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "RAM:    $($sp.RAM)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "GPU:    $($sp.GPU)") -ForegroundColor DarkGray
+    Write-Host ($sf -f "Uptime: $($sp.Uptime)") -ForegroundColor DarkGray
     foreach ($d in $sp.Discos) {
         $linha = "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%"
         Write-Host ($sf -f $linha) -ForegroundColor DarkGray
