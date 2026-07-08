@@ -8,7 +8,7 @@ function Show-Banner {
     $b = [char]0x2554; $b2 = [char]0x2557; $b3 = [char]0x255A; $b4 = [char]0x255D; $h2 = [char]0x2550; $v2 = [char]0x2551
     Write-Host "  $b$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b2" -ForegroundColor Cyan
     Write-Host "  $v2       T L   O P T I M I Z E R         $v2" -ForegroundColor Cyan
-    Write-Host "  $v2     Otimizador de Windows v3.0        $v2" -ForegroundColor DarkCyan
+    Write-Host "  $v2     Otimizador de Windows v1.0        $v2" -ForegroundColor DarkCyan
     Write-Host "  $b3$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b4" -ForegroundColor Cyan
     Write-Host ""
 }
