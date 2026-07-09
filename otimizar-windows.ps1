@@ -3,7 +3,7 @@ $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
 $scriptUrl = "https://is.gd/tlotimizador"
 $rawUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master/otimizar-windows.ps1"
-$script:versao = "1.1"
+$script:versao = "1.2"
 
 $script:temaArquivo = "$backupDir\tema.json"
 $script:temas = @{
@@ -136,7 +136,7 @@ function Show-Banner {
     $ln = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
     Write-Host $ln -ForegroundColor $script:c.Cyan
     Write-Host "  $v            TL OPTIMIZER                $v" -ForegroundColor $script:c.Cyan
-    Write-Host "  $v              v1.1                      $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v              v$($script:versao)                    $v" -ForegroundColor $script:c.DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor $script:c.Cyan
     Write-Host ""
 }
