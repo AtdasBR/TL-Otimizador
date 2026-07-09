@@ -1416,104 +1416,154 @@ if (-not $isAdmin.IsInRole([Security.Principal.WindowsBuiltInRole] "Administrato
 # === FUNCOES TWEAK ===
 
 function Tweak-ActionCenter {
-    Write-Host "`n[+] Central de Acao - Desabilitando..." -ForegroundColor $script:c.Yellow
-    try {
+    Write-Host "`n[+] Central de Acao" -ForegroundColor $script:c.Yellow
+    Write-Host "  [A] Ativar" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
+    if ($opt -eq "A" -or $opt -eq "a") {
+        Remove-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Force -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Central de Acao ativada" -ForegroundColor $script:c.Green
+    } elseif ($opt -eq "D" -or $opt -eq "d") {
         Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
         Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-        Write-Host "[OK] Central de Acao desabilitada" -ForegroundColor $script:c.Green
-    } catch {
-        Write-Host "[ERRO] Falha ao desabilitar Central de Acao" -ForegroundColor $script:c.Red
+        Write-Host "[OK] Central de Acao desativada" -ForegroundColor $script:c.Green
     }
 }
 
 function Tweak-CacheUpdates {
-    Write-Host "`n[+] Cache Updates - Limpando..." -ForegroundColor $script:c.Yellow
-    try {
-        Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path "$env:SystemRoot\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
-        Start-Service -Name wuauserv -ErrorAction SilentlyContinue
-        Write-Host "[OK] Cache de updates limpo" -ForegroundColor $script:c.Green
-    } catch {
-        Write-Host "[ERRO] Falha ao limpar cache de updates" -ForegroundColor $script:c.Red
+    Write-Host "`n[+] Cache Updates" -ForegroundColor $script:c.Yellow
+    Write-Host "  [L] Limpar cache de updates" -ForegroundColor $script:c.Cyan
+    $opt = Read-Host "Confirma? (S/N)"
+    if ($opt -eq "S" -or $opt -eq "s") {
+        try {
+            Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "$env:SystemRoot\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
+            Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+            Write-Host "[OK] Cache de updates limpo" -ForegroundColor $script:c.Green
+        } catch {
+            Write-Host "[ERRO] Falha ao limpar cache de updates" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "[--] Operacao cancelada" -ForegroundColor $script:c.DarkGray
     }
 }
 
 function Tweak-Hibernation {
-    Write-Host "`n[+] Hibernacao - Desabilitando..." -ForegroundColor $script:c.Yellow
-    try {
+    Write-Host "`n[+] Hibernacao" -ForegroundColor $script:c.Yellow
+    Write-Host "  [A] Ativar" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
+    if ($opt -eq "A" -or $opt -eq "a") {
+        powercfg /hibernate on 2>$null
+        Write-Host "[OK] Hibernacao ativada" -ForegroundColor $script:c.Green
+    } elseif ($opt -eq "D" -or $opt -eq "d") {
         powercfg /hibernate off 2>$null
-        Write-Host "[OK] Hibernacao desabilitada" -ForegroundColor $script:c.Green
-    } catch {
-        Write-Host "[ERRO] Falha ao desabilitar hibernacao" -ForegroundColor $script:c.Red
+        Write-Host "[OK] Hibernacao desativada" -ForegroundColor $script:c.Green
     }
 }
 
 function Tweak-Pagefile {
-    Write-Host "`n[+] Pagefile - Configurando..." -ForegroundColor $script:c.Yellow
+    Write-Host "`n[+] Pagefile" -ForegroundColor $script:c.Yellow
+    Write-Host "  [A] Ativar - configurar tamanho manual" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar - gerenciamento automatico" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
     try {
-        $ram = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB
-        $pagefile = [math]::Round($ram * 0.5)
-        $cs = Get-WmiObject Win32_ComputerSystem
-        $cs.AutomaticManagedPagefile = $false
-        $cs.Put() | Out-Null
-        $pf = Get-WmiObject Win32_PageFileSetting
-        if ($pf) {
-            $pf.InitialSize = $pagefile
-            $pf.MaximumSize = [math]::Round($ram * 1.5)
-            $pf.Put() | Out-Null
+        if ($opt -eq "A" -or $opt -eq "a") {
+            $ram = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB
+            $pagefile = [math]::Round($ram * 0.5)
+            $cs = Get-WmiObject Win32_ComputerSystem
+            $cs.AutomaticManagedPagefile = $false
+            $cs.Put() | Out-Null
+            $pf = Get-WmiObject Win32_PageFileSetting
+            if ($pf) {
+                $pf.InitialSize = $pagefile
+                $pf.MaximumSize = [math]::Round($ram * 1.5)
+                $pf.Put() | Out-Null
+            }
+            Write-Host "[OK] Pagefile configurado: ${pagefile}MB inicial" -ForegroundColor $script:c.Green
+        } elseif ($opt -eq "D" -or $opt -eq "d") {
+            $cs = Get-WmiObject Win32_ComputerSystem
+            $cs.AutomaticManagedPagefile = $true
+            $cs.Put() | Out-Null
+            Write-Host "[OK] Pagefile em gerenciamento automatico" -ForegroundColor $script:c.Green
         }
-        Write-Host "[OK] Pagefile configurado: ${pagefile}MB inicial" -ForegroundColor $script:c.Green
     } catch {
         Write-Host "[ERRO] Falha ao configurar pagefile" -ForegroundColor $script:c.Red
     }
 }
 
 function Tweak-TakeOwnership {
-    Write-Host "`n[+] Take Ownership - Adicionando ao menu..." -ForegroundColor $script:c.Yellow
+    Write-Host "`n[+] Take Ownership" -ForegroundColor $script:c.Yellow
+    Write-Host "  [A] Ativar - adicionar ao menu de contexto" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar - remover do menu de contexto" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
     try {
-        $regPath = "HKLM:\SOFTWARE\Classes\*\shell\TakeOwnership"
-        New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
-        Set-ItemProperty -Path $regPath -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
-        New-Item -Path "$regPath\command" -Force -ErrorAction SilentlyContinue | Out-Null
-        Set-ItemProperty -Path "$regPath\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" && icacls "%1" /grant administrators:F' -Force -ErrorAction SilentlyContinue
-        $regPathDir = "HKLM:\SOFTWARE\Classes\Directory\shell\TakeOwnership"
-        New-Item -Path $regPathDir -Force -ErrorAction SilentlyContinue | Out-Null
-        Set-ItemProperty -Path $regPathDir -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
-        New-Item -Path "$regPathDir\command" -Force -ErrorAction SilentlyContinue | Out-Null
-        Set-ItemProperty -Path "$regPathDir\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" /r /d y && icacls "%1" /grant administrators:F /t' -Force -ErrorAction SilentlyContinue
-        Write-Host "[OK] Take Ownership adicionado ao menu de contexto" -ForegroundColor $script:c.Green
+        if ($opt -eq "A" -or $opt -eq "a") {
+            $regPath = "HKLM:\SOFTWARE\Classes\*\shell\TakeOwnership"
+            New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path $regPath -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
+            New-Item -Path "$regPath\command" -Force -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path "$regPath\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" && icacls "%1" /grant administrators:F' -Force -ErrorAction SilentlyContinue
+            $regPathDir = "HKLM:\SOFTWARE\Classes\Directory\shell\TakeOwnership"
+            New-Item -Path $regPathDir -Force -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path $regPathDir -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
+            New-Item -Path "$regPathDir\command" -Force -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path "$regPathDir\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" /r /d y && icacls "%1" /grant administrators:F /t' -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Take Ownership adicionado ao menu de contexto" -ForegroundColor $script:c.Green
+        } elseif ($opt -eq "D" -or $opt -eq "d") {
+            Remove-Item -Path "HKLM:\SOFTWARE\Classes\*\shell\TakeOwnership" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "HKLM:\SOFTWARE\Classes\Directory\shell\TakeOwnership" -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Take Ownership removido do menu de contexto" -ForegroundColor $script:c.Green
+        }
     } catch {
-        Write-Host "[ERRO] Falha ao adicionar Take Ownership" -ForegroundColor $script:c.Red
+        Write-Host "[ERRO] Falha ao configurar Take Ownership" -ForegroundColor $script:c.Red
     }
 }
 
 function Tweak-Updates2077 {
-    Write-Host "`n[+] Updates 2077 - Configurando..." -ForegroundColor $script:c.Yellow
+    Write-Host "`n[+] Updates 2077" -ForegroundColor $script:c.Yellow
+    Write-Host "  [A] Ativar - baixar e notificar" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar - pausar ate 2077" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
     try {
-        $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
-        New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
-        Set-ItemProperty -Path $regPath -Name "NoAutoUpdate" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-        Set-ItemProperty -Path $regPath -Name "AUOptions" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
-        Set-ItemProperty -Path $regPath -Name "ScheduledInstallDay" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-        Set-ItemProperty -Path $regPath -Name "ScheduledInstallTime" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
-        Write-Host "[OK] Updates configurados: baixar e notificar" -ForegroundColor $script:c.Green
+        if ($opt -eq "A" -or $opt -eq "a") {
+            Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Updates ativados (padrao do Windows)" -ForegroundColor $script:c.Green
+        } elseif ($opt -eq "D" -or $opt -eq "d") {
+            $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate"
+            Set-ItemProperty -Path $regPath -Name "DeferQualityUpdates" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "DeferQualityUpdatesPeriodInDays" -Value 365 -Type DWord -Force -ErrorAction SilentlyContinue
+            $regPath2 = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\Settings"
+            New-Item -Path $regPath2 -Force -ErrorAction SilentlyContinue | Out-Null
+            Set-ItemProperty -Path $regPath2 -Name "PausedQualityDate" -Value "2077-12-31" -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Updates pausados ate 2077" -ForegroundColor $script:c.Green
+        }
     } catch {
         Write-Host "[ERRO] Falha ao configurar updates" -ForegroundColor $script:c.Red
     }
 }
 
 function Tweak-CompactLZX {
-    Write-Host "`n[+] Compact/LZX - Ativando..." -ForegroundColor $script:c.Yellow
+    Write-Host "`n[+] Compact/LZX" -ForegroundColor $script:c.Yellow
+    $os = Get-CimInstance Win32_OperatingSystem
+    if ([version]$os.Version -lt [version]"10.0.17763") {
+        Write-Host "[--] Requer Windows 10 1809 ou superior" -ForegroundColor $script:c.DarkGray
+        return
+    }
+    Write-Host "  [A] Ativar - comprimir sistema (~30% economia)" -ForegroundColor $script:c.Green
+    Write-Host "  [D] Desativar - descomprimir" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Escolha"
     try {
-        $os = Get-CimInstance Win32_OperatingSystem
-        if ([version]$os.Version -ge [version]"10.0.17763") {
+        if ($opt -eq "A" -or $opt -eq "a") {
             compact /compactOS:LZX 2>$null
-            Write-Host "[OK] Compact/LZX ativado (economia de ~30%%)" -ForegroundColor $script:c.Green
-        } else {
-            Write-Host "[--] Requer Windows 10 1809 ou superior" -ForegroundColor $script:c.DarkGray
+            Write-Host "[OK] Compact/LZX ativado" -ForegroundColor $script:c.Green
+        } elseif ($opt -eq "D" -or $opt -eq "d") {
+            compact /compactOS:never 2>$null
+            Write-Host "[OK] Compact/LZX desativado" -ForegroundColor $script:c.Green
         }
     } catch {
-        Write-Host "[ERRO] Falha ao ativar Compact/LZX" -ForegroundColor $script:c.Red
+        Write-Host "[ERRO] Falha ao configurar Compact/LZX" -ForegroundColor $script:c.Red
     }
 }
 
@@ -1529,18 +1579,16 @@ function Tweak-RemoverUWP {
     )
     $i = 0
     foreach ($app in $apps) {
-        $i++
         $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
-        if ($found) {
-            Write-Host "  $i. $app" -ForegroundColor $script:c.Yellow
-        }
+        if ($found) { $i++ }
     }
     if ($i -eq 0) {
         Write-Host "[--] Nenhum app UWP removivel encontrado" -ForegroundColor $script:c.DarkGray
         return
     }
-    $res = Read-Host "Remover todos os listados? (S/N)"
-    if ($res -eq "S" -or $res -eq "s") {
+    Write-Host "  [R] Remover apps listados" -ForegroundColor $script:c.Red
+    $opt = Read-Host "Confirma? (S/N)"
+    if ($opt -eq "S" -or $opt -eq "s") {
         foreach ($app in $apps) {
             $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
             if ($found) {
