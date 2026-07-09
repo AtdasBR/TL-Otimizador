@@ -285,28 +285,13 @@ function Show-Menu {
         $specLines += "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%"
     }
     $maxLen = ($specLines | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
-    $boxW = [Math]::Max(63, $maxLen + 5)
-    if ($boxW % 2 -eq 0) { $boxW++ }
-    $contentW = $boxW - 5
-    Set-TermSize -Width ($boxW + 4) -Height $Host.UI.RawUI.WindowSize.Height
-    Show-Banner -Width $boxW
-    $p = Pad-W $boxW
-    $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
-    $st = "$p$tt$("$th"*($boxW-2))$tr"
-    $sb = "$p$tb$("$th"*($boxW-2))$te"
-    $sf = "$p$tv  {0,-$contentW} $tv"
-    Write-Host $st -ForegroundColor $script:c.White
-    foreach ($s in $specLines) { Write-Host ($sf -f $s) -ForegroundColor $script:c.White }
-    Write-Host $sb -ForegroundColor $script:c.White
-    Write-Host ""
 
     $h=[char]0x2500;$v=[char]0x2502
 
     function Show-GridRow {
-        param($c1, $c2, $c3, $hdr1, $hdr2, $hdr3, $color)
-        function T { param($s, $n) if (-not $s) { " " * $n } elseif ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
+        param($c1, $c2, $c3, $hdr1, $hdr2, $hdr3, $color, $cw3)
+        function T { param($s, $n) if (-not $s) { " " * $n } else { $s.PadRight($n) } }
         $rows = [Math]::Max([Math]::Max($c1.Count, $c2.Count), $c3.Count)
-        $cw3 = [Math]::Floor(($boxW - 4) / 3)
         $nw3 = $cw3 - 9
         $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
         $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
@@ -333,13 +318,44 @@ function Show-Menu {
     $t2 = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("",""), @("",""), @("","") )
     $t3 = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa") )
 
-    Show-GridRow -c1 $t1 -c2 $t2 -c3 $t3 -hdr1 "TWEAK" -hdr2 "LIMPEZA" -hdr3 "INSTALAR + REDE" -color $script:c.Green
-
     $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("",""), @("",""), @("",""), @("","") )
     $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa"), @("",""), @("",""), @("","") )
     $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("",""), @("",""), @("",""), @("",""), @("",""), @("","") )
 
-    Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 "SISTEMA" -hdr2 "FERRAMENTAS" -hdr3 "PRIVACIDADE" -color $script:c.Blue
+    $hdrG1="TWEAK";$hdrG2="LIMPEZA";$hdrG3="INSTALAR + REDE"
+    $hdrB1="SISTEMA";$hdrB2="FERRAMENTAS";$hdrB3="PRIVACIDADE"
+
+    $todosItens = @($t1)+@($t2)+@($t3)+@($t4)+@($t5)+@($t6)
+    $todosHdrs = @($hdrG1,$hdrG2,$hdrG3,$hdrB1,$hdrB2,$hdrB3)
+    $maxTexto = 0
+    foreach ($item in $todosItens) {
+        if ($item[1] -ne "") { $maxTexto = [Math]::Max($maxTexto, $item[1].Length) }
+    }
+    foreach ($hd in $todosHdrs) { $maxTexto = [Math]::Max($maxTexto, $hd.Length) }
+
+    $cw3 = $maxTexto + 11
+    $gridW = $cw3 * 3 + 4
+    $boxW = [Math]::Max([Math]::Max(63, $maxLen + 5), $gridW)
+    if ($boxW % 2 -eq 0) { $boxW++ }
+    if ($cw3 % 2 -ne 0) { $cw3++ }
+    $gridW = $cw3 * 3 + 4
+    if ($gridW -gt $boxW) { $boxW = $gridW; if ($boxW % 2 -eq 0) { $boxW++ } }
+
+    $contentW = $boxW - 5
+    Set-TermSize -Width ($boxW + 4) -Height $Host.UI.RawUI.WindowSize.Height
+    Show-Banner -Width $boxW
+    $p = Pad-W $boxW
+    $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
+    $st = "$p$tt$("$th"*($boxW-2))$tr"
+    $sb = "$p$tb$("$th"*($boxW-2))$te"
+    $sf = "$p$tv  {0,-$contentW} $tv"
+    Write-Host $st -ForegroundColor $script:c.White
+    foreach ($s in $specLines) { Write-Host ($sf -f $s) -ForegroundColor $script:c.White }
+    Write-Host $sb -ForegroundColor $script:c.White
+    Write-Host ""
+
+    Show-GridRow -c1 $t1 -c2 $t2 -c3 $t3 -hdr1 $hdrG1 -hdr2 $hdrG2 -hdr3 $hdrG3 -color $script:c.Green -cw3 $cw3
+    Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 $hdrB1 -hdr2 $hdrB2 -hdr3 $hdrB3 -color $script:c.Blue -cw3 $cw3
 
     $rows1 = [Math]::Max([Math]::Max($t1.Count, $t2.Count), $t3.Count)
     $rows2 = [Math]::Max([Math]::Max($t4.Count, $t5.Count), $t6.Count)
