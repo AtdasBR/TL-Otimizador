@@ -1003,11 +1003,17 @@ function Run-Browsers {
                 Write-Host ">>> DESINSTALAR $($item.Desc) <<<" -ForegroundColor $script:c.Magenta
                 Write-Host ""
                 Write-Host "Procurando no sistema..." -NoNewline
-                $chaves = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
+                $chaves = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*")
                 $prog = $null
                 foreach ($chave in $chaves) {
                     $prog = Get-ItemProperty $chave -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$($item.Nome)*" } | Select-Object -First 1
                     if ($prog) { break }
+                }
+                if (-not $prog) {
+                    foreach ($chave in $chaves) {
+                        $prog = Get-ItemProperty $chave -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$($item.Desc)*" } | Select-Object -First 1
+                        if ($prog) { break }
+                    }
                 }
                 if (-not $prog) {
                     Write-Host " NAO ENCONTRADO" -ForegroundColor $script:c.Red
@@ -1152,11 +1158,17 @@ function Run-DriverUpdater {
                 Write-Host ">>> DESINSTALAR $($item.Nome) <<<" -ForegroundColor $script:c.Magenta
                 Write-Host ""
                 Write-Host "Procurando no sistema..." -NoNewline
-                $chaves = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
+                $chaves = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*")
                 $prog = $null
                 foreach ($chave in $chaves) {
                     $prog = Get-ItemProperty $chave -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$nomeBusca*" } | Select-Object -First 1
                     if ($prog) { break }
+                }
+                if (-not $prog) {
+                    foreach ($chave in $chaves) {
+                        $prog = Get-ItemProperty $chave -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$($item.Desc)*" } | Select-Object -First 1
+                        if ($prog) { break }
+                    }
                 }
                 if (-not $prog) {
                     Write-Host " NAO ENCONTRADO" -ForegroundColor $script:c.Red
