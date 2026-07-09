@@ -358,7 +358,7 @@ function Show-Menu {
 
     Show-ColPair -left $p -right $pe -hdrL "PRIVACIDADE" -hdrR "" -color $script:c.Magenta
 
-    Write-Host "$p[0] Sair  [U] Verificar Atualizacao  [H] Ajuda" -ForegroundColor $script:c.Red
+    Write-Host "$p[0] Sair  [U] Verificar Atualizacao  [H] Ajuda  [D] Desinstalar" -ForegroundColor $script:c.Red
     Write-Host ""
 }
 
@@ -1332,6 +1332,47 @@ function Show-Welcome {
     Write-Host "$p                e registra no perfil do PowerShell." -ForegroundColor $script:c.Cyan
     Write-Host "$p                Depois e so digitar 'tl' de qualquer lugar." -ForegroundColor $script:c.DarkGray
     Write-Host ""
+}
+
+function Uninstall-TL {
+    $p = Pad-W 44
+    Write-Host "$p DESINSTALAR TL OPTIMIZER" -ForegroundColor $script:c.Red
+    Write-Host "$p Isso vai remover TODOS os arquivos e rastros:" -ForegroundColor $script:c.Yellow
+    Write-Host "$p  - Pasta %USERPROFILE%\TL-Optimizer" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p  - Atalho na Area de Trabalho" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p  - Alias 'tl' do perfil PowerShell" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p  - Backups em %LOCALAPPDATA%\Otimizador" -ForegroundColor $script:c.DarkGray
+    Write-Host ""
+    $conf = Read-Host "$p Confirmar desinstalacao? (S/N)"
+    if ($conf -ne "S" -and $conf -ne "s") { Write-Host "$p Cancelado." -ForegroundColor $script:c.Yellow; return }
+    Write-Host ""
+    $installDir = "$env:USERPROFILE\TL-Optimizer"
+    if (Test-Path $installDir) {
+        Remove-Item $installDir -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "$p [OK] Pasta TL-Optimizer removida" -ForegroundColor $script:c.Green
+    } else { Write-Host "$p [--] Pasta TL-Optimizer nao encontrada" -ForegroundColor $script:c.DarkGray }
+    $shortcutPath = "$env:USERPROFILE\Desktop\TL Optimizer.lnk"
+    if (Test-Path $shortcutPath) {
+        Remove-Item $shortcutPath -Force -ErrorAction SilentlyContinue
+        Write-Host "$p [OK] Atalho removido" -ForegroundColor $script:c.Green
+    } else { Write-Host "$p [--] Atalho nao encontrado" -ForegroundColor $script:c.DarkGray }
+    $backupDirPath = "$env:LOCALAPPDATA\Otimizador"
+    if (Test-Path $backupDirPath) {
+        Remove-Item $backupDirPath -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "$p [OK] Backups removidos" -ForegroundColor $script:c.Green
+    } else { Write-Host "$p [--] Backups nao encontrados" -ForegroundColor $script:c.DarkGray }
+    $profilePath = $PROFILE.CurrentUserAllHosts
+    if (Test-Path $profilePath) {
+        $content = Get-Content $profilePath -Raw -ErrorAction SilentlyContinue
+        if ($content -match '# TL Optimizer') {
+            $newContent = $content -replace '[\r\n]*# TL Optimizer[\r\n]*function tl-optimizer.*[\r\n]*Set-Alias -Name tl -Value tl-optimizer -Force[\r\n]*', ''
+            Set-Content -Path $profilePath -Value $newContent -Force -ErrorAction SilentlyContinue
+            Write-Host "$p [OK] Alias 'tl' removido do perfil" -ForegroundColor $script:c.Green
+        } else { Write-Host "$p [--] Alias 'tl' nao encontrado no perfil" -ForegroundColor $script:c.DarkGray }
+    } else { Write-Host "$p [--] Perfil PowerShell nao encontrado" -ForegroundColor $script:c.DarkGray }
+    Write-Host ""
+    Write-Host "$p TL Optimizer foi completamente removido." -ForegroundColor $script:c.Green
+    Wait-Key
 }
 
 function Install-Local {
@@ -2597,6 +2638,8 @@ do {
         "h" { Show-Help; Wait-Key }
         "U" { Show-Banner; VerificarAtualizacao; Wait-Key }
         "u" { Show-Banner; VerificarAtualizacao; Wait-Key }
+        "D" { Show-Banner; Uninstall-TL }
+        "d" { Show-Banner; Uninstall-TL }
         "0" { Write-Host "Saindo..." -ForegroundColor $script:c.Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor $script:c.Red; Start-Sleep -Seconds 1 }
     }
