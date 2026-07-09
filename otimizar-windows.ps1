@@ -1356,8 +1356,8 @@ function Run-UniversalUninstaller {
 }
 
 function Wait-Key {
-    Write-Host ""; Write-Host "Pressione ENTER para voltar ao menu..." -ForegroundColor $script:c.Gray
-    $null = Read-Host
+    Write-Host ""; Write-Host "Pressione qualquer tecla para voltar ao menu..." -ForegroundColor $script:c.Gray
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
 function Show-Welcome {
