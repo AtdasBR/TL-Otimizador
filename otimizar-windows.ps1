@@ -118,7 +118,6 @@ function VerificarAtualizacao {
             return
         }
         if ($Silencioso) {
-            try { Copy-Item $tmp $scriptPath -Force } catch {}
             Remove-Item $tmp -Force
             return
         }
