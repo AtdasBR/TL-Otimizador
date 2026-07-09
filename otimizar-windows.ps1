@@ -2396,22 +2396,39 @@ function Show-Gaming {
     Wait-Key
 }
 
-function Show-LoadingScreen {
-    Clear-Host
-    $p = Pad-W 36
+function Show-BootSequence {
+    Show-Banner
+    $c = $script:c
+    $checks = @(
+        "Inicializando nucleo do sistema",
+        "Verificando permissoes de administrador",
+        "Carregando modulos de limpeza e otimizacao",
+        "Sincronizando parametros de hardware",
+        "Compilando interface do otimizador"
+    )
+    $p = Pad-W 57
+    $padItem = " " * 5
+    foreach ($chk in $checks) {
+        Write-Host "$p$padItem$chk..." -NoNewline -ForegroundColor $c.DarkGray
+        Start-Sleep -Milliseconds 200
+        Write-Host " [OK]" -ForegroundColor $c.Green
+    }
     Write-Host ""
-    Write-Host "$p          XXX   X" -ForegroundColor $script:c.White
-    Write-Host "$p           X    X" -ForegroundColor $script:c.White
-    Write-Host "$p           X    X" -ForegroundColor $script:c.White
-    Write-Host "$p           X    X" -ForegroundColor $script:c.White
-    Write-Host "$p           X    XXXXX" -ForegroundColor $script:c.White
+    $full = [char]0x2588; $empty = [char]0x2591
+    try { $null = "$full$empty"[0] } catch { $full = '#'; $empty = '-' }
+    $barW = 30
+    $pBar = Pad-W ($barW + 8)
+    $cr = [char]13
+    for ($pct = 0; $pct -le 100; $pct += 3) {
+        $fill = [Math]::Min(($pct * $barW / 100), $barW)
+        $bar = "$full" * [Math]::Floor($fill) + "$empty" * ($barW - [Math]::Floor($fill))
+        Write-Host "$cr$pBar  $bar  $("{0,3}" -f $pct)%" -NoNewline -ForegroundColor $c.Green
+        Start-Sleep -Milliseconds 15
+    }
     Write-Host ""
-    Write-Host "$p           by Thallas" -ForegroundColor $script:c.Cyan
-    Write-Host "$p        << Discord: atdas >>" -ForegroundColor $script:c.DarkGray
-    Write-Host ""
-    Write-Host "$p          Iniciando" -NoNewline -ForegroundColor $script:c.Green
-    for ($i = 0; $i -lt 5; $i++) { Start-Sleep -Milliseconds 500; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
-    Start-Sleep 1.5
+    Start-Sleep -Milliseconds 300
+    Write-Host "$p  Pronto." -ForegroundColor $c.Green
+    Start-Sleep -Milliseconds 400
 }
 
 function Show-Sobre {
@@ -2450,8 +2467,8 @@ if (-not $PSCommandPath) {
 # === AUTO-UPDATE (silencioso) ===
 VerificarAtualizacao -Silencioso
 
-# === LOADING SCREEN (uma vez por sessao) ===
-Show-LoadingScreen
+# === BOOT SEQUENCE (uma vez por sessao) ===
+Show-BootSequence
 
 # === MAIN LOOP ===
 do {
