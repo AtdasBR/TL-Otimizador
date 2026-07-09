@@ -1126,7 +1126,7 @@ function Run-UniversalUninstaller {
     $todos = $todos | Sort-Object Nome
     if ($todos.Count -eq 0) { Write-Host "Nenhum programa encontrado." -ForegroundColor $script:c.Yellow; Wait-Key; return }
 
-    $filtro = ""; $sel = -1; $pag = 0; $porPag = 20
+    $filtro = ""; $pag = 0; $porPag = 20
     do {
         Clear-Host; Show-Banner
         $lista = if ($filtro) { $todos | Where-Object { $_.Nome -match $filtro } } else { $todos }
@@ -1141,7 +1141,7 @@ function Run-UniversalUninstaller {
         Write-Host "  $v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor $script:c.Magenta
         Write-Host $sep -ForegroundColor $script:c.Magenta
         Write-Host "  $v  /texto = buscar   [N] proxima   [P] anterior         $v" -ForegroundColor $script:c.DarkCyan
-        Write-Host "  $v  NUMERO = selecionar   [U] Desinstalar   [V] Voltar   $v" -ForegroundColor $script:c.DarkCyan
+        Write-Host "  $v  NUMERO = desinstalar   [V] Voltar                   $v" -ForegroundColor $script:c.DarkCyan
         Write-Host "  $v  Filtro: $(if ($filtro) { $filtro } else { '(todos)' })                          $v" -ForegroundColor $script:c.Yellow
         Write-Host $sep -ForegroundColor $script:c.Magenta
         if ($lista.Count -eq 0) {
@@ -1149,8 +1149,7 @@ function Run-UniversalUninstaller {
         } else {
             for ($i = $ini; $i -le $fim; $i++) {
                 $item = $lista[$i]
-                $mark = if ($i -eq $sel) { ">>" } else { "  " }
-                Write-Host "  $v  $mark $("{0,3}" -f ($i+1)). $("{0,-47}" -f $(if ($item.Nome.Length -gt 47) { $item.Nome.Substring(0,44) + '...' } else { $item.Nome }))$v" -ForegroundColor $(if ($i -eq $sel) { $script:c.Cyan } else { $script:c.Gray })
+                Write-Host "  $v     $("{0,3}" -f ($i+1)). $("{0,-47}" -f $(if ($item.Nome.Length -gt 47) { $item.Nome.Substring(0,44) + '...' } else { $item.Nome }))$v" -ForegroundColor $script:c.Gray
             }
             $resto = $porPag - ($fim - $ini + 1)
             for ($r = 0; $r -lt $resto; $r++) { Write-Host "  $v                                                               $v" -ForegroundColor $script:c.DarkGray }
@@ -1163,9 +1162,9 @@ function Run-UniversalUninstaller {
         if ($cmd -eq "V" -or $cmd -eq "v") { return }
         if ($cmd -eq "N" -or $cmd -eq "n") { if ($pag -lt $totalPag) { $pag++ }; continue }
         if ($cmd -eq "P" -or $cmd -eq "p") { if ($pag -gt 0) { $pag-- }; continue }
-        if ($cmd -eq "U" -or $cmd -eq "u") {
-            if ($sel -lt 0 -or $sel -ge $lista.Count) { Write-Host "Selecione um programa primeiro." -ForegroundColor $script:c.Yellow; Start-Sleep 1; continue }
-            $prog = $lista[$sel]
+        $num = [int]::TryParse($cmd, [ref]$null)
+        if ($num -and [int]$cmd -ge 1 -and [int]$cmd -le $lista.Count) {
+            $prog = $lista[[int]$cmd - 1]
             Write-Host "`nDESINSTALAR: $($prog.Nome)?" -ForegroundColor $script:c.Yellow
             $conf = Read-Host "Confirmar? (S/N)"
             if ($conf -ne "S" -and $conf -ne "s") { continue }
@@ -1204,9 +1203,10 @@ function Run-UniversalUninstaller {
             Write-Host " OK" -ForegroundColor $script:c.Green
             Write-Host ""; Write-Host "Desinstalacao e limpeza concluidas!" -ForegroundColor $script:c.Green; Wait-Key; return
         }
-        if ($cmd -match '^/\s*(.+)$') { $filtro = $Matches[1]; $pag = 0; $sel = -1; continue }
-        $num = [int]::TryParse($cmd, [ref]$null)
-        if ($num -and [int]$cmd -ge 1 -and [int]$cmd -le $lista.Count) { $sel = [int]$cmd - 1; continue }
+        if ($cmd -eq "U" -or $cmd -eq "u") {
+            Write-Host "Digite o NUMERO do programa para desinstalar." -ForegroundColor $script:c.Yellow; Start-Sleep 1; continue
+        }
+        if ($cmd -match '^/\s*(.+)$') { $filtro = $Matches[1]; $pag = 0; continue }
         if ($cmd -eq "") { continue }
         Write-Host "Comando invalido!" -ForegroundColor $script:c.Red; Start-Sleep 1
     } while ($true)
