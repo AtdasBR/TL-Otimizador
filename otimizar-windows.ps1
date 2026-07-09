@@ -1871,6 +1871,7 @@ $script:wingetApps = @(
     @{Cat="Utilidades";      Name="WhatsApp";             ID="WhatsApp.WhatsApp"}
     @{Cat="Utilidades";      Name="Telegram";             ID="Telegram.TelegramDesktop"}
     @{Cat="Utilidades";      Name="Steam";                ID="Valve.Steam"}
+    @{Cat="Utilidades";      Name="Epic Games Launcher";  ID="EpicGames.EpicGamesLauncher"}
     @{Cat="Utilidades";      Name="OBS Studio";           ID="OBSProject.OBSStudio"}
     @{Cat="Utilidades";      Name="ShareX";               ID="ShareX.ShareX"}
     @{Cat="Utilidades";      Name="Everything";           ID="Voidtools.Everything"}
