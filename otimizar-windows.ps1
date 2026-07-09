@@ -981,7 +981,7 @@ function Run-DriverUpdater {
     $itens = @(
         @{Nome = "Driver Easy";       Desc = "Driver Easy";        URL = "https://www.drivereasy.com/download-free/"; DownloadURL = "https://www.drivereasy.com/DriverEasy_Setup.exe"; Detalhe = "Escaneia o PC e encontra drivers desatualizados. Versao gratuita baixa um driver por vez. Interface simples e intuitiva."}
         @{Nome = "Driver Booster";    Desc = "Driver Booster";     URL = "https://www.iobit.com/pt/driver-booster.php"; DownloadURL = "https://download.iobit.com/driver_booster_setup.exe"; Detalhe = "Da IObit. Atualiza drivers com um clique, tem modo game e faz backup antes de atualizar. Versao gratuita tem limite de velocidade."}
-        @{Nome = "Snappy Driver Installer"; Desc = "SDI"; URL = "https://www.snappy-driver-installer.org/download/"; DownloadURL = "https://sdi-tool.org/releases/SDI_R2604.zip"; Detalhe = "Ferramenta portatil que baixa e instala drivers. Codigo aberto, sem propagandas e sem limitacoes."}
+        @{Nome = "Snappy Driver Installer"; Desc = "SDI"; URL = "https://www.snappy-driver-installer.org/download/"; DownloadURL = "https://DriverOff.net/sdi/SDI_R2601.7z"; Detalhe = "Ferramenta portatil que baixa e instala drivers. Codigo aberto, sem propagandas e sem limitacoes."}
     )
     do {
         Clear-Host; Show-Banner
@@ -1049,16 +1049,26 @@ function Run-DriverUpdater {
                         Write-Host "Extraindo arquivos..." -NoNewline
                         Expand-Archive -Path $filePath -DestinationPath $extractDir -Force -ErrorAction Stop
                         Write-Host " OK" -ForegroundColor $script:c.Green
-                        $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Where-Object { $_.Name -match '^SDI' } | Select-Object -First 1
-                        if (-not $exe) { $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Select-Object -First 1 }
-                        if ($exe) {
-                            Write-Host "Iniciando $($exe.Name)..." -ForegroundColor $script:c.Cyan
-                            Start-Process $exe.FullName
-                        } else { throw "Nenhum executavel encontrado na extracao." }
+                    } elseif ($fileName -match '\.7z$') {
+                        $7zPaths = @("$env:ProgramFiles\7-Zip\7z.exe", "${env:ProgramFiles(x86)}\7-Zip\7z.exe", "$env:LOCALAPPDATA\Programs\7-Zip\7z.exe")
+                        $7z = $null
+                        foreach ($p in $7zPaths) { if (Test-Path $p) { $7z = $p; break } }
+                        if (-not $7z) { throw "7-Zip nao encontrado. Instale 7-Zip ou baixe manualmente." }
+                        $extractDir = "$tempDir\SDI"
+                        Write-Host "Extraindo com 7-Zip..." -NoNewline
+                        & $7z x $filePath -o"$extractDir" -y -bso0 | Out-Null
+                        if ($LASTEXITCODE -ne 0) { throw "Erro na extracao (codigo $LASTEXITCODE)." }
+                        Write-Host " OK" -ForegroundColor $script:c.Green
                     } else {
                         Write-Host "Iniciando instalador..." -ForegroundColor $script:c.Cyan
-                        Start-Process $filePath
+                        Start-Process $filePath; return
                     }
+                    $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Where-Object { $_.Name -match '^SDI' } | Select-Object -First 1
+                    if (-not $exe) { $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Select-Object -First 1 }
+                    if ($exe) {
+                        Write-Host "Iniciando $($exe.Name)..." -ForegroundColor $script:c.Cyan
+                        Start-Process $exe.FullName
+                    } else { throw "Nenhum executavel encontrado na extracao." }
                     Write-Host ""; Write-Host "Instalador iniciado! Siga as instrucoes na tela." -ForegroundColor $script:c.Yellow
                 } catch {
                     Write-Host "`r  FALHOU: $($_.Exception.Message)" -ForegroundColor $script:c.Red
