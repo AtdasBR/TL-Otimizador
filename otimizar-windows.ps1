@@ -162,12 +162,12 @@ function Show-Banner {
     $bot = "$p$bl$("$h"*$inner)$br"
     $padL = [Math]::Max(0, [Math]::Floor(($inner - 13) / 2))
     $padR = $inner - 13 - $padL
-    Write-Host $top -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v$(" "*$padL)TL OPTIMIZER$(" "*$padR)$v" -ForegroundColor $script:c.Cyan
+    Write-Host $top -ForegroundColor $script:c.White
+    Write-Host "$p$v$(" "*$padL)TL OPTIMIZER$(" "*$padR)$v" -ForegroundColor $script:c.White
     $padL = [Math]::Max(0, [Math]::Floor(($inner - 4) / 2))
     $padR = $inner - 4 - $padL
-    Write-Host "$p$v$(" "*$padL)v$($script:versao)$(" "*$padR)$v" -ForegroundColor $script:c.DarkGray
-    Write-Host $bot -ForegroundColor $script:c.Cyan
+    Write-Host "$p$v$(" "*$padL)v$($script:versao)$(" "*$padR)$v" -ForegroundColor $script:c.Gray
+    Write-Host $bot -ForegroundColor $script:c.White
     Write-Host ""
 }
 function Show-Help {
@@ -257,9 +257,9 @@ function Show-Menu {
     $st = "$p$tt$("$th"*($boxW-2))$tr"
     $sb = "$p$tb$("$th"*($boxW-2))$te"
     $sf = "$p$tv  {0,-$contentW} $tv"
-    Write-Host $st -ForegroundColor $script:c.DarkGray
-    foreach ($s in $specLines) { Write-Host ($sf -f $s) -ForegroundColor $script:c.DarkGray }
-    Write-Host $sb -ForegroundColor $script:c.DarkGray
+    Write-Host $st -ForegroundColor $script:c.White
+    foreach ($s in $specLines) { Write-Host ($sf -f $s) -ForegroundColor $script:c.White }
+    Write-Host $sb -ForegroundColor $script:c.White
     Write-Host ""
 
     $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
