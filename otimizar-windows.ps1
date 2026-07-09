@@ -1418,10 +1418,12 @@ CarregarTema
 # === ADMIN CHECK ===
 $isAdmin = [Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
 if (-not $isAdmin.IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    if ($PSCommandPath) {
+    $scriptToRun = if ($PSCommandPath) { $PSCommandPath } else { Get-ScriptPath }
+    if (Test-Path $scriptToRun) {
         Write-Host "Reiniciando como ADMINISTRADOR..." -ForegroundColor $script:c.Yellow
         $currentShell = (Get-Process -Id $PID).Path
-        Start-Process -FilePath $currentShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        Start-Process -FilePath $currentShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptToRun`"" -Verb RunAs
+        Start-Sleep -Seconds 1
         exit
     } else {
         Write-Host "ERRO: TL Optimizer precisa de privilegios de ADMINISTRADOR." -ForegroundColor $script:c.Red
