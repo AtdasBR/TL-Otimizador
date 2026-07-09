@@ -308,17 +308,19 @@ function Show-Menu {
 
     function Show-ColPair {
         param($left, $right, $hdrL, $hdrR, $color)
-        function T { param($s, $n) if ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
+        function T { param($s, $n) if (-not $s) { " " * $n } elseif ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
         $rows = [Math]::Max($left.Count, $right.Count)
         Write-Host $f_top -ForegroundColor $color
         Write-Host ("$p$v  {0,-$($cw-3)} $v  {1,-$($cw-3)} $v" -f $hdrL, $hdrR) -ForegroundColor $color
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
-            if ($i -lt $left.Count -and $left[$i][0] -ne "") {
-                $ls = " [$($left[$i][0].PadLeft(2))] | $(T $left[$i][1] $nw) "
+            $lval = if ($i -lt $left.Count) { $left[$i] } else { $null }
+            $rval = if ($i -lt $right.Count) { $right[$i] } else { $null }
+            if ($lval -and $lval[0] -is [string] -and $lval[0] -ne "") {
+                $ls = " [$($lval[0].PadLeft(2))] | $(T $lval[1] $nw) "
             } else { $ls = " "*$cw }
-            if ($i -lt $right.Count -and $right[$i][0] -ne "") {
-                $rs = " [$($right[$i][0].PadLeft(2))] | $(T $right[$i][1] $nw) "
+            if ($rval -and $rval[0] -is [string] -and $rval[0] -ne "") {
+                $rs = " [$($rval[0].PadLeft(2))] | $(T $rval[1] $nw) "
             } else { $rs = " "*$cw }
             Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
