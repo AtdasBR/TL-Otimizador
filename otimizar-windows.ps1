@@ -16,6 +16,12 @@ $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
 $script:carregouTema = $false
 
+function Pad-W {
+    param([int]$Width)
+    $tw = $Host.UI.RawUI.WindowSize.Width
+    return " " * [Math]::Max(0, [Math]::Floor(($tw - $Width) / 2))
+}
+
 function CarregarTema {
     if (Test-Path $script:temaArquivo) {
         try {
@@ -40,18 +46,19 @@ function EscolherTema {
     }
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 48
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
         Write-Host $top -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  Digite NUMERO para escolher o tema         $v" -ForegroundColor $script:c.DarkCyan
+        Write-Host "$p$v  Digite NUMERO para escolher o tema         $v" -ForegroundColor $script:c.DarkCyan
         Write-Host $sep -ForegroundColor $script:c.Cyan
         $temp = 1
         foreach ($t in $script:temas.Keys | Sort-Object) {
             $marcador = if ($t -eq $script:temaAtual) { "[X]" } else { "[ ]" }
             $corItem = if ($t -eq $script:temaAtual) { $script:c.Green } else { $script:c.DarkGray }
-            Write-Host "  $v  $("{0,2}" -f $temp). $marcador $("{0,-20}" -f $t)     $v" -ForegroundColor $corItem
+            Write-Host "$p$v  $("{0,2}" -f $temp). $marcador $("{0,-20}" -f $t)     $v" -ForegroundColor $corItem
             $temp++
         }
         Write-Host $bot -ForegroundColor $script:c.Cyan
@@ -133,77 +140,80 @@ function Get-SystemSpecs {
 
 function Show-Banner {
     Clear-Host
+    $p = Pad-W 44
     $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
-    $ln = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $ln = "$p$t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
     Write-Host $ln -ForegroundColor $script:c.Cyan
-    Write-Host "  $v            TL OPTIMIZER                $v" -ForegroundColor $script:c.Cyan
-    Write-Host "  $v              v$($script:versao)                    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v            TL OPTIMIZER                $v" -ForegroundColor $script:c.Cyan
+    Write-Host "$p$v              v$($script:versao)                    $v" -ForegroundColor $script:c.DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor $script:c.Cyan
     Write-Host ""
 }
 function Show-Help {
     Clear-Host
+    $p = Pad-W 44
     $c=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514;$r=[char]0x2510;$e=[char]0x2518
-    $top = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
-    $sep = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
-    $bot = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
+    $top = "$p$c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $sep = "$p$c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $bot = "$p$b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
 
     Write-Host $top -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  ### GUIA RAPIDO ###                             $v" -ForegroundColor $script:c.White
+    Write-Host "$p$v  ### GUIA RAPIDO ###                             $v" -ForegroundColor $script:c.White
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  TWEAK (1-8)  - Melhorias de sistema             $v" -ForegroundColor $script:c.Yellow
-    Write-Host "  $v   1. Central de Acao - Notificacoes              $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   2. Cache Updates - Limpa downloads            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   3. Hibernacao - Libera RAM                    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   4. Pagefile - Otimiza memoria virtual         $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   5. Take Ownership - Menu de contexto          $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   6. Updates 2077 - Pausar atualizacoes         $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   7. Compact/LZX - Comprime o Windows           $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   8. Remover UWP - Apps desnecessarios          $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v  TWEAK (1-8)  - Melhorias de sistema             $v" -ForegroundColor $script:c.Yellow
+    Write-Host "$p$v   1. Central de Acao - Notificacoes              $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   2. Cache Updates - Limpa downloads            $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   3. Hibernacao - Libera RAM                    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   4. Pagefile - Otimiza memoria virtual         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   5. Take Ownership - Menu de contexto          $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   6. Updates 2077 - Pausar atualizacoes         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   7. Compact/LZX - Comprime o Windows           $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   8. Remover UWP - Apps desnecessarios          $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  LIMPEZA (10-16) - Liberar espaco              $v" -ForegroundColor $script:c.Red
-    Write-Host "  $v   10. Logs de Eventos - Limpa logs antigos     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   11. Cache Windows - Libera espaco            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   12. DNS Cache - Reseta cache DNS             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   13. Temporarios - Limpa arquivos temp        $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   14. Limpeza Extrema - Libera GBs             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   15. CleanMgr - Ferramenta nativa             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   16. DISM - Repara o Windows                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v  LIMPEZA (10-16) - Liberar espaco              $v" -ForegroundColor $script:c.Red
+    Write-Host "$p$v   10. Logs de Eventos - Limpa logs antigos     $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   11. Cache Windows - Libera espaco            $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   12. DNS Cache - Reseta cache DNS             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   13. Temporarios - Limpa arquivos temp        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   14. Limpeza Extrema - Libera GBs             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   15. CleanMgr - Ferramenta nativa             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   16. DISM - Repara o Windows                  $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  INSTALADOR (20-25) - Instalar/remover        $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   20. Navegadores - Chrome, Firefox, etc       $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   21. Softwares - 7-Zip, VLC, VS Code, etc    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   22. Drivers - Atualizar drivers              $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   23. Desinstalar - Programas                  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   24. Editor de Imagem - GIMP, Paint, etc      $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   25. Editor de Video - CapCut, Shotcut, etc   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   26. Visualizador de Fotos - Photos, XnView, etc$v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   27. Streaming/Gravacao - OBS, Streamlabs, etc  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   28. Conversor Video/Audio - HandBrake, etc     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   29. Zip/Unzip - 7-Zip, WinRAR                   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   30. Media Player - Pot Player, VLC, etc        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v  INSTALADOR (20-25) - Instalar/remover        $v" -ForegroundColor $script:c.Green
+    Write-Host "$p$v   20. Navegadores - Chrome, Firefox, etc       $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   21. Softwares - 7-Zip, VLC, VS Code, etc    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   22. Drivers - Atualizar drivers              $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   23. Desinstalar - Programas                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   24. Editor de Imagem - GIMP, Paint, etc      $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   25. Editor de Video - CapCut, Shotcut, etc   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   26. Visualizador de Fotos - Photos, XnView, etc$v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   27. Streaming/Gravacao - OBS, Streamlabs, etc  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   28. Conversor Video/Audio - HandBrake, etc     $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   29. Zip/Unzip - 7-Zip, WinRAR                   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   30. Media Player - Pot Player, VLC, etc        $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  OUTROS (41-50) - Utilidades                  $v" -ForegroundColor $script:c.White
-    Write-Host "  $v   41. Backup / 42. Restaurar                  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   43. Edicoes / 44. Usuarios / 45. CMD Cores $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   46. Windows Update / 47. Som / 48. Gaming   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   49. Tema / 50. Sobre                        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v  OUTROS (41-50) - Utilidades                  $v" -ForegroundColor $script:c.White
+    Write-Host "$p$v   41. Backup / 42. Restaurar                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   43. Edicoes / 44. Usuarios / 45. CMD Cores $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   46. Windows Update / 47. Som / 48. Gaming   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v   49. Tema / 50. Sobre                        $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  [0] Sair                                      $v" -ForegroundColor $script:c.Red
+    Write-Host "$p$v  [0] Sair                                      $v" -ForegroundColor $script:c.Red
     Write-Host $bot -ForegroundColor $script:c.Cyan
     Write-Host ""
-    Write-Host "  Como usar: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
-    Write-Host "  Depois de instalado (tl), e so digitar 'tl'" -ForegroundColor $script:c.DarkGray
-    Write-Host "  Backups ficam em: %LOCALAPPDATA%\Otimizador" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p Como usar: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
+    Write-Host "$p Depois de instalado (tl), e so digitar 'tl'" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p Backups ficam em: %LOCALAPPDATA%\Otimizador" -ForegroundColor $script:c.DarkGray
 }
 
 function Show-Menu {
     Show-Banner
     $sp = Get-SystemSpecs
+    $p = Pad-W 47
     $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
-    $st = "  $tt$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$tr"
-    $sb = "  $tb$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$te"
-    $sf = "  $tv  {0,-38} $tv"
+    $st = "$p$tt$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$tr"
+    $sb = "$p$tb$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$te"
+    $sf = "$p$tv  {0,-38} $tv"
     Write-Host $st -ForegroundColor $script:c.DarkGray
     Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor $script:c.DarkGray
     Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor $script:c.DarkGray
@@ -223,22 +233,21 @@ function Show-Menu {
     $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
     $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
     $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
-
-    $f_top = "  $tl$("$h"*21)$tc$("$h"*21)$tr"
-    $f_sep = "  $ml$("$h"*21)$mc$("$h"*21)$mr"
-    $f_bot = "  $bl$("$h"*21)$bc$("$h"*21)$br"
+    $f_top = "$p$tl$("$h"*21)$tc$("$h"*21)$tr"
+    $f_sep = "$p$ml$("$h"*21)$mc$("$h"*21)$mr"
+    $f_bot = "$p$bl$("$h"*21)$bc$("$h"*21)$br"
 
     function Show-ColPair {
         param($left, $right, $hdrL, $hdrR, $color)
         function T { param($s, $n) if ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
         $rows = [Math]::Max($left.Count, $right.Count)
         Write-Host $f_top -ForegroundColor $color
-        Write-Host ("  $v   {0,-18} $v   {1,-18} $v" -f $hdrL, $hdrR) -ForegroundColor $color
+        Write-Host ("$p$v   {0,-18} $v   {1,-18} $v" -f $hdrL, $hdrR) -ForegroundColor $color
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
             if ($i -lt $left.Count) { $ls = "  $("{0,2}" -f $left[$i][0]) $d $(T $left[$i][1] 14) " } else { $ls = " "*21 }
             if ($i -lt $right.Count) { $rs = "  $("{0,2}" -f $right[$i][0]) $d $(T $right[$i][1] 14) " } else { $rs = " "*21 }
-            Write-Host "  $v$ls$v$rs$v" -ForegroundColor $color
+            Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
         Write-Host $f_bot -ForegroundColor $color
         Write-Host ""
@@ -254,7 +263,7 @@ function Show-Menu {
 
     Show-ColPair -left $i -right $o -hdrL "INSTALADOR 20-30" -hdrR "OUTROS (41-50)" -color $script:c.Green
 
-    Write-Host "  [0] Sair" -ForegroundColor $script:c.Red
+    Write-Host "$p[0] Sair" -ForegroundColor $script:c.Red
     Write-Host ""
 }
 
@@ -382,11 +391,12 @@ function Show-ServicosSubmenu {
 
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 56
         $h=[char]0x2550;$v=[char]0x2551;$w=54
-        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        $sub = "  $([char]0x255F)$("$h"*$w)$([char]0x2562)"
+        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $sub = "$p$([char]0x255F)$("$h"*$w)$([char]0x2562)"
 
         $i = 1
         foreach ($s in $Servicos) {
@@ -396,18 +406,18 @@ function Show-ServicosSubmenu {
             $cor = if ($s.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "  $v  Digite NUMERO para marcar/desmarcar               $v" -ForegroundColor $script:c.DarkCyan
+                Write-Host "$p$v  Digite NUMERO para marcar/desmarcar               $v" -ForegroundColor $script:c.DarkCyan
                 Write-Host $sep -ForegroundColor $script:c.Cyan
             }
-            Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-30}" -f $s.Desc) $("{0,-12}" -f $status) $v" -ForegroundColor $cor
+            Write-Host "$p$v  $("{0,2}" -f $i). $check $("{0,-30}" -f $s.Desc) $("{0,-12}" -f $status) $v" -ForegroundColor $cor
             foreach ($linha in (Wrap-Texto -Texto $s.Detalhe -Largura 48)) {
-                Write-Host "  $v  $("{0,-50}" -f "  $linha") $v" -ForegroundColor $script:c.DarkGray
+                Write-Host "$p$v  $("{0,-50}" -f "  $linha") $v" -ForegroundColor $script:c.DarkGray
             }
             $i++
         }
 
         Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [0] Voltar                $v" -ForegroundColor $script:c.Yellow
+        Write-Host "$p$v  [A] Aplicar  [T] Marcar todos  [0] Voltar                $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
@@ -576,11 +586,12 @@ function Show-GenericoSubmenu {
 
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 48
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        $sub = "  $([char]0x255F)$("$h"*$w)$([char]0x2562)"
+        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $sub = "$p$([char]0x255F)$("$h"*$w)$([char]0x2562)"
 
         $i = 1
         foreach ($item in $Itens) {
@@ -588,18 +599,18 @@ function Show-GenericoSubmenu {
             $cor = if ($item.Selected) { "Green" } else { "DarkGray" }
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "  $v  Digite NUMERO para marcar/desmarcar          $v" -ForegroundColor $script:c.DarkCyan
+                Write-Host "$p$v  Digite NUMERO para marcar/desmarcar          $v" -ForegroundColor $script:c.DarkCyan
                 Write-Host $sep -ForegroundColor $script:c.Cyan
             }
-            Write-Host "  $v  $("{0,2}" -f $i). $check $("{0,-35}" -f $item.Desc) $v" -ForegroundColor $cor
+            Write-Host "$p$v  $("{0,2}" -f $i). $check $("{0,-35}" -f $item.Desc) $v" -ForegroundColor $cor
             foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
-                Write-Host "  $v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
+                Write-Host "$p$v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
             }
             $i++
         }
 
         Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [0] Voltar           $v" -ForegroundColor $script:c.Yellow
+        Write-Host "$p$v  [A] Aplicar  [T] Marcar todos  [0] Voltar           $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
@@ -885,10 +896,11 @@ function Run-Browsers {
     )
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 48
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
         $i = 1
         foreach ($item in $itens) {
             if ($i -eq 1) {
@@ -1014,20 +1026,21 @@ function Run-DriverUpdater {
     )
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 48
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
         $i = 1
         foreach ($item in $itens) {
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "  $v  Digite NUMERO para instalar ou desinstalar    $v" -ForegroundColor $script:c.DarkCyan
+                Write-Host "$p$v  Digite NUMERO para instalar ou desinstalar    $v" -ForegroundColor $script:c.DarkCyan
                 Write-Host $sep -ForegroundColor $script:c.Cyan
             }
-            Write-Host "  $v  $("{0,2}" -f $i). $("{0,-38}" -f $item.Desc) $v" -ForegroundColor $script:c.White
+            Write-Host "$p$v  $("{0,2}" -f $i). $("{0,-38}" -f $item.Desc) $v" -ForegroundColor $script:c.White
             foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
-                Write-Host "  $v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
+                Write-Host "$p$v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
             }
             $i++
         }
@@ -1039,13 +1052,13 @@ function Run-DriverUpdater {
         if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
         $item = $itens[[int]$choice - 1]
         Show-Banner
-        Write-Host "  $([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  $($item.Desc)  $v" -ForegroundColor $script:c.White
-        Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
-        Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
-        Write-Host "  $v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
-        Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$v  $($item.Desc)  $v" -ForegroundColor $script:c.White
+        Write-Host "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
+        Write-Host "$p$v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
+        Write-Host "$p$v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
+        Write-Host "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
         Write-Host ""
         $acao = Read-Host "Escolha"
         switch ($acao.ToUpper()) {
@@ -1192,25 +1205,26 @@ function Run-UniversalUninstaller {
     $filtro = ""
     do {
         Clear-Host; Show-Banner
+        $p = Pad-W 60
         $lista = if ($filtro) { $todos | Where-Object { $_.Nome -match $filtro } } else { $todos }
         $h=[char]0x2550;$v=[char]0x2551
-        $top = "  $([char]0x2554)$("$h"*58)$([char]0x2557)"
-        $bot = "  $([char]0x255A)$("$h"*58)$([char]0x255D)"
+        $top = "$p$([char]0x2554)$("$h"*58)$([char]0x2557)"
+        $bot = "$p$([char]0x255A)$("$h"*58)$([char]0x255D)"
         Write-Host $top -ForegroundColor $script:c.Magenta
-        Write-Host "  $v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor $script:c.Magenta
-        Write-Host "  $v  /texto = buscar   NUMERO = desinstalar   [0] Voltar $v" -ForegroundColor $script:c.DarkCyan
-        Write-Host "  $v  Filtro: $(if ($filtro) { $filtro } else { '(todos)' })                          $v" -ForegroundColor $script:c.Yellow
+        Write-Host "$p$v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor $script:c.Magenta
+        Write-Host "$p$v  /texto = buscar   NUMERO = desinstalar   [0] Voltar $v" -ForegroundColor $script:c.DarkCyan
+        Write-Host "$p$v  Filtro: $(if ($filtro) { $filtro } else { '(todos)' })                          $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Magenta
         if ($lista.Count -eq 0) {
-            Write-Host "  Nenhum programa encontrado com esse filtro." -ForegroundColor $script:c.DarkGray
+            Write-Host "$p Nenhum programa encontrado com esse filtro." -ForegroundColor $script:c.DarkGray
         } else {
             $i = 1
             foreach ($item in $lista) {
-                Write-Host "  $("{0,3}" -f $i). $("{0,-55}" -f $(if ($item.Nome.Length -gt 55) { $item.Nome.Substring(0,52) + '...' } else { $item.Nome }))" -ForegroundColor $script:c.Gray
+                Write-Host "$p $("{0,3}" -f $i). $("{0,-55}" -f $(if ($item.Nome.Length -gt 55) { $item.Nome.Substring(0,52) + '...' } else { $item.Nome }))" -ForegroundColor $script:c.Gray
                 $i++
             }
         }
-        Write-Host "  ---- $($lista.Count) programa(s) ----" -ForegroundColor $script:c.DarkGray
+        Write-Host "$p ---- $($lista.Count) programa(s) ----" -ForegroundColor $script:c.DarkGray
         Write-Host ""
         $cmd = Read-Host "Comando"
         if ($cmd -eq "0") { return }
@@ -1297,38 +1311,40 @@ function Wait-Key {
 
 function Show-Welcome {
     Clear-Host
+    $p = Pad-W 42
     $b = [char]0x2554; $b2 = [char]0x2557; $b3 = [char]0x255A; $b4 = [char]0x255D; $h2 = [char]0x2550; $v2 = [char]0x2551
-    Write-Host "  $b$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b2" -ForegroundColor $script:c.Cyan
-    Write-Host "  $v2       T L   O P T I M I Z E R         $v2" -ForegroundColor $script:c.Cyan
-    Write-Host "  $b3$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b4" -ForegroundColor $script:c.Cyan
+    Write-Host "$p$b$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b2" -ForegroundColor $script:c.Cyan
+    Write-Host "$p$v2       T L   O P T I M I Z E R         $v2" -ForegroundColor $script:c.Cyan
+    Write-Host "$p$b3$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$h2$b4" -ForegroundColor $script:c.Cyan
     Write-Host ""
-    Write-Host "   TL Optimizer foi carregado via iwr | iex." -ForegroundColor $script:c.Yellow
-    Write-Host "   Escolha como deseja usa-lo:" -ForegroundColor $script:c.Yellow
+    Write-Host "$p TL Optimizer foi carregado via iwr | iex." -ForegroundColor $script:c.Yellow
+    Write-Host "$p Escolha como deseja usa-lo:" -ForegroundColor $script:c.Yellow
     Write-Host ""
-    Write-Host "   [P] Portatil  - Roda agora, nada e salvo no PC." -ForegroundColor $script:c.Green
-    Write-Host "                  Use quando quiser testar ou usar" -ForegroundColor $script:c.DarkGray
-    Write-Host "                  uma unica vez. Comando sempre funciona." -ForegroundColor $script:c.DarkGray
+    Write-Host "$p [P] Portatil  - Roda agora, nada e salvo no PC." -ForegroundColor $script:c.Green
+    Write-Host "$p                Use quando quiser testar ou usar" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p                uma unica vez. Comando sempre funciona." -ForegroundColor $script:c.DarkGray
     Write-Host ""
-    Write-Host "   [I] Instalar  - Salva em $env:USERPROFILE\TL-Optimizer" -ForegroundColor $script:c.Cyan
-    Write-Host "                  e registra no perfil do PowerShell." -ForegroundColor $script:c.Cyan
-    Write-Host "                  Depois e so digitar 'tl' de qualquer lugar." -ForegroundColor $script:c.DarkGray
+    Write-Host "$p [I] Instalar  - Salva em $env:USERPROFILE\TL-Optimizer" -ForegroundColor $script:c.Cyan
+    Write-Host "$p                e registra no perfil do PowerShell." -ForegroundColor $script:c.Cyan
+    Write-Host "$p                Depois e so digitar 'tl' de qualquer lugar." -ForegroundColor $script:c.DarkGray
     Write-Host ""
 }
 
 function Install-Local {
+    $p = Pad-W 44
     $targetDir = "$env:USERPROFILE\TL-Optimizer"
     $scriptPath = "$targetDir\otimizar-windows.ps1"
-    Write-Host "Instalando em $targetDir..." -ForegroundColor $script:c.Cyan
+    Write-Host "$p Instalando em $targetDir..." -ForegroundColor $script:c.Cyan
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     try {
         iwr -useb "$scriptUrl" -OutFile $scriptPath -ErrorAction Stop
-        Write-Host "Script salvo." -ForegroundColor $script:c.Green
+        Write-Host "$p Script salvo." -ForegroundColor $script:c.Green
     } catch {
-        Write-Host "Erro ao baixar o script. Salvando da memoria..." -ForegroundColor $script:c.Yellow
+        Write-Host "$p Erro ao baixar o script. Salvando da memoria..." -ForegroundColor $script:c.Yellow
         if ($global:MyInvocation.MyCommand.ScriptContents) {
             $global:MyInvocation.MyCommand.ScriptContents | Set-Content -Path $scriptPath -Force
         } else {
-            Write-Host "Nao foi possivel salvar. Verifique a conexao." -ForegroundColor $script:c.Red
+            Write-Host "$p Nao foi possivel salvar. Verifique a conexao." -ForegroundColor $script:c.Red
             Wait-Key; return
         }
     }
@@ -1338,9 +1354,9 @@ function Install-Local {
     if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
     if (-not (Test-Path $profilePath) -or (Get-Content $profilePath -Raw) -notmatch '# TL Optimizer') {
         Add-Content -Path $profilePath -Value $profileLine -Force
-        Write-Host "Alias 'tl' adicionado ao perfil PowerShell." -ForegroundColor $script:c.Green
+        Write-Host "$p Alias 'tl' adicionado ao perfil PowerShell." -ForegroundColor $script:c.Green
     } else {
-        Write-Host "Alias 'tl' ja existe no perfil." -ForegroundColor $script:c.Yellow
+        Write-Host "$p Alias 'tl' ja existe no perfil." -ForegroundColor $script:c.Yellow
     }
     $shortcutPath = "$env:USERPROFILE\Desktop\TL Optimizer.lnk"
     try {
@@ -1351,11 +1367,11 @@ function Install-Local {
         $shortcut.WorkingDirectory = $targetDir
         $shortcut.Description = "TL Optimizer - Otimizador de Windows"
         $shortcut.Save()
-        Write-Host "Atalho criado na Area de Trabalho." -ForegroundColor $script:c.Green
+        Write-Host "$p Atalho criado na Area de Trabalho." -ForegroundColor $script:c.Green
     } catch {
-        Write-Host "Nao foi possivel criar atalho na Area de Trabalho." -ForegroundColor $script:c.DarkGray
+        Write-Host "$p Nao foi possivel criar atalho na Area de Trabalho." -ForegroundColor $script:c.DarkGray
     }
-    Write-Host "`nInstalacao concluida! Reinicie o PowerShell e digite 'tl'." -ForegroundColor $script:c.Green
+    Write-Host "$p `nInstalacao concluida! Reinicie o PowerShell e digite 'tl'." -ForegroundColor $script:c.Green
     Wait-Key
     & $scriptPath
     exit
@@ -1686,18 +1702,19 @@ function Run-DISM {
 
 function Show-BrowserInstaller {
     Show-Banner
-    Write-Host "  INSTALADOR DE NAVEGADORES" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  INSTALADOR DE NAVEGADORES" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. Google Chrome" -ForegroundColor $script:c.White
-    Write-Host "  2. Mozilla Firefox" -ForegroundColor $script:c.White
-    Write-Host "  3. Microsoft Edge" -ForegroundColor $script:c.White
-    Write-Host "  4. Brave" -ForegroundColor $script:c.White
-    Write-Host "  5. Vivaldi" -ForegroundColor $script:c.White
-    Write-Host "  6. Opera" -ForegroundColor $script:c.White
-    Write-Host "  7. Opera GX" -ForegroundColor $script:c.White
-    Write-Host "  8. Tor Browser" -ForegroundColor $script:c.White
-    Write-Host "  9. Instalar todos" -ForegroundColor $script:c.Yellow
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. Google Chrome" -ForegroundColor $script:c.White
+    Write-Host "$p  2. Mozilla Firefox" -ForegroundColor $script:c.White
+    Write-Host "$p  3. Microsoft Edge" -ForegroundColor $script:c.White
+    Write-Host "$p  4. Brave" -ForegroundColor $script:c.White
+    Write-Host "$p  5. Vivaldi" -ForegroundColor $script:c.White
+    Write-Host "$p  6. Opera" -ForegroundColor $script:c.White
+    Write-Host "$p  7. Opera GX" -ForegroundColor $script:c.White
+    Write-Host "$p  8. Tor Browser" -ForegroundColor $script:c.White
+    Write-Host "$p  9. Instalar todos" -ForegroundColor $script:c.Yellow
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o navegador"
     $browsers = @(
@@ -1739,20 +1756,21 @@ function Install-Browser {
 
 function Show-SoftwareInstaller {
     Show-Banner
-    Write-Host "  INSTALADOR DE SOFTWARES" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  INSTALADOR DE SOFTWARES" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. 7-Zip" -ForegroundColor $script:c.White
-    Write-Host "  2. VLC Media Player" -ForegroundColor $script:c.White
-    Write-Host "  3. Notepad++" -ForegroundColor $script:c.White
-    Write-Host "  4. Git" -ForegroundColor $script:c.White
-    Write-Host "  5. Python" -ForegroundColor $script:c.White
-    Write-Host "  6. Node.js LTS" -ForegroundColor $script:c.White
-    Write-Host "  7. Visual Studio Code" -ForegroundColor $script:c.White
-    Write-Host "  8. Discord" -ForegroundColor $script:c.White
-    Write-Host "  9. Steam" -ForegroundColor $script:c.White
-    Write-Host " 10. WhatsApp Desktop" -ForegroundColor $script:c.White
-    Write-Host " 11. Telegram Desktop" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. 7-Zip" -ForegroundColor $script:c.White
+    Write-Host "$p  2. VLC Media Player" -ForegroundColor $script:c.White
+    Write-Host "$p  3. Notepad++" -ForegroundColor $script:c.White
+    Write-Host "$p  4. Git" -ForegroundColor $script:c.White
+    Write-Host "$p  5. Python" -ForegroundColor $script:c.White
+    Write-Host "$p  6. Node.js LTS" -ForegroundColor $script:c.White
+    Write-Host "$p  7. Visual Studio Code" -ForegroundColor $script:c.White
+    Write-Host "$p  8. Discord" -ForegroundColor $script:c.White
+    Write-Host "$p  9. Steam" -ForegroundColor $script:c.White
+    Write-Host "$p 10. WhatsApp Desktop" -ForegroundColor $script:c.White
+    Write-Host "$p 11. Telegram Desktop" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o software"
     $softwares = @(
@@ -1790,12 +1808,13 @@ function Show-SoftwareInstaller {
 
 function Show-ImageEditorInstaller {
     Show-Banner
-    Write-Host "  EDITOR DE IMAGEM" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  EDITOR DE IMAGEM" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. GIMP" -ForegroundColor $script:c.White
-    Write-Host "  2. Microsoft Paint" -ForegroundColor $script:c.White
-    Write-Host "  3. Paint.NET" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. GIMP" -ForegroundColor $script:c.White
+    Write-Host "$p  2. Microsoft Paint" -ForegroundColor $script:c.White
+    Write-Host "$p  3. Paint.NET" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o editor"
     $editores = @(
@@ -1829,15 +1848,16 @@ function Show-ImageEditorInstaller {
 
 function Show-VideoEditorInstaller {
     Show-Banner
-    Write-Host "  EDITOR DE VIDEO" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  EDITOR DE VIDEO" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. Microsoft Clipchamp" -ForegroundColor $script:c.White
-    Write-Host "  2. CapCut" -ForegroundColor $script:c.White
-    Write-Host "  3. OpenShot" -ForegroundColor $script:c.White
-    Write-Host "  4. DaVinci Resolve" -ForegroundColor $script:c.White
-    Write-Host "  5. Shotcut" -ForegroundColor $script:c.White
-    Write-Host "  6. Kdenlive" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. Microsoft Clipchamp" -ForegroundColor $script:c.White
+    Write-Host "$p  2. CapCut" -ForegroundColor $script:c.White
+    Write-Host "$p  3. OpenShot" -ForegroundColor $script:c.White
+    Write-Host "$p  4. DaVinci Resolve" -ForegroundColor $script:c.White
+    Write-Host "$p  5. Shotcut" -ForegroundColor $script:c.White
+    Write-Host "$p  6. Kdenlive" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o editor"
     $editores = @(
@@ -1874,12 +1894,13 @@ function Show-VideoEditorInstaller {
 
 function Show-PhotoViewerInstaller {
     Show-Banner
-    Write-Host "  VISUALIZADOR DE FOTOS" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  VISUALIZADOR DE FOTOS" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. Microsoft Photos" -ForegroundColor $script:c.White
-    Write-Host "  2. XnView" -ForegroundColor $script:c.White
-    Write-Host "  3. IrfanView" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. Microsoft Photos" -ForegroundColor $script:c.White
+    Write-Host "$p  2. XnView" -ForegroundColor $script:c.White
+    Write-Host "$p  3. IrfanView" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o visualizador"
     $editores = @(
@@ -1913,13 +1934,14 @@ function Show-PhotoViewerInstaller {
 
 function Show-StreamingInstaller {
     Show-Banner
-    Write-Host "  STREAMING / GRAVACAO" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  STREAMING / GRAVACAO" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. OBS Studio" -ForegroundColor $script:c.White
-    Write-Host "  2. Streamlabs" -ForegroundColor $script:c.White
-    Write-Host "  3. XSplit" -ForegroundColor $script:c.White
-    Write-Host "  4. PRISM Live Studio" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. OBS Studio" -ForegroundColor $script:c.White
+    Write-Host "$p  2. Streamlabs" -ForegroundColor $script:c.White
+    Write-Host "$p  3. XSplit" -ForegroundColor $script:c.White
+    Write-Host "$p  4. PRISM Live Studio" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o software"
     $editores = @(
@@ -1954,12 +1976,13 @@ function Show-StreamingInstaller {
 
 function Show-ConverterInstaller {
     Show-Banner
-    Write-Host "  CONVERSOR VIDEO / AUDIO" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  CONVERSOR VIDEO / AUDIO" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. HandBrake" -ForegroundColor $script:c.White
-    Write-Host "  2. VidCoder" -ForegroundColor $script:c.White
-    Write-Host "  3. Shutter Encoder" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. HandBrake" -ForegroundColor $script:c.White
+    Write-Host "$p  2. VidCoder" -ForegroundColor $script:c.White
+    Write-Host "$p  3. Shutter Encoder" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o conversor"
     $editores = @(
@@ -1993,11 +2016,12 @@ function Show-ConverterInstaller {
 
 function Show-ZipInstaller {
     Show-Banner
-    Write-Host "  ZIP / UNZIP" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  ZIP / UNZIP" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. 7-Zip" -ForegroundColor $script:c.White
-    Write-Host "  2. WinRAR (trial)" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. 7-Zip" -ForegroundColor $script:c.White
+    Write-Host "$p  2. WinRAR (trial)" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o compactador"
     $editores = @(
@@ -2030,12 +2054,13 @@ function Show-ZipInstaller {
 
 function Show-MediaPlayerInstaller {
     Show-Banner
-    Write-Host "  MEDIA PLAYER" -ForegroundColor $script:c.Green
+    $p = Pad-W 44
+    Write-Host "$p  MEDIA PLAYER" -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host "  1. Pot Player" -ForegroundColor $script:c.White
-    Write-Host "  2. VLC Player" -ForegroundColor $script:c.White
-    Write-Host "  3. Windows Media Player" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. Pot Player" -ForegroundColor $script:c.White
+    Write-Host "$p  2. VLC Player" -ForegroundColor $script:c.White
+    Write-Host "$p  3. Windows Media Player" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha o player"
     $editores = @(
@@ -2240,15 +2265,16 @@ function Run-SomMod {
 
 function Show-Gaming {
     Show-Banner
-    Write-Host "  GAMING" -ForegroundColor $script:c.Cyan
+    $p = Pad-W 44
+    Write-Host "$p  GAMING" -ForegroundColor $script:c.Cyan
     Write-Host ""
-    Write-Host "  1. Game Mode - Ativar" -ForegroundColor $script:c.White
-    Write-Host "  2. Game Bar - Desativar" -ForegroundColor $script:c.White
-    Write-Host "  3. GPU Scheduling - Ativar" -ForegroundColor $script:c.White
-    Write-Host "  4. Prioridade Processo - Alta" -ForegroundColor $script:c.White
-    Write-Host "  5. Power Plan - High Performance" -ForegroundColor $script:c.White
-    Write-Host "  6. Desativar Nagle Algorithm" -ForegroundColor $script:c.White
-    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host "$p  1. Game Mode - Ativar" -ForegroundColor $script:c.White
+    Write-Host "$p  2. Game Bar - Desativar" -ForegroundColor $script:c.White
+    Write-Host "$p  3. GPU Scheduling - Ativar" -ForegroundColor $script:c.White
+    Write-Host "$p  4. Prioridade Processo - Alta" -ForegroundColor $script:c.White
+    Write-Host "$p  5. Power Plan - High Performance" -ForegroundColor $script:c.White
+    Write-Host "$p  6. Desativar Nagle Algorithm" -ForegroundColor $script:c.White
+    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
     Write-Host ""
     $escolha = Read-Host "Escolha"
     switch ($escolha) {
@@ -2292,24 +2318,25 @@ function Show-Gaming {
 }
 
 function Show-Sobre {
+    $p = Pad-W 44
     Write-Host ""
-    Write-Host "  TL Otimizador v1.4" -ForegroundColor $script:c.Yellow
-    Write-Host "  Ferramenta de otimizacao do Windows" -ForegroundColor $script:c.White
+    Write-Host "$p  TL Otimizador v1.4" -ForegroundColor $script:c.Yellow
+    Write-Host "$p  Ferramenta de otimizacao do Windows" -ForegroundColor $script:c.White
     Write-Host ""
-    Write-Host "  Autor: AtdasBR" -ForegroundColor $script:c.Cyan
-    Write-Host "  GitHub: github.com/AtdasBR/TL-Otimizador" -ForegroundColor $script:c.Cyan
-    Write-Host "  Distribuicao: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p  Autor: AtdasBR" -ForegroundColor $script:c.Cyan
+    Write-Host "$p  GitHub: github.com/AtdasBR/TL-Otimizador" -ForegroundColor $script:c.Cyan
+    Write-Host "$p  Distribuicao: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.DarkGray
     Write-Host ""
-    Write-Host "  Funcionalidades:" -ForegroundColor $script:c.Green
-    Write-Host "  - Limpeza rapida e profunda" -ForegroundColor $script:c.White
-    Write-Host "  - Gerenciamento de servicos" -ForegroundColor $script:c.White
-    Write-Host "  - Otimizacao de rede" -ForegroundColor $script:c.White
-    Write-Host "  - Acelerar visual" -ForegroundColor $script:c.White
-    Write-Host "  - Instalador de navegadores e softwares" -ForegroundColor $script:c.White
-    Write-Host "  - Desinstalador universal" -ForegroundColor $script:c.White
-    Write-Host "  - Driver Updater" -ForegroundColor $script:c.White
-    Write-Host "  - Sistema de temas" -ForegroundColor $script:c.White
-    Write-Host "  - Auto-atualizacao" -ForegroundColor $script:c.White
+    Write-Host "$p  Funcionalidades:" -ForegroundColor $script:c.Green
+    Write-Host "$p  - Limpeza rapida e profunda" -ForegroundColor $script:c.White
+    Write-Host "$p  - Gerenciamento de servicos" -ForegroundColor $script:c.White
+    Write-Host "$p  - Otimizacao de rede" -ForegroundColor $script:c.White
+    Write-Host "$p  - Acelerar visual" -ForegroundColor $script:c.White
+    Write-Host "$p  - Instalador de navegadores e softwares" -ForegroundColor $script:c.White
+    Write-Host "$p  - Desinstalador universal" -ForegroundColor $script:c.White
+    Write-Host "$p  - Driver Updater" -ForegroundColor $script:c.White
+    Write-Host "$p  - Sistema de temas" -ForegroundColor $script:c.White
+    Write-Host "$p  - Auto-atualizacao" -ForegroundColor $script:c.White
     Write-Host ""
 }
 
