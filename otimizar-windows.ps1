@@ -3,7 +3,7 @@ $backupDir = "$env:LOCALAPPDATA\Otimizador"
 if (-not (Test-Path $backupDir)) { New-Item -ItemType Directory -Path $backupDir -Force | Out-Null }
 $scriptUrl = "https://is.gd/tlotimizador"
 $rawUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master/otimizar-windows.ps1"
-$script:versao = "1.2"
+$script:versao = "1.4"
 
 $script:temaArquivo = "$backupDir\tema.json"
 $script:temas = @{
@@ -149,72 +149,45 @@ function Show-Help {
     $bot = "  $b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
 
     Write-Host $top -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  ### O QUE CADA OPCAO FAZ ###                    $v" -ForegroundColor $script:c.White
+    Write-Host "  $v  ### GUIA RAPIDO ###                             $v" -ForegroundColor $script:c.White
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   1. LIMPEZA RAPIDA                               $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Apaga arquivos temporarios e libera espaco no   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   disco. Leve e seguro, pode fazer sem medo.      $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v  TWEAK (1-8)  - Melhorias de sistema             $v" -ForegroundColor $script:c.Yellow
+    Write-Host "  $v   1. Central de Acao - Notificacoes              $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   2. Cache Updates - Limpa downloads            $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   3. Hibernacao - Libera RAM                    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   4. Pagefile - Otimiza memoria virtual         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   5. Take Ownership - Menu de contexto          $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   6. Updates 2077 - Pausar atualizacoes         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   7. Compact/LZX - Comprime o Windows           $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   8. Remover UWP - Apps desnecessarios          $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   2. LIMPEZA PROFUNDA                             $v" -ForegroundColor $script:c.Magenta
-    Write-Host "  $v   Uma limpeza mais forte que libera varios GBs.   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   Remove cache de programas, logs antigos e mais. $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v  LIMPEZA (10-16) - Liberar espaco              $v" -ForegroundColor $script:c.Red
+    Write-Host "  $v   10. Logs de Eventos - Limpa logs antigos     $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   11. Cache Windows - Libera espaco            $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   12. DNS Cache - Reseta cache DNS             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   13. Temporarios - Limpa arquivos temp        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   14. Limpeza Extrema - Libera GBs             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   15. CleanMgr - Ferramenta nativa             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   16. DISM - Repara o Windows                  $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   3. DESLIGAR SERVICOS                            $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Mostra uma lista de servicos do Windows.        $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   Digite o NUMERO para marcar/desmarcar.          $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   [X] = vai ser desligado | [ ] = vai ser ligado  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   [A] Aplica | [T] Marca tudo | [V] Voltar                $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v  INSTALADOR (20-23) - Instalar/remover        $v" -ForegroundColor $script:c.Green
+    Write-Host "  $v   20. Navegadores - Chrome, Firefox, etc       $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   21. Softwares - 7-Zip, VLC, VS Code, etc    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   22. Drivers - Atualizar drivers              $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   23. Desinstalar - Programas                  $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   4. MELHORAR INTERNET                            $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Troca o DNS para Cloudflare (mais rapido),      $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   reseta a placa de rede e ajusta conexao.        $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   Desmarcou um item? Ele volta ao normal.         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v  OUTROS (30-40) - Utilidades                  $v" -ForegroundColor $script:c.White
+    Write-Host "  $v   30. Backup / 31. Restaurar / 32. WinRE       $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   33. Edicoes / 34. Usuarios / 35. CMD Cores   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   36. Windows Update / 37. Som / 38. Gaming    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   39. Tema / 40. Sobre                         $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   5. ACELERAR VISUAL                              $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Desliga animacoes, transparencia e efeitos.     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   O Windows fica mais leve, principalmente em     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   PCs mais antigos. Desmarcou, volta ao original. $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   6. EXECUTAR TUDO                                $v" -ForegroundColor $script:c.Magenta
-    Write-Host "  $v   Roda as opcoes 3, 4 e 5 de uma vez so, com     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   tudo marcado. Nao precisa ficar escolhendo.     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   7. PONTO DE RESTAURACAO                         $v" -ForegroundColor $script:c.Yellow
-    Write-Host "  $v   Cria um ponto no Windows pra voltar atras       $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   se algo der errado. Faca antes de mexer.        $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   8, 9, 10. DESFAZER                              $v" -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   Restaura o que foi alterado em cada categoria   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   usando o backup salvo automaticamente.          $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   11. GERENCIAR NAVEGADORES                        $v" -ForegroundColor $script:c.Yellow
-    Write-Host "  $v   Detecta navegadores instalados e permite         $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   desinstalar varios de uma vez.                    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   12. DESINSTALADOR UNIVERSAL                       $v" -ForegroundColor $script:c.Magenta
-    Write-Host "  $v   Lista todos os programas instalados, desinstala    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   e limpa arquivos e registros residuais.            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   13. DRIVER UPDATER                                 $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Baixa instaladores de Driver Easy, Driver Booster   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   e Snappy Driver Installer Lite.                     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   14. VERIFICAR ATUALIZACAO                           $v" -ForegroundColor $script:c.Green
-    Write-Host "  $v   Checa se ha versao nova no GitHub e baixa            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   automaticamente.                                     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   15. ESCOLHER TEMA                                    $v" -ForegroundColor $script:c.Yellow
-    Write-Host "  $v   Altera as cores do otimizador. Temas:                $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   Padrao, Claro, Matrix, Synthwave.                    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v   16. AJUDA (esta tela)                                $v" -ForegroundColor $script:c.Yellow
-    Write-Host "  $v   0. SAIR                                         $v" -ForegroundColor $script:c.Red
+    Write-Host "  $v  [0] Sair                                      $v" -ForegroundColor $script:c.Red
     Write-Host $bot -ForegroundColor $script:c.Cyan
     Write-Host ""
     Write-Host "  Como usar: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
     Write-Host "  Depois de instalado (tl), e so digitar 'tl'" -ForegroundColor $script:c.DarkGray
     Write-Host "  Backups ficam em: %LOCALAPPDATA%\Otimizador" -ForegroundColor $script:c.DarkGray
-    Write-Host "  Tudo pode ser desfeito pelas opcoes 8, 9 e 10." -ForegroundColor $script:c.DarkGray
 }
 
 function Show-Menu {
@@ -248,67 +221,58 @@ function Show-Menu {
     $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $bot = "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $fmt = "     {0,-2}. {1}  {2,-27} "
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "1", $d, "Limpeza rapida") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
+
+    Write-Host "  TWEAK" -ForegroundColor $script:c.Yellow
+    Write-Host $top -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "1", $d, "Central de Acao") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "2", $d, "Cache Updates") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "3", $d, "Hibernacao") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "4", $d, "Pagefile") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "5", $d, "Take Ownership") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "6", $d, "Updates 2077") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "7", $d, "Compact/LZX") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host ("  $v" + ($fmt -f "8", $d, "Remover UWP") + "$v") -ForegroundColor $script:c.Yellow
+    Write-Host $bot -ForegroundColor $script:c.Yellow
     Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "2", $s, "Limpeza profunda") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
+
+    Write-Host "  LIMPEZA" -ForegroundColor $script:c.Red
+    Write-Host $top -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "10", $d, "Logs Eventos") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "11", $d, "Cache Windows") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "12", $d, "DNS Cache") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "13", $d, "Temporarios") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "14", $d, "Limpeza Extrema") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "15", $d, "CleanMgr") + "$v") -ForegroundColor $script:c.Red
+    Write-Host ("  $v" + ($fmt -f "16", $d, "DISM") + "$v") -ForegroundColor $script:c.Red
+    Write-Host $bot -ForegroundColor $script:c.Red
     Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "3", $d, "Desligar servicos") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
+
+    Write-Host "  INSTALADOR" -ForegroundColor $script:c.Green
+    Write-Host $top -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "20", $d, "Navegadores") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "21", $d, "Softwares") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "22", $d, "Atualizar Drivers") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "23", $d, "Desinstalar") + "$v") -ForegroundColor $script:c.Green
+    Write-Host $bot -ForegroundColor $script:c.Green
     Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "4", $d, "Melhorar internet") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
+
+    Write-Host "  OUTROS" -ForegroundColor $script:c.White
+    Write-Host $top -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "30", $d, "Backup Sistema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "31", $d, "Restaurar Sistema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "32", $d, "WinRE") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "33", $d, "Edicoes Windows") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "34", $d, "Usuarios") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "35", $d, "CMD Cores") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "36", $d, "Windows Update") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "37", $d, "Som Mod") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "38", $d, "Gaming") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "39", $d, "Tema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "40", $d, "Sobre") + "$v") -ForegroundColor $script:c.White
+    Write-Host $bot -ForegroundColor $script:c.White
     Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "5", $d, "Acelerar visual") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "6", $s, "EXECUTAR TUDO") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "7", $d, "Ponto de restauracao") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "8", $d, "Desfazer - Servicos") + "$v") -ForegroundColor $script:c.Cyan
-    Write-Host ("  $v" + ($fmt -f "9", $d, "Desfazer - Rede") + "$v") -ForegroundColor $script:c.Cyan
-    Write-Host ("  $v" + ($fmt -f "10", $d, "Desfazer - Visual") + "$v") -ForegroundColor $script:c.Cyan
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "11", $d, "Gerenciar navegadores") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "12", $s, "Desinstalador universal") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "13", $d, "Driver Updater") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "14", $d, "Verificar atualizacao") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "15", $d, "Escolher tema") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host ("  $v" + ($fmt -f "16", $d, "Ajuda") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host $mid -ForegroundColor $script:c.DarkCyan
-    Write-Host ""
-    Write-Host $top -ForegroundColor $script:c.DarkCyan
-    Write-Host "  $v             [0]  X  Sair                  $v" -ForegroundColor $script:c.Red
-    Write-Host $bot -ForegroundColor $script:c.DarkCyan
+
+    Write-Host "  [0] Sair" -ForegroundColor $script:c.Red
     Write-Host ""
 }
 
@@ -1449,6 +1413,613 @@ if (-not $isAdmin.IsInRole([Security.Principal.WindowsBuiltInRole] "Administrato
     }
 }
 
+# === FUNCOES TWEAK ===
+
+function Tweak-ActionCenter {
+    Write-Host "`n[+] Central de Acao - Desabilitando..." -ForegroundColor $script:c.Yellow
+    try {
+        Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Central de Acao desabilitada" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao desabilitar Central de Acao" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-CacheUpdates {
+    Write-Host "`n[+] Cache Updates - Limpando..." -ForegroundColor $script:c.Yellow
+    try {
+        Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:SystemRoot\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+        Write-Host "[OK] Cache de updates limpo" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao limpar cache de updates" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-Hibernation {
+    Write-Host "`n[+] Hibernacao - Desabilitando..." -ForegroundColor $script:c.Yellow
+    try {
+        powercfg /hibernate off 2>$null
+        Write-Host "[OK] Hibernacao desabilitada" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao desabilitar hibernacao" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-Pagefile {
+    Write-Host "`n[+] Pagefile - Configurando..." -ForegroundColor $script:c.Yellow
+    try {
+        $ram = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB
+        $pagefile = [math]::Round($ram * 0.5)
+        $cs = Get-WmiObject Win32_ComputerSystem
+        $cs.AutomaticManagedPagefile = $false
+        $cs.Put() | Out-Null
+        $pf = Get-WmiObject Win32_PageFileSetting
+        if ($pf) {
+            $pf.InitialSize = $pagefile
+            $pf.MaximumSize = [math]::Round($ram * 1.5)
+            $pf.Put() | Out-Null
+        }
+        Write-Host "[OK] Pagefile configurado: ${pagefile}MB inicial" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao configurar pagefile" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-TakeOwnership {
+    Write-Host "`n[+] Take Ownership - Adicionando ao menu..." -ForegroundColor $script:c.Yellow
+    try {
+        $regPath = "HKLM:\SOFTWARE\Classes\*\shell\TakeOwnership"
+        New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path $regPath -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
+        New-Item -Path "$regPath\command" -Force -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path "$regPath\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" && icacls "%1" /grant administrators:F' -Force -ErrorAction SilentlyContinue
+        $regPathDir = "HKLM:\SOFTWARE\Classes\Directory\shell\TakeOwnership"
+        New-Item -Path $regPathDir -Force -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path $regPathDir -Name "(Default)" -Value "Take Ownership" -Force -ErrorAction SilentlyContinue
+        New-Item -Path "$regPathDir\command" -Force -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path "$regPathDir\command" -Name "(Default)" -Value 'cmd.exe /c takeown /f "%1" /r /d y && icacls "%1" /grant administrators:F /t' -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Take Ownership adicionado ao menu de contexto" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao adicionar Take Ownership" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-Updates2077 {
+    Write-Host "`n[+] Updates 2077 - Configurando..." -ForegroundColor $script:c.Yellow
+    try {
+        $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+        New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
+        Set-ItemProperty -Path $regPath -Name "NoAutoUpdate" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $regPath -Name "AUOptions" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $regPath -Name "ScheduledInstallDay" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $regPath -Name "ScheduledInstallTime" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Updates configurados: baixar e notificar" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao configurar updates" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-CompactLZX {
+    Write-Host "`n[+] Compact/LZX - Ativando..." -ForegroundColor $script:c.Yellow
+    try {
+        $os = Get-CimInstance Win32_OperatingSystem
+        if ([version]$os.Version -ge [version]"10.0.17763") {
+            compact /compactOS:LZX 2>$null
+            Write-Host "[OK] Compact/LZX ativado (economia de ~30%%)" -ForegroundColor $script:c.Green
+        } else {
+            Write-Host "[--] Requer Windows 10 1809 ou superior" -ForegroundColor $script:c.DarkGray
+        }
+    } catch {
+        Write-Host "[ERRO] Falha ao ativar Compact/LZX" -ForegroundColor $script:c.Red
+    }
+}
+
+function Tweak-RemoverUWP {
+    Write-Host "`n[+] Remover UWP - Listando apps..." -ForegroundColor $script:c.Yellow
+    $apps = @(
+        "Microsoft.BingNews", "Microsoft.BingWeather", "Microsoft.GetHelp",
+        "Microsoft.Getstarted", "Microsoft.MicrosoftSolitaireCollection",
+        "Microsoft.People", "Microsoft.PowerAutomateDesktop", "Microsoft.Todos",
+        "Microsoft.WindowsMaps", "Microsoft.WindowsFeedbackHub",
+        "Microsoft.ZuneMusic", "Microsoft.ZuneVideo", "Microsoft.549981C3F5F10",
+        "Microsoft.WindowsAlarms", "Microsoft.MicrosoftOfficeHub"
+    )
+    $i = 0
+    foreach ($app in $apps) {
+        $i++
+        $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
+        if ($found) {
+            Write-Host "  $i. $app" -ForegroundColor $script:c.Yellow
+        }
+    }
+    if ($i -eq 0) {
+        Write-Host "[--] Nenhum app UWP removivel encontrado" -ForegroundColor $script:c.DarkGray
+        return
+    }
+    $res = Read-Host "Remover todos os listados? (S/N)"
+    if ($res -eq "S" -or $res -eq "s") {
+        foreach ($app in $apps) {
+            $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
+            if ($found) {
+                Remove-AppxPackage -Package $found.PackageFullName -AllUsers -ErrorAction SilentlyContinue
+                Write-Host "[OK] Removido: $app" -ForegroundColor $script:c.Green
+            }
+        }
+    } else {
+        Write-Host "[--] Operacao cancelada" -ForegroundColor $script:c.DarkGray
+    }
+}
+
+# === FUNCOES LIMPEZA ===
+
+function Clear-EventLogs {
+    Write-Host "`n[+] Logs de Eventos - Limpando..." -ForegroundColor $script:c.Red
+    $logs = Get-WinEvent -ListLog * -ErrorAction SilentlyContinue | Where-Object { $_.RecordCount -gt 0 -and $_.IsEnabled }
+    $count = 0
+    foreach ($log in $logs) {
+        try {
+            wevtutil cl $log.LogName 2>$null
+            $count++
+        } catch {}
+    }
+    Write-Host "[OK] $count logs de eventos limpos" -ForegroundColor $script:c.Green
+}
+
+function Clear-CacheWindows {
+    Write-Host "`n[+] Cache Windows - Limpando..." -ForegroundColor $script:c.Red
+    $paths = @(
+        "$env:LOCALAPPDATA\Microsoft\Windows\INetCache",
+        "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db",
+        "$env:LOCALAPPDATA\Temp",
+        "$env:SystemRoot\Temp"
+    )
+    $freed = 0
+    foreach ($path in $paths) {
+        $items = Get-ChildItem -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+        foreach ($item in $items) {
+            try {
+                $freed += $item.Length
+                Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
+            } catch {}
+        }
+    }
+    $mb = [math]::Round($freed / 1MB, 2)
+    Write-Host "[OK] Cache limpo: ${mb}MB liberados" -ForegroundColor $script:c.Green
+}
+
+function Clear-DNSCache {
+    Write-Host "`n[+] DNS Cache - Limpando..." -ForegroundColor $script:c.Red
+    try {
+        Clear-DnsClientCache -ErrorAction SilentlyContinue
+        ipconfig /flushdns 2>$null | Out-Null
+        Write-Host "[OK] DNS Cache limpo" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao limpar DNS Cache" -ForegroundColor $script:c.Red
+    }
+}
+
+function Clear-Temporarios {
+    Write-Host "`n[+] Temporarios - Limpando..." -ForegroundColor $script:c.Red
+    $paths = @(
+        "$env:TEMP\*",
+        "$env:LOCALAPPDATA\Temp\*",
+        "$env:SystemRoot\Temp\*",
+        "$env:SystemRoot\Prefetch\*"
+    )
+    $freed = 0
+    foreach ($path in $paths) {
+        $items = Get-ChildItem -Path $path -Force -ErrorAction SilentlyContinue
+        foreach ($item in $items) {
+            try {
+                $freed += $item.Length
+                Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
+            } catch {}
+        }
+    }
+    $mb = [math]::Round($freed / 1MB, 2)
+    Write-Host "[OK] Temporarios limpos: ${mb}MB liberados" -ForegroundColor $script:c.Green
+}
+
+function Run-CleanMgr {
+    Write-Host "`n[+] CleanMgr - Executando..." -ForegroundColor $script:c.Red
+    try {
+        $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches"
+        $items = Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue
+        foreach ($item in $items) {
+            Set-ItemProperty -Path $item.PSPath -Name "StateFlags0064" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
+        }
+        Start-Process cleanmgr.exe -ArgumentList "/sagerun:64" -Wait -ErrorAction SilentlyContinue
+        Write-Host "[OK] CleanMgr executado" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao executar CleanMgr" -ForegroundColor $script:c.Red
+    }
+}
+
+function Run-DISM {
+    Write-Host "`n[+] DISM - Verificando e reparando..." -ForegroundColor $script:c.Red
+    Write-Host "[...] Isso pode levar varios minutos..." -ForegroundColor $script:c.DarkGray
+    try {
+        DISM /Online /Cleanup-Image /ScanHealth 2>$null
+        DISM /Online /Cleanup-Image /RestoreHealth 2>$null
+        Write-Host "[OK] DISM concluido" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao executar DISM" -ForegroundColor $script:c.Red
+    }
+}
+
+# === FUNCOES INSTALADOR ===
+
+function Show-BrowserInstaller {
+    Show-Banner
+    Write-Host "  INSTALADOR DE NAVEGADORES" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. Google Chrome" -ForegroundColor $script:c.White
+    Write-Host "  2. Mozilla Firefox" -ForegroundColor $script:c.White
+    Write-Host "  3. Microsoft Edge" -ForegroundColor $script:c.White
+    Write-Host "  4. Brave" -ForegroundColor $script:c.White
+    Write-Host "  5. Vivaldi" -ForegroundColor $script:c.White
+    Write-Host "  6. Opera" -ForegroundColor $script:c.White
+    Write-Host "  7. Opera GX" -ForegroundColor $script:c.White
+    Write-Host "  8. Tor Browser" -ForegroundColor $script:c.White
+    Write-Host "  9. Instalar todos" -ForegroundColor $script:c.Yellow
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o navegador"
+    $browsers = @(
+        @{Name="Google Chrome"; Url="https://dl.google.com/chrome/install/latest/chrome_installer.exe"; Args="/silent /install"},
+        @{Name="Mozilla Firefox"; Url="https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=pt-BR"; Args="/S"},
+        @{Name="Microsoft Edge"; Url="https://go.microsoft.com/fwlink/?linkid=2108834&Channel=Stable&language=en&PC=UC"; Args="/silent /install"},
+        @{Name="Brave"; Url="https://laptop-updates.brave.com/latest/standalone"; Args="/silent /install"},
+        @{Name="Vivaldi"; Url="https://downloads.vivaldi.net/stable/Vivaldi.8.0.4033.57.x64.exe"; Args="/S"},
+        @{Name="Opera"; Url="https://net.geo.opera.com/opera/stable/windows"; Args="/silent /install"},
+        @{Name="Opera GX"; Url="https://net.geo.opera.com/gx/stable/windows"; Args="/silent /install"},
+        @{Name="Tor Browser"; Url="https://dist.torproject.org/torbrowser/15.0.17/tor-browser-windows-x86_64-portable-15.0.17.exe"; Args="/S"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -eq "9") {
+        foreach ($b in $browsers) { Install-Browser $b }
+    } elseif ($escolha -ge 1 -and $escolha -le 8) {
+        Install-Browser $browsers[$escolha - 1]
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Install-Browser {
+    param($b)
+    Write-Host "`n[+] $($b.Name) - Baixando..." -ForegroundColor $script:c.Green
+    $tempFile = Join-Path $env:TEMP "browser_install.exe"
+    try {
+        $wc = New-Object System.Net.WebClient
+        $wc.DownloadFile($b.Url, $tempFile)
+        Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+        $argList = "$($b.Args)"
+        Start-Process $tempFile -ArgumentList $argList -Wait -ErrorAction SilentlyContinue
+        Write-Host "[OK] $($b.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+        Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "[ERRO] Falha ao instalar $($b.Name): $_" -ForegroundColor $script:c.Red
+    }
+}
+
+function Show-SoftwareInstaller {
+    Show-Banner
+    Write-Host "  INSTALADOR DE SOFTWARES" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. 7-Zip" -ForegroundColor $script:c.White
+    Write-Host "  2. VLC Media Player" -ForegroundColor $script:c.White
+    Write-Host "  3. Notepad++" -ForegroundColor $script:c.White
+    Write-Host "  4. Git" -ForegroundColor $script:c.White
+    Write-Host "  5. Python" -ForegroundColor $script:c.White
+    Write-Host "  6. Node.js LTS" -ForegroundColor $script:c.White
+    Write-Host "  7. Visual Studio Code" -ForegroundColor $script:c.White
+    Write-Host "  8. Discord" -ForegroundColor $script:c.White
+    Write-Host "  9. Steam" -ForegroundColor $script:c.White
+    Write-Host " 10. WhatsApp Desktop" -ForegroundColor $script:c.White
+    Write-Host " 11. Telegram Desktop" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o software"
+    $softwares = @(
+        @{Name="7-Zip"; Url="https://www.7-zip.org/a/7z2409-x64.exe"; Args="/S"},
+        @{Name="VLC"; Url="https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe"; Args="/S /L=1046"},
+        @{Name="Notepad++"; Url="https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.1/npp.8.7.1.Installer.x64.exe"; Args="/S"},
+        @{Name="Git"; Url="https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.1/Git-2.47.1-64-bit.exe"; Args="/VERYSILENT /NORESTART"},
+        @{Name="Python"; Url="https://www.python.org/ftp/python/3.12.7/python-3.12.7-amd64.exe"; Args="/quiet InstallAllUsers=1 PrependPath=1"},
+        @{Name="Node.js"; Url="https://nodejs.org/dist/v22.11.0/node-v22.11.0-x64.msi"; Args="/quiet INSTALLDIR=`"C:\Program Files\nodejs`""},
+        @{Name="VS Code"; Url="https://update.code.visualstudio.com/latest/win32-x64-user/stable"; Args="/silent /install"},
+        @{Name="Discord"; Url="https://dl.discordapp.net/apps/win/DiscordSetup.exe"; Args="/silent"},
+        @{Name="Steam"; Url="https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe"; Args="/S"},
+        @{Name="WhatsApp"; Url="https://web.whatsapp.com/desktop/windows/release/x64/WhatsAppSetup.exe"; Args="/silent"},
+        @{Name="Telegram"; Url="https://tdesktop.com/tdesktop/tdesktop.5.8.3.x64.exe"; Args="/S"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 11) {
+        $sw = $softwares[$escolha - 1]
+        Write-Host "`n[+] $($sw.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "software_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($sw.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            Start-Process $tempFile -ArgumentList $sw.Args -Wait -ErrorAction SilentlyContinue
+            Write-Host "[OK] $($sw.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($sw.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+# === FUNCOES OUTROS ===
+
+function Run-BackupSistema {
+    Write-Host "`n[+] Backup do Sistema - Criando ponto..." -ForegroundColor $script:c.Yellow
+    try {
+        Enable-ComputerRestore -Drive "C:\" -ErrorAction SilentlyContinue
+        Checkpoint-Computer -Description "TL Optimizer Backup" -RestorePointType MODIFY_SETTINGS -ErrorAction SilentlyContinue
+        Write-Host "[OK] Ponto de restauracao criado" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao criar backup" -ForegroundColor $script:c.Red
+    }
+}
+
+function Run-RestaurarSistema {
+    Write-Host "`n[+] Restaurar Sistema - Abrindo..." -ForegroundColor $script:c.Yellow
+    try {
+        Start-Process rstrui.exe -ErrorAction SilentlyContinue
+        Write-Host "[OK] Assistente de Restauracao aberto" -ForegroundColor $script:c.Green
+    } catch {
+        Write-Host "[ERRO] Falha ao abrir Restaurar Sistema" -ForegroundColor $script:c.Red
+    }
+}
+
+function Run-WinRE {
+    Write-Host "`n[+] WinRE - Gerenciando..." -ForegroundColor $script:c.Yellow
+    $status = reagentc /info 2>&1
+    if ($status -match "Enabled") {
+        Write-Host "[OK] WinRE esta ATIVADO" -ForegroundColor $script:c.Green
+    } else {
+        Write-Host "[--] WinRE esta DESATIVADO" -ForegroundColor $script:c.DarkGray
+    }
+    $res = Read-Host "Ativar/Desativar WinRE? (A/D/N)"
+    if ($res -eq "A" -or $res -eq "a") {
+        reagentc /enable 2>$null
+        Write-Host "[OK] WinRE ativado" -ForegroundColor $script:c.Green
+    } elseif ($res -eq "D" -or $res -eq "d") {
+        reagentc /disable 2>$null
+        Write-Host "[OK] WinRE desativado" -ForegroundColor $script:c.Green
+    }
+}
+
+function Run-EdicoesWindows {
+    Write-Host "`n[+] Edicoes do Windows - Informacoes..." -ForegroundColor $script:c.Yellow
+    $edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "EditionID" -ErrorAction SilentlyContinue).EditionID
+    $display = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "ProductName" -ErrorAction SilentlyContinue).ProductName
+    Write-Host "[OK] Edicao atual: $display ($edition)" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  Edicoes disponiveis para upgrade:" -ForegroundColor $script:c.White
+    Write-Host "  - Home -> Pro: slmgr /ipk VK7JG-NPHTM-C97JM-9MPGT-3V66T" -ForegroundColor $script:c.DarkGray
+    Write-Host "  - Pro -> Enterprise: slmgr /ipk NPPR9-FWDCX-D2C8J-H872K-2YT43" -ForegroundColor $script:c.DarkGray
+    Write-Host ""
+}
+
+function Run-Usuarios {
+    Write-Host "`n[+] Gerenciar Usuarios..." -ForegroundColor $script:c.Yellow
+    Write-Host ""
+    Write-Host "  1. Criar novo usuario" -ForegroundColor $script:c.White
+    Write-Host "  2. Listar usuarios" -ForegroundColor $script:c.White
+    Write-Host "  3. Adicionar ao grupo Administradores" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha"
+    switch ($escolha) {
+        "1" {
+            $nome = Read-Host "Nome do novo usuario"
+            if ($nome) {
+                $senha = Read-Host "Senha" -AsSecureString
+                New-LocalUser -Name $nome -Password $senha -FullName $nome -ErrorAction SilentlyContinue
+                Write-Host "[OK] Usuario '$nome' criado" -ForegroundColor $script:c.Green
+            }
+        }
+        "2" {
+            Get-LocalUser | Format-Table Name, Enabled, LastLogon -AutoSize
+        }
+        "3" {
+            $nome = Read-Host "Nome do usuario"
+            if ($nome) {
+                Add-LocalGroupMember -Group "Administradores" -Member $nome -ErrorAction SilentlyContinue
+                Write-Host "[OK] '$nome' adicionado aos Administradores" -ForegroundColor $script:c.Green
+            }
+        }
+    }
+}
+
+function Run-CmdCores {
+    Write-Host "`n[+] CMD Cores - Configurando..." -ForegroundColor $script:c.Yellow
+    try {
+        $regPath = "HKCU:\Console"
+        $cores = @(
+            @{Name="Verde Matrix"; FG=10; BG=0},
+            @{Name="Azul Neon"; FG=11; BG=0},
+            @{Name="Vermelho Synthwave"; FG=12; BG=0},
+            @{Name="Amarelo Classico"; FG=14; BG=0},
+            @{Name="Branco Preto"; FG=15; BG=0}
+        )
+        Write-Host ""
+        $i = 0
+        foreach ($c in $cores) { $i++; Write-Host "  $i. $($c.Name)" -ForegroundColor $script:c.White }
+        Write-Host "  0. Padrao" -ForegroundColor $script:c.Red
+        Write-Host ""
+        $escolha = Read-Host "Escolha a cor"
+        if ($escolha -ge 1 -and $escolha -le 5) {
+            $sel = $cores[$escolha - 1]
+            Set-ItemProperty -Path $regPath -Name "ColorTable00" -Value ($sel.BG + $sel.FG * 16) -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "ColorTable07" -Value ($sel.FG + $sel.BG * 16) -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Cor do CMD alterada para: $($sel.Name)" -ForegroundColor $script:c.Green
+        } elseif ($escolha -eq "0") {
+            Set-ItemProperty -Path $regPath -Name "ColorTable00" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "ColorTable07" -Value 7 -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Cor do CMD restaurada" -ForegroundColor $script:c.Green
+        }
+    } catch {
+        Write-Host "[ERRO] Falha ao configurar cores do CMD" -ForegroundColor $script:c.Red
+    }
+}
+
+function Run-WindowsUpdate {
+    Write-Host "`n[+] Windows Update - Gerenciando..." -ForegroundColor $script:c.Yellow
+    Write-Host ""
+    Write-Host "  1. Verificar atualizacoes" -ForegroundColor $script:c.White
+    Write-Host "  2. Parar servico" -ForegroundColor $script:c.White
+    Write-Host "  3. Iniciar servico" -ForegroundColor $script:c.White
+    Write-Host "  4. Configurar Horario Noturno" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha"
+    switch ($escolha) {
+        "1" {
+            Write-Host "[...] Verificando atualizacoes..." -ForegroundColor $script:c.DarkGray
+            $session = New-Object -ComObject Microsoft.Update.Session
+            $searcher = $session.CreateUpdateSearcher()
+            $result = $searcher.Search("IsInstalled=0")
+            Write-Host "[OK] $($result.Updates.Count) atualizacoes disponiveis" -ForegroundColor $script:c.Green
+            if ($result.Updates.Count -gt 0) {
+                foreach ($update in $result.Updates) {
+                    Write-Host "  - $($update.Title)" -ForegroundColor $script:c.DarkGray
+                }
+            }
+        }
+        "2" { Stop-Service -Name wuauserv -Force; Write-Host "[OK] Servico parado" -ForegroundColor $script:c.Green }
+        "3" { Start-Service -Name wuauserv; Write-Host "[OK] Servico iniciado" -ForegroundColor $script:c.Green }
+        "4" {
+            $res = Read-Host "Horario de inicio (0-23)"
+            if ($res -match '^\d+$') {
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "ScheduledInstallTime" -Value ([int]$res) -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host "[OK] Horario configurado: ${res}:00" -ForegroundColor $script:c.Green
+            }
+        }
+    }
+}
+
+function Run-SomMod {
+    Write-Host "`n[+] Som Mod - Configurando..." -ForegroundColor $script:c.Yellow
+    try {
+        $regPath = "HKCU:\AppEvents\Schemes"
+        $sounds = Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue
+        Write-Host ""
+        Write-Host "  1. Desativar todos os sons" -ForegroundColor $script:c.White
+        Write-Host "  2. Restaurar sons padrao" -ForegroundColor $script:c.White
+        Write-Host "  3. Modo silencioso (sem Notificacoes)" -ForegroundColor $script:c.White
+        Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+        Write-Host ""
+        $escolha = Read-Host "Escolha"
+        switch ($escolha) {
+            "1" {
+                foreach ($scheme in $sounds) {
+                    $events = Get-ChildItem -Path $scheme.PSPath -ErrorAction SilentlyContinue
+                    foreach ($event in $events) {
+                        Set-ItemProperty -Path $event.PSPath -Name ".current" -Value "" -Force -ErrorAction SilentlyContinue
+                    }
+                }
+                Write-Host "[OK] Todos os sons desativados" -ForegroundColor $script:c.Green
+            }
+            "2" {
+                Set-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name "(Default)" -Value ".Default" -Force -ErrorAction SilentlyContinue
+                Write-Host "[OK] Sons padrao restaurados" -ForegroundColor $script:c.Green
+            }
+            "3" {
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host "[OK] Notificacoes sonoras desativadas" -ForegroundColor $script:c.Green
+            }
+        }
+    } catch {
+        Write-Host "[ERRO] Falha ao configurar som" -ForegroundColor $script:c.Red
+    }
+}
+
+function Show-Gaming {
+    Show-Banner
+    Write-Host "  GAMING" -ForegroundColor $script:c.Cyan
+    Write-Host ""
+    Write-Host "  1. Game Mode - Ativar" -ForegroundColor $script:c.White
+    Write-Host "  2. Game Bar - Desativar" -ForegroundColor $script:c.White
+    Write-Host "  3. GPU Scheduling - Ativar" -ForegroundColor $script:c.White
+    Write-Host "  4. Prioridade Processo - Alta" -ForegroundColor $script:c.White
+    Write-Host "  5. Power Plan - High Performance" -ForegroundColor $script:c.White
+    Write-Host "  6. Desativar Nagle Algorithm" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha"
+    switch ($escolha) {
+        "1" {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Game Mode ativado" -ForegroundColor $script:c.Green
+        }
+        "2" {
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameBarEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Name "AppCaptureEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Game Bar desativado" -ForegroundColor $script:c.Green
+        }
+        "3" {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] GPU Scheduling ativado (reinicie)" -ForegroundColor $script:c.Green
+        }
+        "4" {
+            $proc = Read-Host "Nome do processo (ex: chrome.exe)"
+            if ($proc) {
+                $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$proc"
+                New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path $regPath -Name "Priority" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host "[OK] Prioridade alta definida para $proc" -ForegroundColor $script:c.Green
+            }
+        }
+        "5" {
+            powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
+            Write-Host "[OK] Power Plan: High Performance" -ForegroundColor $script:c.Green
+        }
+        "6" {
+            $adapters = Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -ErrorAction SilentlyContinue
+            foreach ($adapter in $adapters) {
+                Set-ItemProperty -Path $adapter.PSPath -Name "TcpAckFrequency" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path $adapter.PSPath -Name "TCPNoDelay" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] Nagle Algorithm desativado" -ForegroundColor $script:c.Green
+        }
+    }
+    Wait-Key
+}
+
+function Show-Sobre {
+    Write-Host ""
+    Write-Host "  TL Otimizador v1.4" -ForegroundColor $script:c.Yellow
+    Write-Host "  Ferramenta de otimizacao do Windows" -ForegroundColor $script:c.White
+    Write-Host ""
+    Write-Host "  Autor: AtdasBR" -ForegroundColor $script:c.Cyan
+    Write-Host "  GitHub: github.com/AtdasBR/TL-Otimizador" -ForegroundColor $script:c.Cyan
+    Write-Host "  Distribuicao: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.DarkGray
+    Write-Host ""
+    Write-Host "  Funcionalidades:" -ForegroundColor $script:c.Green
+    Write-Host "  - Limpeza rapida e profunda" -ForegroundColor $script:c.White
+    Write-Host "  - Gerenciamento de servicos" -ForegroundColor $script:c.White
+    Write-Host "  - Otimizacao de rede" -ForegroundColor $script:c.White
+    Write-Host "  - Acelerar visual" -ForegroundColor $script:c.White
+    Write-Host "  - Instalador de navegadores e softwares" -ForegroundColor $script:c.White
+    Write-Host "  - Desinstalador universal" -ForegroundColor $script:c.White
+    Write-Host "  - Driver Updater" -ForegroundColor $script:c.White
+    Write-Host "  - Sistema de temas" -ForegroundColor $script:c.White
+    Write-Host "  - Auto-atualizacao" -ForegroundColor $script:c.White
+    Write-Host ""
+}
+
 # === WELCOME (modo portatil via iex) ===
 if (-not $PSCommandPath) {
     do {
@@ -1466,25 +2037,39 @@ VerificarAtualizacao -Silencioso
 do {
     Show-Menu
 
-    $opcao = Read-Host "Escolha uma opcao (ou 16 para ajuda)"
+    $opcao = Read-Host "Escolha uma opcao"
 
     switch ($opcao) {
-        "1" { Show-Banner; Run-Limpeza; Wait-Key }
-        "2" { Show-Banner; Run-LimpezaExtrema; Wait-Key }
-        "3" { Show-Banner; Run-Servicos; Wait-Key }
-        "4" { Show-Banner; Run-Rede; Wait-Key }
-        "5" { Show-Banner; Run-Visual; Wait-Key }
-        "6" { Run-Tudo }
-        "7" { New-PontoRestauracao }
-        "8" { Undo-Servicos }
-        "9" { Undo-Rede }
-        "10" { Undo-Visual }
-        "11" { Show-Banner; Run-Browsers }
-        "12" { Show-Banner; Run-UniversalUninstaller }
-        "13" { Show-Banner; Run-DriverUpdater }
-        "14" { Show-Banner; VerificarAtualizacao; Wait-Key }
-        "15" { EscolherTema }
-        "16" { Show-Help; Wait-Key }
+        "1" { Show-Banner; Tweak-ActionCenter; Wait-Key }
+        "2" { Show-Banner; Tweak-CacheUpdates; Wait-Key }
+        "3" { Show-Banner; Tweak-Hibernation; Wait-Key }
+        "4" { Show-Banner; Tweak-Pagefile; Wait-Key }
+        "5" { Show-Banner; Tweak-TakeOwnership; Wait-Key }
+        "6" { Show-Banner; Tweak-Updates2077; Wait-Key }
+        "7" { Show-Banner; Tweak-CompactLZX; Wait-Key }
+        "8" { Show-Banner; Tweak-RemoverUWP; Wait-Key }
+        "10" { Show-Banner; Clear-EventLogs; Wait-Key }
+        "11" { Show-Banner; Clear-CacheWindows; Wait-Key }
+        "12" { Show-Banner; Clear-DNSCache; Wait-Key }
+        "13" { Show-Banner; Clear-Temporarios; Wait-Key }
+        "14" { Show-Banner; Run-LimpezaExtrema; Wait-Key }
+        "15" { Show-Banner; Run-CleanMgr; Wait-Key }
+        "16" { Show-Banner; Run-DISM; Wait-Key }
+        "20" { Show-BrowserInstaller }
+        "21" { Show-SoftwareInstaller }
+        "22" { Show-Banner; Run-DriverUpdater }
+        "23" { Show-Banner; Run-UniversalUninstaller }
+        "30" { Show-Banner; Run-BackupSistema; Wait-Key }
+        "31" { Show-Banner; Run-RestaurarSistema; Wait-Key }
+        "32" { Show-Banner; Run-WinRE; Wait-Key }
+        "33" { Show-Banner; Run-EdicoesWindows; Wait-Key }
+        "34" { Show-Banner; Run-Usuarios; Wait-Key }
+        "35" { Show-Banner; Run-CmdCores; Wait-Key }
+        "36" { Show-Banner; Run-WindowsUpdate; Wait-Key }
+        "37" { Show-Banner; Run-SomMod; Wait-Key }
+        "38" { Show-Gaming }
+        "39" { EscolherTema }
+        "40" { Show-Banner; Show-Sobre; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor $script:c.Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor $script:c.Red; Start-Sleep -Seconds 1 }
     }
