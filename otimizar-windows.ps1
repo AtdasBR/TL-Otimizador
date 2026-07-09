@@ -452,10 +452,10 @@ function Show-ServicosSubmenu {
     do {
         Clear-Host; Show-Banner
         $h=[char]0x2550;$v=[char]0x2551;$w=54
-        $top = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
-        $sub = "  $([char]0x255F)$($h*$w)$([char]0x2562)"
+        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $sub = "  $([char]0x255F)$("$h"*$w)$([char]0x2562)"
 
         $i = 1
         foreach ($s in $Servicos) {
@@ -646,10 +646,10 @@ function Show-GenericoSubmenu {
     do {
         Clear-Host; Show-Banner
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
-        $sub = "  $([char]0x255F)$($h*$w)$([char]0x2562)"
+        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $sub = "  $([char]0x255F)$("$h"*$w)$([char]0x2562)"
 
         $i = 1
         foreach ($item in $Itens) {
@@ -986,9 +986,9 @@ function Run-DriverUpdater {
     do {
         Clear-Host; Show-Banner
         $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$($h*$w)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
+        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
         $i = 1
         foreach ($item in $itens) {
             if ($i -eq 1) {
@@ -1010,13 +1010,13 @@ function Run-DriverUpdater {
         if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
         $item = $itens[[int]$choice - 1]
         Show-Banner
-        Write-Host "  $([char]0x2554)$($h*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
+        Write-Host "  $([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
         Write-Host "  $v  $($item.Desc)  $v" -ForegroundColor $script:c.White
-        Write-Host "  $([char]0x2560)$($h*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
+        Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
         Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
         Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
         Write-Host "  $v  [V] Voltar                                    $v" -ForegroundColor $script:c.Yellow
-        Write-Host "  $([char]0x255A)$($h*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
+        Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
         Write-Host ""
         $acao = Read-Host "Escolha"
         switch ($acao.ToUpper()) {
@@ -1083,12 +1083,19 @@ function Run-DriverUpdater {
                 Write-Host ""
                 Write-Host "[1/3] Executando desinstalador..." -NoNewline
                 try {
-                    $uninst = $prog.UninstallString -replace '"',''
+                    $uninst = $prog.UninstallString
                     if ($uninst -match 'msiexec') {
                         $args = "/x $($uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart"
                         Start-Process "msiexec.exe" -ArgumentList $args -Wait -ErrorAction Stop
                     } else {
-                        Start-Process -FilePath ($uninst -split ' ',2)[0] -ArgumentList ($uninst -split ' ',2)[1] -Wait -ErrorAction Stop
+                        if ($uninst -match '^"([^"]+)"\s*(.*)$') {
+                            $exe = $Matches[1]; $args = $Matches[2]
+                        } else {
+                            $parts = $uninst -split '\s+', 2
+                            $exe = $parts[0]; $args = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+                        }
+                        if ($args) { Start-Process -FilePath $exe -ArgumentList $args -Wait -ErrorAction Stop }
+                        else { Start-Process -FilePath $exe -Wait -ErrorAction Stop }
                     }
                     Write-Host " OK" -ForegroundColor $script:c.Green
                 } catch { Write-Host " FALHOU" -ForegroundColor $script:c.Red }
@@ -1127,9 +1134,9 @@ function Run-UniversalUninstaller {
         $ini = $pag * $porPag
         $fim = [math]::Min($ini + $porPag - 1, $lista.Count - 1)
         $h=[char]0x2550;$v=[char]0x2551
-        $top = "  $([char]0x2554)$($h*58)$([char]0x2557)"
-        $sep = "  $([char]0x2560)$($h*58)$([char]0x2563)"
-        $bot = "  $([char]0x255A)$($h*58)$([char]0x255D)"
+        $top = "  $([char]0x2554)$("$h"*58)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*58)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*58)$([char]0x255D)"
         Write-Host $top -ForegroundColor $script:c.Magenta
         Write-Host "  $v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor $script:c.Magenta
         Write-Host $sep -ForegroundColor $script:c.Magenta
@@ -1167,10 +1174,18 @@ function Run-UniversalUninstaller {
             Write-Host ""
             Write-Host "[1/3] Executando desinstalador..." -NoNewline
             try {
-                if ($prog.Uninst -match 'msiexec') {
-                    Start-Process "msiexec.exe" -ArgumentList "/x $($prog.Uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart" -Wait -ErrorAction Stop
+                $uninst = $prog.Uninst
+                if ($uninst -match 'msiexec') {
+                    Start-Process "msiexec.exe" -ArgumentList "/x $($uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart" -Wait -ErrorAction Stop
                 } else {
-                    Start-Process -FilePath $prog.Uninst -Wait -ErrorAction Stop
+                    if ($uninst -match '^"([^"]+)"\s*(.*)$') {
+                        $exe = $Matches[1]; $args = $Matches[2]
+                    } else {
+                        $parts = $uninst -split '\s+', 2
+                        $exe = $parts[0]; $args = if ($parts.Count -gt 1) { $parts[1] } else { '' }
+                    }
+                    if ($args) { Start-Process -FilePath $exe -ArgumentList $args -Wait -ErrorAction Stop }
+                    else { Start-Process -FilePath $exe -Wait -ErrorAction Stop }
                 }
                 Write-Host " OK" -ForegroundColor $script:c.Green
             } catch { Write-Host " FALHOU" -ForegroundColor $script:c.Red }
