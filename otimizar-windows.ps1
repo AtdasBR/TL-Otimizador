@@ -928,14 +928,14 @@ function Run-LimpezaExtrema {
 }
 function Run-Browsers {
     $itens = @(
-        @{Nome = "Microsoft Edge";  Desc = "Microsoft Edge";    Selected = $false; URL = "https://www.microsoft.com/edge/download"; Detalhe = "Navegador padrao do Windows. Leve e integrado ao sistema. Recomendado para uso basico."}
+        @{Nome = "Microsoft Edge";  Desc = "Microsoft Edge";    Selected = $false; URL = "https://go.microsoft.com/fwlink/?linkid=2108834&Channel=Stable&language=en&PC=UC"; Detalhe = "Navegador padrao do Windows. Leve e integrado ao sistema. Recomendado para uso basico."}
         @{Nome = "Google Chrome";   Desc = "Google Chrome";     Selected = $false; URL = "https://dl.google.com/chrome/install/standalonesetup64.exe"; Detalhe = "O navegador mais popular do mundo. Rapido, com muitas extensoes e sincronizacao de conta Google."}
         @{Nome = "Mozilla Firefox"; Desc = "Mozilla Firefox";   Selected = $false; URL = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"; Detalhe = "Navegador focado em privacidade e codigo aberto. Bloqueador de rastreadores nativo."}
         @{Nome = "Brave";           Desc = "Brave";             Selected = $false; URL = "https://laptop-updates.brave.com/latest/winx64"; Detalhe = "Navegador com bloqueador de anuncios e rastreadores nativo. Recompensa usuarios com criptomoedas."}
         @{Nome = "Opera";           Desc = "Opera";             Selected = $false; URL = "https://net.geo.opera.com/opera/stable/windows"; Detalhe = "Navegador com VPN gratuita integrada, bloqueador de anuncios e Messenger na barra lateral."}
         @{Nome = "Opera GX";        Desc = "Opera GX";          Selected = $false; URL = "https://net.geo.opera.com/opera_gx/stable/windows"; Detalhe = "Navegador para gamers com limitador de CPU/RAM, integracao com Twitch e Discord."}
         @{Nome = "Vivaldi";         Desc = "Vivaldi";           Selected = $false; URL = "https://downloads.vivaldi.com/stable/Vivaldi.8.0.4033.57.x64.exe"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
-        @{Nome = "Tor Browser";     Desc = "Tor Browser";       Selected = $false; URL = "https://www.torproject.org/dist/torbrowser/latest/torbrowser-install-win64.exe"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
+        @{Nome = "Tor Browser";     Desc = "Tor Browser";       Selected = $false; URL = "https://dist.torproject.org/torbrowser/15.0.17/tor-browser-windows-x86_64-portable-15.0.17.exe"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
     )
     $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "INSTALAR NAVEGADORES"
     if ($selecionados -eq $null) { return }
@@ -947,12 +947,19 @@ function Run-Browsers {
     Write-Host ""
     foreach ($b in $paraInstalar) {
         Write-Host "[$($b.Nome)] Baixando..." -NoNewline
-        $dest = "$env:TEMP\install_$($b.Nome -replace ' ','').exe"
+        $ext = if ($b.URL -match '\.msi$') { 'msi' } else { 'exe' }
+        $dest = "$env:TEMP\install_$($b.Nome -replace ' ','').$ext"
         try {
             Invoke-WebRequest -Uri $b.URL -OutFile $dest -UseBasicParsing -ErrorAction Stop
             Write-Host " OK" -ForegroundColor $script:c.Green
             Write-Host "         Instalando..." -NoNewline
-            Start-Process -FilePath $dest -ArgumentList "/silent /install" -Wait -ErrorAction SilentlyContinue
+            if ($b.Nome -eq "Tor Browser") {
+                Start-Process -FilePath $dest -ArgumentList "/S" -Wait -ErrorAction SilentlyContinue
+            } elseif ($ext -eq "msi") {
+                Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$dest`" /quiet /norestart" -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process -FilePath $dest -ArgumentList "/silent /install" -Wait -ErrorAction SilentlyContinue
+            }
             Write-Host " OK" -ForegroundColor $script:c.Green
             Remove-Item $dest -Force -ErrorAction SilentlyContinue
         } catch {
