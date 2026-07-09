@@ -8,9 +8,12 @@ $script:versao = "1.4"
 $script:temaArquivo = "$backupDir\tema.json"
 $script:temas = @{
     Padrao = @{ Cyan = "Cyan"; DarkCyan = "DarkCyan"; DarkGray = "DarkGray"; Gray = "Gray"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Blue"; DarkBlue = "DarkBlue" }
-    Claro  = @{ Cyan = "DarkBlue"; DarkCyan = "Blue"; DarkGray = "DarkGray"; Gray = "DarkGray"; Green = "DarkGreen"; Magenta = "DarkMagenta"; Red = "Red"; White = "Black"; Yellow = "DarkYellow"; Blue = "Blue"; DarkBlue = "DarkBlue" }
     Matrix = @{ Cyan = "Green"; DarkCyan = "DarkGreen"; DarkGray = "DarkGreen"; Gray = "Green"; Green = "Green"; Magenta = "Green"; Red = "Red"; White = "Green"; Yellow = "Yellow"; Blue = "Green"; DarkBlue = "DarkGreen" }
-    Synthwave = @{ Cyan = "Cyan"; DarkCyan = "Magenta"; DarkGray = "DarkMagenta"; Gray = "Cyan"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Cyan"; DarkBlue = "Magenta" }
+    Roxo   = @{ Cyan = "Magenta"; DarkCyan = "DarkMagenta"; DarkGray = "DarkMagenta"; Gray = "Magenta"; Green = "Magenta"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Magenta"; DarkBlue = "DarkMagenta" }
+    Amarelo = @{ Cyan = "DarkYellow"; DarkCyan = "Yellow"; DarkGray = "DarkYellow"; Gray = "Yellow"; Green = "DarkGreen"; Magenta = "Yellow"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Yellow"; DarkBlue = "DarkYellow" }
+    Branco  = @{ Cyan = "White"; DarkCyan = "Gray"; DarkGray = "DarkGray"; Gray = "Gray"; Green = "White"; Magenta = "White"; Red = "Red"; White = "White"; Yellow = "White"; Blue = "White"; DarkBlue = "Gray" }
+    Azul    = @{ Cyan = "Cyan"; DarkCyan = "DarkBlue"; DarkGray = "DarkBlue"; Gray = "Blue"; Green = "Cyan"; Magenta = "Blue"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Blue"; DarkBlue = "DarkBlue" }
+    Vermelho = @{ Cyan = "Red"; DarkCyan = "DarkRed"; DarkGray = "DarkRed"; Gray = "Red"; Green = "Red"; Magenta = "Red"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Red"; DarkBlue = "DarkRed" }
 }
 $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
