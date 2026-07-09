@@ -156,17 +156,18 @@ function Show-Banner {
     param([int]$Width = 63)
     Clear-Host
     $p = Pad-W $Width
-    $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
+    $tl=[char]0x2554;$tr=[char]0x2557;$bl=[char]0x255A;$br=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
     $inner = $Width - 2
-    $ln = "$p$t$("$h"*$inner)$r"
+    $top = "$p$tl$("$h"*$inner)$tr"
+    $bot = "$p$bl$("$h"*$inner)$br"
     $padL = [Math]::Max(0, [Math]::Floor(($inner - 13) / 2))
     $padR = $inner - 13 - $padL
-    Write-Host $ln -ForegroundColor $script:c.Cyan
+    Write-Host $top -ForegroundColor $script:c.Cyan
     Write-Host "$p$v$(" "*$padL)TL OPTIMIZER$(" "*$padR)$v" -ForegroundColor $script:c.Cyan
     $padL = [Math]::Max(0, [Math]::Floor(($inner - 4) / 2))
     $padR = $inner - 4 - $padL
     Write-Host "$p$v$(" "*$padL)v$($script:versao)$(" "*$padR)$v" -ForegroundColor $script:c.DarkGray
-    Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor $script:c.Cyan
+    Write-Host $bot -ForegroundColor $script:c.Cyan
     Write-Host ""
 }
 function Show-Help {
