@@ -1389,10 +1389,19 @@ function Install-Local {
             Wait-Key; return
         }
     }
-    $srcIcon = Join-Path (Get-Location) "icon.ico"
-    if (Test-Path $srcIcon) {
-        Copy-Item $srcIcon (Join-Path $targetDir "icon.ico") -Force
-        Write-Host "$p Icone personalizado copiado." -ForegroundColor $script:c.Green
+    $iconPath = Join-Path $targetDir "icon.ico"
+    $iconUrl = "https://raw.githubusercontent.com/AtdasBR/TL-Otimizador/master/icon.ico"
+    try {
+        iwr -useb "$iconUrl" -OutFile $iconPath -ErrorAction Stop
+        Write-Host "$p Icone baixado." -ForegroundColor $script:c.Green
+    } catch {
+        $srcIcon = Join-Path (Get-Location) "icon.ico"
+        if (Test-Path $srcIcon) {
+            Copy-Item $srcIcon $iconPath -Force
+            Write-Host "$p Icone local copiado." -ForegroundColor $script:c.Green
+        } else {
+            Write-Host "$p Icone padrao sera usado (sem internet)." -ForegroundColor $script:c.DarkGray
+        }
     }
     $profileLine = "`n# TL Optimizer`nfunction tl-optimizer { & `"$scriptPath`" }`nSet-Alias -Name tl -Value tl-optimizer -Force"
     $profilePath = $PROFILE.CurrentUserAllHosts
