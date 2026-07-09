@@ -289,13 +289,13 @@ function Show-Menu {
         Write-Host ""
     }
 
-    $t = @( @("2","Cache Updates"), @("1","Central de Acao"), @("7","Compact/LZX"), @("3","Hibernacao"), @("4","Pagefile"), @("",""), @("8","Remover UWP"), @("5","Take Ownership"), @("6","Updates 2077") )
-    $l = @( @("11","Cache Windows"), @("15","CleanMgr"), @("16","DISM"), @("12","DNS Cache"), @("",""), @("14","Limpeza Extrema"), @("10","Logs Eventos"), @("13","Temporarios") )
+    $t = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("",""), @("7","Compact/LZX"), @("8","Remover UWP") )
+    $l = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("","") )
 
     Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA" -color $script:c.Green
 
-    $i = @( @("22","Atualizar Drivers"), @("28","Conv. Video/Audio"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("",""), @("30","Media Player"), @("20","Navegadores"), @("21","Softwares"), @("27","Streaming/Gravacao"), @("26","Visualizador Fotos"), @("29","Zip/Unzip") )
-    $o = @( @("41","Backup Sistema"), @("45","CMD Cores"), @("43","Edicoes Windows"), @("48","Gaming"), @("44","Usuarios"), @("",""), @("42","Restaurar Sistema"), @("50","Sobre"), @("47","Som Mod"), @("49","Tema"), @("46","Windows Update") )
+    $i = @( @("20","Navegadores"), @("21","Softwares"), @("22","Atualizar Drivers"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("26","Visualizador Fotos"), @("27","Streaming/Gravacao"), @("28","Conv. Video/Audio"), @("29","Zip/Unzip"), @("30","Media Player"), @("","") )
+    $o = @( @("41","Backup Sistema"), @("42","Restaurar Sistema"), @("43","Edicoes Windows"), @("44","Usuarios"), @("45","CMD Cores"), @("46","Windows Update"), @("47","Som Mod"), @("48","Gaming"), @("49","Tema"), @("50","Sobre"), @("","") )
 
     $rows1 = [Math]::Max($t.Count, $l.Count)
     $rows2 = [Math]::Max($i.Count, $o.Count)
