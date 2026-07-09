@@ -2413,8 +2413,8 @@ function Show-LoadingScreen {
     Write-Host "$p2  Discord: atdas" -ForegroundColor $script:c.DarkGray
     Write-Host ""
     Write-Host "$p2  Iniciando" -NoNewline -ForegroundColor $script:c.Green
-    for ($i = 0; $i -lt 3; $i++) { Start-Sleep -Milliseconds 400; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
-    Start-Sleep 1
+    for ($i = 0; $i -lt 5; $i++) { Start-Sleep -Milliseconds 500; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
+    Start-Sleep 1.5
 }
 
 function Show-Sobre {
