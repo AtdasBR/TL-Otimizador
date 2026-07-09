@@ -76,7 +76,8 @@ function EscolherTema {
         foreach ($t in $script:temas.Keys | Sort-Object) {
             $marcador = if ($t -eq $script:temaAtual) { "[X]" } else { "[ ]" }
             $corItem = if ($t -eq $script:temaAtual) { $script:c.Green } else { $script:c.DarkGray }
-            Write-Host "$p$v  $("{0,2}" -f $temp). $marcador $("{0,-20}" -f $t)     $v" -ForegroundColor $corItem
+            $itemStr = "  $("{0,2}" -f $temp). $marcador $("{0,-20}" -f $t)"
+            Write-Host "$p$v$itemStr$(" " * ($w - $itemStr.Length))$v" -ForegroundColor $corItem
             $temp++
         }
         Write-Host $bot -ForegroundColor $script:c.Cyan
