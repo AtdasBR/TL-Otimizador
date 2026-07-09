@@ -320,7 +320,7 @@ function Show-Menu {
 
     $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("",""), @("",""), @("",""), @("","") )
     $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa"), @("",""), @("",""), @("","") )
-    $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("",""), @("",""), @("",""), @("",""), @("",""), @("","") )
+    $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("55","Undo Privacidade"), @("",""), @("",""), @("",""), @("",""), @("","") )
 
     $hdrG1="TWEAK";$hdrG2="LIMPEZA";$hdrG3="INSTALAR + REDE"
     $hdrB1="SISTEMA";$hdrB2="FERRAMENTAS";$hdrB3="PRIVACIDADE"
@@ -885,6 +885,29 @@ function Undo-Visual {
     }
     Write-Host ""; Write-Host "Ajustes visuais restaurados!" -ForegroundColor $script:c.Green
     Remove-Item "$backupDir\visual_backup.json" -Force -ErrorAction SilentlyContinue
+    Wait-Key
+}
+
+function Undo-Privacidade {
+    Show-Banner
+    Write-Host ">>> DESFAZER - PRIVACIDADE <<<" -ForegroundColor $script:c.Magenta
+    Write-Host ""
+    if (-not (Test-Path "$backupDir\privacidade_backup.json")) {
+        Write-Host "Nenhum backup de privacidade encontrado." -ForegroundColor $script:c.Red
+        Wait-Key; return
+    }
+    $backup = Get-Content "$backupDir\privacidade_backup.json" | ConvertFrom-Json
+    foreach ($key in $backup.PSObject.Properties) {
+        $pathName = $key.Name
+        $value = $key.Value
+        $path = $pathName.Substring(0, $pathName.LastIndexOf('\'))
+        $name = $pathName.Substring($pathName.LastIndexOf('\') + 1)
+        Write-Host "[$name @ $path]..." -NoNewline
+        Set-ItemProperty -Path $path -Name $name -Value $value -Force -ErrorAction SilentlyContinue
+        Write-Host " RESTAURADO" -ForegroundColor $script:c.Green
+    }
+    Write-Host ""; Write-Host "Privacidade restaurada!" -ForegroundColor $script:c.Green
+    Remove-Item "$backupDir\privacidade_backup.json" -Force -ErrorAction SilentlyContinue
     Wait-Key
 }
 
@@ -2412,48 +2435,157 @@ function Show-ShutUp10 {
     Wait-Key
 }
 
-# === PRIVACIDADE (RECOMENDACOES POR COR) ===
-function Show-Privacidade {
-    $priv = @(
-        @{Nome="Desativar Telemetria";       Cor="Verde";  Detalhe="Impede o Microsoft de coletar dados de uso. Seguro para todos, melhora privacidade sem quebrar nada."}
-        @{Nome="Desativar Cortana";           Cor="Verde";  Detalhe="Desliga a assistente virtual. Seguro, libera RAM e CPU. Alguns recursos de busca podem ficar mais lentos."}
-        @{Nome="Desativar Localizacao";       Cor="Verde";  Detalhe="Impede apps de rastrear sua localizacao. Seguro, a menos que voce use Mapas ou Clima com localizacao."}
-        @{Nome="Bloquear Anuncios (ID)";      Cor="Verde";  Detalhe="Remove o ID de publicidade do Windows. Seguro, para de receber anuncios personalizados da Microsoft."}
-        @{Nome="Desativar Wi-Fi Sense";       Cor="Verde";  Detalhe="Impede compartilhamento automatico de senhas Wi-Fi. Seguro, recomendado para todos."}
-        @{Nome="Desativar Ativ. Voz";         Cor="Amarelo"; Detalhe="Desliga ativacao por voz (OK Google, Cortana). Pode afetar integracao com assistentes de voz."}
-        @{Nome="Bloquear Telemetria (Hosts)"; Cor="Amarelo"; Detalhe="Adiciona servidores da Microsoft ao arquivo hosts. Pode afetar alguns updates e servicos online."}
-        @{Nome="Desativar Windows Update";    Cor="Vermelho"; Detalhe="Para completamente as atualizacoes. So para maquinas isoladas. Voce perde patches de seguranca importantes."}
-        @{Nome="Remover Microsoft Account";   Cor="Vermelho"; Detalhe="Forca login local. Perde sincronizacao de configuracao entre dispositivos e acesso a Store."}
-        @{Nome="Desativar Windows Defender";  Cor="Vermelho"; Detalhe="Desliga o antivirus nativo. So faca se tiver outro antivirus instalado. Risco real de seguranca."}
+# === PRIVACIDADE (INTERATIVO COM SHOW-GENERICOSUBMENU) ===
+function Run-Privacidade {
+    param([switch]$SkipMenu)
+
+    $itens = @(
+        @{Nome = "DisableTelemetry";        Desc = "Desativar Telemetria";       Selected = $true;  Detalhe = "Impede o Microsoft de coletar dados de uso. Seguro para todos, melhora privacidade sem quebrar nada."}
+        @{Nome = "DisableCortana";          Desc = "Desativar Cortana";          Selected = $true;  Detalhe = "Desliga a assistente virtual. Seguro, libera RAM e CPU. Alguns recursos de busca podem ficar mais lentos."}
+        @{Nome = "DisableLocation";         Desc = "Desativar Localizacao";      Selected = $true;  Detalhe = "Impede apps de rastrear sua localizacao. Seguro, a menos que use Mapas ou Clima com localizacao."}
+        @{Nome = "BlockAdvertisingID";      Desc = "Bloquear Anuncios (ID)";     Selected = $true;  Detalhe = "Remove o ID de publicidade do Windows. Seguro, para de receber anuncios personalizados da Microsoft."}
+        @{Nome = "DisableWiFiSense";        Desc = "Desativar Wi-Fi Sense";      Selected = $true;  Detalhe = "Impede compartilhamento automatico de senhas Wi-Fi. Seguro, recomendado para todos."}
+        @{Nome = "DisableVoiceActivation";  Desc = "Desativar Ativ. Voz";        Selected = $false; Detalhe = "Desliga ativacao por voz (OK Google, Cortana). Pode afetar integracao com assistentes de voz."}
+        @{Nome = "BlockTelemetryHosts";     Desc = "Bloquear Telemetria (Hosts)";Selected = $false; Detalhe = "Adiciona servidores da Microsoft ao arquivo hosts. Pode afetar alguns updates e servicos online."}
+        @{Nome = "DisableWindowsUpdate";    Desc = "Desativar Windows Update";   Selected = $false; Detalhe = "Para completamente as atualizacoes. So para maquinas isoladas. Voce perde patches de seguranca importantes."}
+        @{Nome = "RemoveMicrosoftAccount";  Desc = "Remover Microsoft Account";  Selected = $false; Detalhe = "Forca login local. Perde sincronizacao de configuracao entre dispositivos e acesso a Store."}
+        @{Nome = "DisableDefender";         Desc = "Desativar Windows Defender"; Selected = $false; Detalhe = "Desliga o antivirus nativo. So faca se tiver outro antivirus instalado. Risco real de seguranca."}
     )
-    do {
-        Clear-Host; Show-Banner
-        $c = $script:c; $p = Pad-W 46
-        $h=[char]0x2550;$v=[char]0x2551;$w=44
-        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        Write-Host $top -ForegroundColor $c.Cyan
-        Write-Host "$p$v  PRIVACIDADE - Recomendacoes por cor$(" " * 4)$v" -ForegroundColor $c.DarkCyan
-        Write-Host "$p$v  $([char]0x2588) Verde = Seguro  $([char]0x2588) Amarelo = Pensar  $([char]0x2588) Vermelho = Risco$v" -ForegroundColor $c.White
-        Write-Host $bot -ForegroundColor $c.Cyan; Write-Host ""
-        foreach ($item in $priv) {
-            $corSimbolo = switch ($item.Cor) {
-                "Verde" { $c.Green }
-                "Amarelo" { $c.Yellow }
-                "Vermelho" { $c.Red }
-                default { $c.White }
+
+    if ($SkipMenu) { $selecionados = $itens }
+    else { $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "PRIVACIDADE" }
+    if ($selecionados -eq $null) { return }
+
+    Show-Banner
+    Write-Host ">>> APLICANDO AJUSTES DE PRIVACIDADE <<<" -ForegroundColor $script:c.Magenta
+    Write-Host ""; Backup-Privacidade
+
+    $paraAplicar = $selecionados | Where-Object { $_.Selected }
+    foreach ($item in $paraAplicar) {
+        switch ($item.Nome) {
+            "DisableTelemetry" {
+                Write-Host "[Desativando Telemetria]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-Service -Name DiagTrack -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name DiagTrack -Force -ErrorAction SilentlyContinue
+                Set-Service -Name dmwappushservice -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name dmwappushservice -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
             }
-            $simbolo = switch ($item.Cor) {
-                "Verde" { "$([char]0x2588)" }
-                "Amarelo" { "$([char]0x2588)" }
-                "Vermelho" { "$([char]0x2588)" }
-                default { " " }
+            "DisableCortana" {
+                Write-Host "[Desativando Cortana]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
             }
-            Write-Host "$p  $simbolo $($item.Nome)" -ForegroundColor $corSimbolo
-            Write-Host "$p    $($item.Detalhe)" -ForegroundColor $c.DarkGray
+            "DisableLocation" {
+                Write-Host "[Desativando Localizacao]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "BlockAdvertisingID" {
+                Write-Host "[Bloqueando ID de Publicidade]..." -NoNewline
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "DisableWiFiSense" {
+                Write-Host "[Desativando Wi-Fi Sense]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiSense" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedOEM" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedUser" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "DisableVoiceActivation" {
+                Write-Host "[Desativando Ativacao por Voz]..." -NoNewline
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Speech\Preferences" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "BlockTelemetryHosts" {
+                Write-Host "[Bloqueando Telemetria via Hosts]..." -NoNewline
+                $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+                $telemetryHosts = @(
+                    "0.0.0.0 vortex-win.data.microsoft.com",
+                    "0.0.0.0 settings-win.data.microsoft.com",
+                    "0.0.0.0 telemetry.microsoft.com",
+                    "0.0.0.0 telemetry.appex.bing.net",
+                    "0.0.0.0 telemetry.urs.microsoft.com",
+                    "0.0.0.0 df.telemetry.microsoft.com",
+                    "0.0.0.0 oca.telemetry.microsoft.com",
+                    "0.0.0.0 sqm.telemetry.microsoft.com",
+                    "0.0.0.0 watson.telemetry.microsoft.com",
+                    "0.0.0.0 vortex-sandbox.data.microsoft.com",
+                    "0.0.0.0 v10.vortex-win.data.microsoft.com",
+                    "0.0.0.0 watson.microsoft.com",
+                    "0.0.0.0 watson.live.com",
+                    "0.0.0.0 watson.ppe.telemetry.microsoft.com",
+                    "0.0.0.0 vortex.data.microsoft.com",
+                    "0.0.0.0 preview.msn.com",
+                    "0.0.0.0 reports.wes.df.telemetry.microsoft.com",
+                    "0.0.0.0 services.wes.df.telemetry.microsoft.com"
+                )
+                $content = Get-Content $hostsPath -Raw -ErrorAction SilentlyContinue
+                foreach ($entry in $telemetryHosts) {
+                    if ($content -notmatch [regex]::Escape($entry)) {
+                        Add-Content -Path $hostsPath -Value $entry -Force -ErrorAction SilentlyContinue
+                    }
+                }
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "DisableWindowsUpdate" {
+                Write-Host "[Desativando Windows Update]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-Service -Name wuauserv -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "RemoveMicrosoftAccount" {
+                Write-Host "[Removendo opcao Microsoft Account]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "BlockDomainPicture" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DontDisplayLastUsername" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
+            "DisableDefender" {
+                Write-Host "[Desativando Windows Defender]..." -NoNewline
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-Service -Name WinDefend -StartupType Disabled -ErrorAction SilentlyContinue
+                Stop-Service -Name WinDefend -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green
+            }
         }
-        Write-Host ""; Write-Host "$p  [0] Voltar"
-    } while ((Read-Host "$p> ") -ne "0")
+    }
+
+    Write-Host ""; Write-Host "Privacidade ajustada! Use [52], [53], [54] no menu para desfazer outras categorias." -ForegroundColor $script:c.Green
+    Wait-Key
+}
+
+function Backup-Privacidade {
+    $dados = @{}
+    $keys = @(
+        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name="AllowTelemetry"},
+        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name="AllowTelemetry"},
+        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"; Name="AllowCortana"},
+        @{Path="HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"; Name="CortanaEnabled"},
+        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"; Name="Value"},
+        @{Path="HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"; Name="Value"},
+        @{Path="HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo"; Name="Enabled"},
+        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"; Name="Enabled"},
+        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"; Name="NoAutoUpdate"},
+        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"; Name="DisableAntiSpyware"},
+        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection"; Name="DisableRealtimeMonitoring"}
+    )
+    foreach ($k in $keys) {
+        $val = Get-ItemProperty -Path $k.Path -Name $k.Name -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $k.Name -ErrorAction SilentlyContinue
+        if ($val -ne $null) { $dados[$k.Path + "\" + $k.Name] = $val }
+    }
+    $dados | ConvertTo-Json | Set-Content "$backupDir\privacidade_backup.json" -Force
+    Write-Host "Backup da privacidade salvo." -ForegroundColor $script:c.Gray
 }
 
 function Show-Gaming {
@@ -2631,10 +2763,11 @@ do {
         "45" { EscolherTema }
         "46" { Show-Banner; Show-Sobre; Wait-Key }
         "50" { Show-ShutUp10 }
-        "51" { Show-Privacidade }
+        "51" { Run-Privacidade }
         "52" { Undo-Servicos }
         "53" { Undo-Rede }
         "54" { Undo-Visual }
+        "55" { Undo-Privacidade }
         "60" { Show-Banner; Run-BackupSistema; Wait-Key }
         "61" { Show-Banner; Run-RestaurarSistema; Wait-Key }
         "62" { Show-Banner; Run-Usuarios; Wait-Key }
