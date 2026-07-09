@@ -2398,13 +2398,21 @@ function Show-Gaming {
 
 function Show-LoadingScreen {
     Clear-Host
+    $p = Pad-W 36
     Write-Host ""
-    Write-Host "                          TL OPTIMIZER v$($script:versao)" -ForegroundColor $script:c.White
+    Write-Host "$p        .-------." -ForegroundColor $script:c.White
+    Write-Host "$p       /  .---.  \" -ForegroundColor $script:c.White
+    Write-Host "$p      /  /     \  \" -ForegroundColor $script:c.White
+    Write-Host "$p     |  |  O O  |  |   TL OPTIMIZER v$($script:versao)" -ForegroundColor $script:c.White
+    Write-Host "$p     |   \  _  /   |" -ForegroundColor $script:c.White
+    Write-Host "$p      \   '---'   /" -ForegroundColor $script:c.White
+    Write-Host "$p       '.       .'" -ForegroundColor $script:c.White
+    Write-Host "$p         '-...-'" -ForegroundColor $script:c.White
     Write-Host ""
-    Write-Host "                          by Thallas" -ForegroundColor $script:c.Cyan
-    Write-Host "                          Discord: atdas" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p           by Thallas" -ForegroundColor $script:c.Cyan
+    Write-Host "$p        << Discord: atdas >>" -ForegroundColor $script:c.DarkGray
     Write-Host ""
-    Write-Host "                          Iniciando" -NoNewline -ForegroundColor $script:c.Green
+    Write-Host "$p          Iniciando" -NoNewline -ForegroundColor $script:c.Green
     for ($i = 0; $i -lt 5; $i++) { Start-Sleep -Milliseconds 500; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
     Start-Sleep 1.5
 }
