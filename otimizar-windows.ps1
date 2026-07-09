@@ -1023,14 +1023,27 @@ function Run-DriverUpdater {
             "I" {
                 Show-Banner
                 Write-Host "Baixando $($item.Desc)..." -ForegroundColor $script:c.Green
+                Write-Host "" -ForegroundColor $script:c.DarkGray
                 $tempDir = "$env:TEMP\TLDriverUpd"
                 $null = New-Item -ItemType Directory -Path $tempDir -Force -ErrorAction SilentlyContinue
                 $fileName = ($item.DownloadURL -split '/')[-1]
                 $filePath = "$tempDir\$fileName"
                 try {
-                    Write-Host "URL: $($item.DownloadURL)" -ForegroundColor $script:c.DarkGray
-                    Invoke-WebRequest -Uri $item.DownloadURL -OutFile $filePath -ErrorAction Stop
-                    Write-Host "Download concluido! ($([math]::Round((Get-Item $filePath -ErrorAction SilentlyContinue).Length/1MB, 1)) MB)" -ForegroundColor $script:c.Green
+                    $oldPref = $ProgressPreference
+                    $ProgressPreference = 'SilentlyContinue'
+                    $job = Start-Job -ScriptBlock { param($u,$p) try { Invoke-WebRequest -Uri $u -OutFile $p -UseBasicParsing -ErrorAction Stop; $true } catch { $false } } -ArgumentList $item.DownloadURL, $filePath
+                    $spin = @('|', '/', '-', '\')
+                    $i = 0
+                    while ($job.State -eq 'Running') {
+                        Write-Host "`r  $($spin[$i % 4]) Baixando..." -NoNewline -ForegroundColor $script:c.DarkCyan
+                        $i++; Start-Sleep -Milliseconds 200
+                    }
+                    $ProgressPreference = $oldPref
+                    $ok = $job | Receive-Job -Wait
+                    $job | Remove-Job -Force
+                    if (-not $ok) { throw "Falha no download." }
+                    $tam = [math]::Round((Get-Item $filePath -ErrorAction SilentlyContinue).Length/1MB, 1)
+                    Write-Host "`r  OK $tam MB" -ForegroundColor $script:c.Green
                     if ($fileName -match '\.zip$') {
                         $extractDir = "$tempDir\SDI"
                         Write-Host "Extraindo arquivos..." -NoNewline
@@ -1048,7 +1061,7 @@ function Run-DriverUpdater {
                     }
                     Write-Host ""; Write-Host "Instalador iniciado! Siga as instrucoes na tela." -ForegroundColor $script:c.Yellow
                 } catch {
-                    Write-Host " FALHOU: $($_.Exception.Message)" -ForegroundColor $script:c.Red
+                    Write-Host "`r  FALHOU: $($_.Exception.Message)" -ForegroundColor $script:c.Red
                     Write-Host ""; Write-Host "Deseja abrir a pagina de download no navegador? (S/N)" -ForegroundColor $script:c.Yellow
                     $fallback = Read-Host
                     if ($fallback -eq "S" -or $fallback -eq "s") {
