@@ -1034,14 +1034,26 @@ function Run-Browsers {
                     Write-Host " OK" -ForegroundColor $script:c.Green
                 } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
                 $nomeBase = $prog.DisplayName -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
-                Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
+                Write-Host "[2/3] Limpando arquivos residuais..." -ForegroundColor $script:c.Yellow
                 $pastas = @("$env:PROGRAMFILES\$nomeBase*", "${env:ProgramFiles(x86)}\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
-                foreach ($pasta in $pastas) { Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue }
-                Write-Host " OK" -ForegroundColor $script:c.Green
-                Write-Host "[3/3] Limpando registros..." -NoNewline
+                foreach ($pasta in $pastas) {
+                    if (Test-Path $pasta) {
+                        Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $pasta" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $pasta" -ForegroundColor $script:c.DarkGray
+                    }
+                }
+                Write-Host "[3/3] Limpando registros..." -ForegroundColor $script:c.Yellow
                 $regs = @("HKCU:\Software\$nomeBase", "HKLM:\Software\$nomeBase", "HKLM:\Software\WOW6432Node\$nomeBase")
-                foreach ($r in $regs) { Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue }
-                Write-Host " OK" -ForegroundColor $script:c.Green
+                foreach ($r in $regs) {
+                    if (Test-Path $r) {
+                        Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $r" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $r" -ForegroundColor $script:c.DarkGray
+                    }
+                }
                 Write-Host ""; Write-Host "Desinstalacao concluida!" -ForegroundColor $script:c.Green; Wait-Key
             }
         }
@@ -1189,15 +1201,31 @@ function Run-DriverUpdater {
                     Write-Host " OK" -ForegroundColor $script:c.Green
                 } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
                 $nomeBase = $prog.DisplayName -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
-                Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
+                Write-Host "[2/3] Limpando arquivos residuais..." -ForegroundColor $script:c.Yellow
                 $pastas = @("$env:PROGRAMFILES\$nomeBase*", "${env:ProgramFiles(x86)}\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
-                foreach ($pasta in $pastas) { Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue }
-                Write-Host " OK" -ForegroundColor $script:c.Green
-                Write-Host "[3/3] Limpando registros..." -NoNewline
+                foreach ($pasta in $pastas) {
+                    if (Test-Path $pasta) {
+                        Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $pasta" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $pasta" -ForegroundColor $script:c.DarkGray
+                    }
+                }
+                Write-Host "[3/3] Limpando registros..." -ForegroundColor $script:c.Yellow
                 $regs = @("HKCU:\Software\$nomeBase", "HKLM:\Software\$nomeBase", "HKLM:\Software\WOW6432Node\$nomeBase")
-                foreach ($r in $regs) { Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue }
-                Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$($prog.DisplayName)" -Recurse -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
+                foreach ($r in $regs) {
+                    if (Test-Path $r) {
+                        Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $r" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $r" -ForegroundColor $script:c.DarkGray
+                    }
+                }
+                $uninstReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$($prog.DisplayName)"
+                if (Test-Path $uninstReg) {
+                    Remove-Item $uninstReg -Recurse -Force -ErrorAction SilentlyContinue
+                    Write-Host "  [OK] $uninstReg" -ForegroundColor $script:c.Green
+                }
                 Write-Host ""; Write-Host "Desinstalacao concluida!" -ForegroundColor $script:c.Green; Wait-Key
             }
         }
@@ -1262,17 +1290,53 @@ function Run-UniversalUninstaller {
             } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
             $nomeBase = $prog.Nome -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
             $pubBase = if ($prog.Pub) { $prog.Pub -replace '[\s\,]+$','' } else { "" }
-            Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
+            Write-Host "[2/3] Limpando arquivos residuais..." -ForegroundColor $script:c.Yellow
             $pastas = @("$env:PROGRAMFILES\$nomeBase*", "$env:ProgramFiles(x86)\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
-            foreach ($pasta in $pastas) { Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue }
-            if ($pubBase) { Remove-Item "$env:PROGRAMDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "$env:LOCALAPPDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "$env:APPDATA\$pubBase*" -Recurse -Force -ErrorAction SilentlyContinue }
-            Write-Host " OK" -ForegroundColor $script:c.Green
-            Write-Host "[3/3] Limpando registros..." -NoNewline
+            foreach ($pasta in $pastas) {
+                if (Test-Path $pasta) {
+                    Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue
+                    Write-Host "  [OK] $pasta" -ForegroundColor $script:c.Green
+                } else {
+                    Write-Host "  [--] $pasta" -ForegroundColor $script:c.DarkGray
+                }
+            }
+            if ($pubBase) {
+                $pubPastas = @("$env:PROGRAMDATA\$pubBase*", "$env:LOCALAPPDATA\$pubBase*", "$env:APPDATA\$pubBase*")
+                foreach ($pp in $pubPastas) {
+                    if (Test-Path $pp) {
+                        Remove-Item $pp -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $pp" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $pp" -ForegroundColor $script:c.DarkGray
+                    }
+                }
+            }
+            Write-Host "[3/3] Limpando registros..." -ForegroundColor $script:c.Yellow
             $regs = @("HKCU:\Software\$nomeBase", "HKLM:\Software\$nomeBase", "HKLM:\Software\WOW6432Node\$nomeBase")
-            foreach ($r in $regs) { Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue }
-            if ($pubBase) { Remove-Item "HKCU:\Software\$pubBase" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item "HKLM:\Software\$pubBase" -Recurse -Force -ErrorAction SilentlyContinue }
-            Remove-Item "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$($prog.Nome)" -Recurse -Force -ErrorAction SilentlyContinue
-            Write-Host " OK" -ForegroundColor $script:c.Green
+            foreach ($r in $regs) {
+                if (Test-Path $r) {
+                    Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue
+                    Write-Host "  [OK] $r" -ForegroundColor $script:c.Green
+                } else {
+                    Write-Host "  [--] $r" -ForegroundColor $script:c.DarkGray
+                }
+            }
+            if ($pubBase) {
+                $pubRegs = @("HKCU:\Software\$pubBase", "HKLM:\Software\$pubBase")
+                foreach ($pr in $pubRegs) {
+                    if (Test-Path $pr) {
+                        Remove-Item $pr -Recurse -Force -ErrorAction SilentlyContinue
+                        Write-Host "  [OK] $pr" -ForegroundColor $script:c.Green
+                    } else {
+                        Write-Host "  [--] $pr" -ForegroundColor $script:c.DarkGray
+                    }
+                }
+            }
+            $uninstReg = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$($prog.Nome)"
+            if (Test-Path $uninstReg) {
+                Remove-Item $uninstReg -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "  [OK] $uninstReg" -ForegroundColor $script:c.Green
+            }
             Write-Host ""; Write-Host "Desinstalacao e limpeza concluidas!" -ForegroundColor $script:c.Green; Wait-Key; return
         }
         if ($cmd -eq "") { continue }
