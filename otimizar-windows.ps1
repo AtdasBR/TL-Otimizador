@@ -251,6 +251,7 @@ function Show-Menu {
     Write-Host ("  $v" + ($fmt -f "21", $d, "Softwares") + "$v") -ForegroundColor $script:c.Green
     Write-Host ("  $v" + ($fmt -f "22", $d, "Atualizar Drivers") + "$v") -ForegroundColor $script:c.Green
     Write-Host ("  $v" + ($fmt -f "23", $d, "Desinstalar") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "24", $d, "Editor de Imagem") + "$v") -ForegroundColor $script:c.Green
     Write-Host $bot -ForegroundColor $script:c.Green
     Write-Host ""
 
@@ -1806,6 +1807,46 @@ function Show-SoftwareInstaller {
     Wait-Key
 }
 
+function Show-ImageEditorInstaller {
+    Show-Banner
+    Write-Host "  EDITOR DE IMAGEM" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. GIMP" -ForegroundColor $script:c.White
+    Write-Host "  2. Microsoft Paint" -ForegroundColor $script:c.White
+    Write-Host "  3. Paint.NET" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o editor"
+    $editores = @(
+        @{Name="GIMP"; Url="https://download.gimp.org/gimp/v3.0/windows/gimp-3.0.2-setup-3.exe"; Args="/VERYSILENT /NORESTART /ALLUSERS"},
+        @{Name="Microsoft Paint"; Url="https://codeload.github.com/microsoft/PowerToys/zip/refs/heads/main"; Args=""},
+        @{Name="Paint.NET"; Url="https://www.dotpdn.com/files/paint.net.5.1.4.install.x64.zip"; Args=""}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 3) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "editor_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
 # === FUNCOES OUTROS ===
 
 function Run-BackupSistema {
@@ -2109,6 +2150,7 @@ do {
         "21" { Show-SoftwareInstaller }
         "22" { Show-Banner; Run-DriverUpdater }
         "23" { Show-Banner; Run-UniversalUninstaller }
+        "24" { Show-ImageEditorInstaller }
         "30" { Show-Banner; Run-BackupSistema; Wait-Key }
         "31" { Show-Banner; Run-RestaurarSistema; Wait-Key }
         "32" { Show-Banner; Run-WinRE; Wait-Key }
