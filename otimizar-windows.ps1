@@ -928,43 +928,118 @@ function Run-LimpezaExtrema {
 }
 function Run-Browsers {
     $itens = @(
-        @{Nome = "Microsoft Edge";  Desc = "Microsoft Edge";    Selected = $false; URL = "https://go.microsoft.com/fwlink/?linkid=2108834&Channel=Stable&language=en&PC=UC"; Args = "/silent /install"; Detalhe = "Navegador padrao do Windows. Leve e integrado ao sistema. Recomendado para uso basico."}
-        @{Nome = "Google Chrome";   Desc = "Google Chrome";     Selected = $false; URL = "https://dl.google.com/chrome/install/standalonesetup64.exe"; Args = "/silent /install"; Detalhe = "O navegador mais popular do mundo. Rapido, com muitas extensoes e sincronizacao de conta Google."}
-        @{Nome = "Mozilla Firefox"; Desc = "Mozilla Firefox";   Selected = $false; URL = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"; Args = "/S"; Detalhe = "Navegador focado em privacidade e codigo aberto. Bloqueador de rastreadores nativo."}
-        @{Nome = "Brave";           Desc = "Brave";             Selected = $false; URL = "https://laptop-updates.brave.com/latest/winx64"; Args = "/silent /install"; Detalhe = "Navegador com bloqueador de anuncios e rastreadores nativo. Recompensa usuarios com criptomoedas."}
-        @{Nome = "Opera";           Desc = "Opera";             Selected = $false; URL = "https://net.geo.opera.com/opera/stable/windows"; Args = "/silent /install"; Detalhe = "Navegador com VPN gratuita integrada, bloqueador de anuncios e Messenger na barra lateral."}
-        @{Nome = "Opera GX";        Desc = "Opera GX";          Selected = $false; URL = "https://net.geo.opera.com/opera_gx/stable/windows"; Args = "/silent /install"; Detalhe = "Navegador para gamers com limitador de CPU/RAM, integracao com Twitch e Discord."}
-        @{Nome = "Vivaldi";         Desc = "Vivaldi";           Selected = $false; URL = "https://downloads.vivaldi.com/stable/Vivaldi.8.0.4033.57.x64.exe"; Args = "/S"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
-        @{Nome = "Tor Browser";     Desc = "Tor Browser";       Selected = $false; URL = "https://dist.torproject.org/torbrowser/15.0.17/tor-browser-windows-x86_64-portable-15.0.17.exe"; Args = "/S"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
+        @{Nome = "Microsoft Edge";  Desc = "Microsoft Edge";    URL = "https://go.microsoft.com/fwlink/?linkid=2108834&Channel=Stable&language=en&PC=UC"; Args = "/silent /install"; Detalhe = "Navegador padrao do Windows. Leve e integrado ao sistema. Recomendado para uso basico."}
+        @{Nome = "Google Chrome";   Desc = "Google Chrome";     URL = "https://dl.google.com/chrome/install/standalonesetup64.exe"; Args = "/silent /install"; Detalhe = "O navegador mais popular do mundo. Rapido, com muitas extensoes e sincronizacao de conta Google."}
+        @{Nome = "Mozilla Firefox"; Desc = "Mozilla Firefox";   URL = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"; Args = "/S"; Detalhe = "Navegador focado em privacidade e codigo aberto. Bloqueador de rastreadores nativo."}
+        @{Nome = "Brave";           Desc = "Brave";             URL = "https://laptop-updates.brave.com/latest/winx64"; Args = "/silent /install"; Detalhe = "Navegador com bloqueador de anuncios e rastreadores nativo. Recompensa usuarios com criptomoedas."}
+        @{Nome = "Opera";           Desc = "Opera";             URL = "https://net.geo.opera.com/opera/stable/windows"; Args = "/silent /install"; Detalhe = "Navegador com VPN gratuita integrada, bloqueador de anuncios e Messenger na barra lateral."}
+        @{Nome = "Opera GX";        Desc = "Opera GX";          URL = "https://net.geo.opera.com/opera_gx/stable/windows"; Args = "/silent /install"; Detalhe = "Navegador para gamers com limitador de CPU/RAM, integracao com Twitch e Discord."}
+        @{Nome = "Vivaldi";         Desc = "Vivaldi";           URL = "https://downloads.vivaldi.com/stable/Vivaldi.8.0.4033.57.x64.exe"; Args = "/S"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
+        @{Nome = "Tor Browser";     Desc = "Tor Browser";       URL = "https://dist.torproject.org/torbrowser/15.0.17/tor-browser-windows-x86_64-portable-15.0.17.exe"; Args = "/S"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
     )
-    $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "INSTALAR NAVEGADORES"
-    if ($selecionados -eq $null) { return }
-    $paraInstalar = $selecionados | Where-Object { $_.Selected }
-    if ($paraInstalar.Count -eq 0) { Write-Host "Nenhum navegador selecionado." -ForegroundColor $script:c.Yellow; Wait-Key; return }
-    Show-Banner
-    Write-Host ">>> BAIXANDO E INSTALANDO NAVEGADORES <<<" -ForegroundColor $script:c.Magenta
-    Write-Host "NOTA: A instalacao pode abrir janelas de confirmacao." -ForegroundColor $script:c.Yellow
-    Write-Host ""
-    foreach ($b in $paraInstalar) {
-        Write-Host "[$($b.Nome)] Baixando..." -NoNewline
-        $ext = if ($b.URL -match '\.msi$') { 'msi' } else { 'exe' }
-        $dest = "$env:TEMP\install_$($b.Nome -replace ' ','').$ext"
-        try {
-            Invoke-WebRequest -Uri $b.URL -OutFile $dest -UseBasicParsing -ErrorAction Stop
-            Write-Host " OK" -ForegroundColor $script:c.Green
-            Write-Host "         Instalando..." -NoNewline
-            if ($ext -eq "msi") {
-                Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$dest`" /quiet /norestart" -Wait -ErrorAction SilentlyContinue
-            } else {
-                Start-Process -FilePath $dest -ArgumentList $b.Args -Wait -ErrorAction SilentlyContinue
+    do {
+        Clear-Host; Show-Banner
+        $h=[char]0x2550;$v=[char]0x2551;$w=46
+        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
+        $i = 1
+        foreach ($item in $itens) {
+            if ($i -eq 1) {
+                Write-Host $top -ForegroundColor $script:c.Cyan
+                Write-Host "  $v  Digite NUMERO para instalar ou desinstalar    $v" -ForegroundColor $script:c.DarkCyan
+                Write-Host $sep -ForegroundColor $script:c.Cyan
             }
-            Write-Host " OK" -ForegroundColor $script:c.Green
-            Remove-Item $dest -Force -ErrorAction SilentlyContinue
-        } catch {
-            Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor $script:c.Red
+            Write-Host "  $v  $("{0,2}" -f $i). $("{0,-38}" -f $item.Desc) $v" -ForegroundColor $script:c.White
+            foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
+                Write-Host "  $v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
+            }
+            $i++
         }
-    }
-    Write-Host ""; Write-Host "Instalacao concluida!" -ForegroundColor $script:c.Green; Wait-Key
+        Write-Host $bot -ForegroundColor $script:c.Cyan
+        Write-Host ""
+        $choice = Read-Host "Numero (ou V para voltar)"
+        if ($choice -eq "V" -or $choice -eq "v") { return }
+        $num = [int]::TryParse($choice, [ref]$null)
+        if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
+        $item = $itens[[int]$choice - 1]
+        Show-Banner
+        Write-Host "  $([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
+        Write-Host "  $v  $($item.Desc)  $v" -ForegroundColor $script:c.White
+        Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
+        Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
+        Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
+        Write-Host "  $v  [V] Voltar                                    $v" -ForegroundColor $script:c.Yellow
+        Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
+        Write-Host ""
+        $acao = Read-Host "Escolha"
+        switch ($acao.ToUpper()) {
+            "I" {
+                Show-Banner
+                Write-Host ">>> INSTALAR $($item.Desc) <<<" -ForegroundColor $script:c.Magenta
+                Write-Host ""
+                Write-Host "Baixando..." -NoNewline
+                $ext = if ($item.URL -match '\.msi$') { 'msi' } else { 'exe' }
+                $dest = "$env:TEMP\install_$($item.Nome -replace ' ','').$ext"
+                try {
+                    Invoke-WebRequest -Uri $item.URL -OutFile $dest -UseBasicParsing -ErrorAction Stop
+                    Write-Host " OK" -ForegroundColor $script:c.Green
+                    Write-Host "Instalando..." -NoNewline
+                    if ($ext -eq "msi") {
+                        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$dest`" /quiet /norestart" -Wait -ErrorAction SilentlyContinue
+                    } else {
+                        Start-Process -FilePath $dest -ArgumentList $item.Args -Wait -ErrorAction SilentlyContinue
+                    }
+                    Write-Host " OK" -ForegroundColor $script:c.Green
+                    Remove-Item $dest -Force -ErrorAction SilentlyContinue
+                    Write-Host ""; Write-Host "Instalacao concluida!" -ForegroundColor $script:c.Green
+                } catch {
+                    Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor $script:c.Red
+                }
+                Wait-Key
+            }
+            "D" {
+                Show-Banner
+                Write-Host ">>> DESINSTALAR $($item.Desc) <<<" -ForegroundColor $script:c.Magenta
+                Write-Host ""
+                Write-Host "Procurando no sistema..." -NoNewline
+                $chaves = @("HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*", "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*")
+                $prog = $null
+                foreach ($chave in $chaves) {
+                    $prog = Get-ItemProperty $chave -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$($item.Nome)*" } | Select-Object -First 1
+                    if ($prog) { break }
+                }
+                if (-not $prog) {
+                    Write-Host " NAO ENCONTRADO" -ForegroundColor $script:c.Red
+                    Write-Host "$($item.Desc) nao esta instalado no sistema." -ForegroundColor $script:c.Yellow
+                    Wait-Key; continue
+                }
+                Write-Host " ENCONTRADO" -ForegroundColor $script:c.Green
+                Write-Host "Programa: $($prog.DisplayName)" -ForegroundColor $script:c.Cyan
+                Write-Host "Confirmar desinstalacao? (S/N)" -ForegroundColor $script:c.Yellow
+                $conf = Read-Host
+                if ($conf -ne "S" -and $conf -ne "s") { continue }
+                Write-Host ""
+                Write-Host "[1/3] Executando desinstalador..." -NoNewline
+                try {
+                    $uninst = $prog.UninstallString
+                    Write-Host " $uninst" -ForegroundColor $script:c.DarkGray
+                    Start-Process cmd.exe -ArgumentList '/c', $uninst -Wait -ErrorAction Stop
+                    Write-Host " OK" -ForegroundColor $script:c.Green
+                } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
+                $nomeBase = $prog.DisplayName -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
+                Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
+                $pastas = @("$env:PROGRAMFILES\$nomeBase*", "${env:ProgramFiles(x86)}\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
+                foreach ($pasta in $pastas) { Remove-Item $pasta -Recurse -Force -ErrorAction SilentlyContinue }
+                Write-Host " OK" -ForegroundColor $script:c.Green
+                Write-Host "[3/3] Limpando registros..." -NoNewline
+                $regs = @("HKCU:\Software\$nomeBase", "HKLM:\Software\$nomeBase", "HKLM:\Software\WOW6432Node\$nomeBase")
+                foreach ($r in $regs) { Remove-Item $r -Recurse -Force -ErrorAction SilentlyContinue }
+                Write-Host " OK" -ForegroundColor $script:c.Green
+                Write-Host ""; Write-Host "Desinstalacao concluida!" -ForegroundColor $script:c.Green; Wait-Key
+            }
+        }
+    } while ($true)
 }
 
 function Run-DriverUpdater {
