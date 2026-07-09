@@ -221,66 +221,38 @@ function Show-Menu {
     Write-Host ""
 
     $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
-    $a=[char]0x2510;$l=[char]0x2514;$k=[char]0x2518
+    $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
+    $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
 
-    $top = "  $([char]0x250C)$("$h"*40)$a"
-    $bot = "  $l$("$h"*40)$k"
-    $fmt = "     {0,-2}. {1}  {2,-27} "
+    $f_top = "  $tl$("$h"*21)$tc$("$h"*21)$tr"
+    $f_sep = "  $ml$("$h"*21)$mc$("$h"*21)$mr"
+    $f_bot = "  $bl$("$h"*21)$bc$("$h"*21)$br"
 
-    Write-Host "  TWEAK" -ForegroundColor $script:c.Yellow
-    Write-Host $top -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "1", $d, "Central de Acao") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "2", $d, "Cache Updates") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "3", $d, "Hibernacao") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "4", $d, "Pagefile") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "5", $d, "Take Ownership") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "6", $d, "Updates 2077") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "7", $d, "Compact/LZX") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ("  $v" + ($fmt -f "8", $d, "Remover UWP") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host $bot -ForegroundColor $script:c.Yellow
-    Write-Host ""
+    function Show-ColPair {
+        param($left, $right, $hdrL, $hdrR, $color)
+        function T { param($s, $n) if ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
+        $rows = [Math]::Max($left.Count, $right.Count)
+        Write-Host $f_top -ForegroundColor $color
+        Write-Host ("  $v   {0,-18} $v   {1,-18} $v" -f $hdrL, $hdrR) -ForegroundColor $color
+        Write-Host $f_sep -ForegroundColor $color
+        for ($i = 0; $i -lt $rows; $i++) {
+            if ($i -lt $left.Count) { $ls = "  $("{0,2}" -f $left[$i][0]) $d $(T $left[$i][1] 14) " } else { $ls = " "*21 }
+            if ($i -lt $right.Count) { $rs = "  $("{0,2}" -f $right[$i][0]) $d $(T $right[$i][1] 14) " } else { $rs = " "*21 }
+            Write-Host "  $v$ls$v$rs$v" -ForegroundColor $color
+        }
+        Write-Host $f_bot -ForegroundColor $color
+        Write-Host ""
+    }
 
-    Write-Host "  LIMPEZA" -ForegroundColor $script:c.Red
-    Write-Host $top -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "10", $d, "Logs Eventos") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "11", $d, "Cache Windows") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "12", $d, "DNS Cache") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "13", $d, "Temporarios") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "14", $d, "Limpeza Extrema") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "15", $d, "CleanMgr") + "$v") -ForegroundColor $script:c.Red
-    Write-Host ("  $v" + ($fmt -f "16", $d, "DISM") + "$v") -ForegroundColor $script:c.Red
-    Write-Host $bot -ForegroundColor $script:c.Red
-    Write-Host ""
+    $t = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("7","Compact/LZX"), @("8","Remover UWP") )
+    $l = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM") )
 
-    Write-Host "  INSTALADOR" -ForegroundColor $script:c.Green
-    Write-Host $top -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "20", $d, "Navegadores") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "21", $d, "Softwares") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "22", $d, "Atualizar Drivers") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "23", $d, "Desinstalar") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "24", $d, "Editor de Imagem") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "25", $d, "Editor de Video") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "26", $d, "Visualizador Fotos") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "27", $d, "Streaming/Gravacao") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "28", $d, "Conv. Video/Audio") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "29", $d, "Zip/Unzip") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ("  $v" + ($fmt -f "30", $d, "Media Player") + "$v") -ForegroundColor $script:c.Green
-    Write-Host $bot -ForegroundColor $script:c.Green
-    Write-Host ""
-    Write-Host "  OUTROS" -ForegroundColor $script:c.White
-    Write-Host $top -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "41", $d, "Backup Sistema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "42", $d, "Restaurar Sistema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "43", $d, "Edicoes Windows") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "44", $d, "Usuarios") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "45", $d, "CMD Cores") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "46", $d, "Windows Update") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "47", $d, "Som Mod") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "48", $d, "Gaming") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "49", $d, "Tema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "50", $d, "Sobre") + "$v") -ForegroundColor $script:c.White
-    Write-Host $bot -ForegroundColor $script:c.White
-    Write-Host ""
+    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA (10-16)" -color $script:c.Yellow
+
+    $i = @( @("20","Navegadores"), @("21","Softwares"), @("22","Atualizar Drivers"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("26","Visualizador Fotos"), @("27","Streaming/Gravacao"), @("28","Conv. Video/Audio"), @("29","Zip/Unzip"), @("30","Media Player") )
+    $o = @( @("41","Backup Sistema"), @("42","Restaurar Sistema"), @("43","Edicoes Windows"), @("44","Usuarios"), @("45","CMD Cores"), @("46","Windows Update"), @("47","Som Mod"), @("48","Gaming"), @("49","Tema"), @("50","Sobre") )
+
+    Show-ColPair -left $i -right $o -hdrL "INSTALADOR 20-30" -hdrR "OUTROS (41-50)" -color $script:c.Green
 
     Write-Host "  [0] Sair" -ForegroundColor $script:c.Red
     Write-Host ""
