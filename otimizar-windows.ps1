@@ -1721,15 +1721,28 @@ function Tweak-RemoverUWP {
         return
     }
     Write-Host "  [R] Remover apps listados" -ForegroundColor $script:c.Red
-    $opt = Read-Host "Confirma? (S/N)"
-    if ($opt -eq "S" -or $opt -eq "s") {
-        foreach ($app in $apps) {
-            $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
-            if ($found) {
-                Remove-AppxPackage -Package $found.PackageFullName -AllUsers -ErrorAction SilentlyContinue
-                Write-Host "[OK] Removido: $app" -ForegroundColor $script:c.Green
+    Write-Host "  [I] Reinstalar apps padrao (via Store)" -ForegroundColor $script:c.Green
+    $opt = Read-Host "Escolha (R/I/0)"
+    if ($opt -eq "R" -or $opt -eq "r") {
+        $opt2 = Read-Host "Confirma remocao? (S/N)"
+        if ($opt2 -eq "S" -or $opt2 -eq "s") {
+            foreach ($app in $apps) {
+                $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
+                if ($found) {
+                    Remove-AppxPackage -Package $found.PackageFullName -AllUsers -ErrorAction SilentlyContinue
+                    Write-Host "[OK] Removido: $app" -ForegroundColor $script:c.Green
+                }
             }
+        } else { Write-Host "[--] Cancelado" -ForegroundColor $script:c.DarkGray }
+    } elseif ($opt -eq "I" -or $opt -eq "i") {
+        Write-Host "[+] Abrindo Microsoft Store para reinstalar apps..." -ForegroundColor $script:c.Yellow
+        Write-Host "  Instale os apps desejados manualmente na Store:" -ForegroundColor $script:c.White
+        foreach ($app in $apps) {
+            $name = $app -replace 'Microsoft\.',''
+            Write-Host "  - $name" -ForegroundColor $script:c.DarkGray
         }
+        Start-Process "ms-windows-store:" -ErrorAction SilentlyContinue
+        Write-Host "[OK] Store aberta" -ForegroundColor $script:c.Green
     } else {
         Write-Host "[--] Operacao cancelada" -ForegroundColor $script:c.DarkGray
     }
