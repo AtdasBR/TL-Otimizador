@@ -2400,12 +2400,12 @@ function Show-LoadingScreen {
     Clear-Host
     $p = Pad-W 36
     Write-Host ""
-    Write-Host "$p       _______   _______" -ForegroundColor $script:c.White
-    Write-Host "$p      |__   __| |__   __|" -ForegroundColor $script:c.White
-    Write-Host "$p         | |       | |" -ForegroundColor $script:c.White
-    Write-Host "$p         | |       | |" -ForegroundColor $script:c.White
-    Write-Host "$p         | |       | |" -ForegroundColor $script:c.White
-    Write-Host "$p         |_|       |_|" -ForegroundColor $script:c.White
+    Write-Host "$p        TTTTTT   LLLLLL" -ForegroundColor $script:c.White
+    Write-Host "$p           T        L" -ForegroundColor $script:c.White
+    Write-Host "$p           T        L" -ForegroundColor $script:c.White
+    Write-Host "$p           T        L" -ForegroundColor $script:c.White
+    Write-Host "$p           T        L" -ForegroundColor $script:c.White
+    Write-Host "$p           T        L" -ForegroundColor $script:c.White
     Write-Host ""
     Write-Host "$p           by Thallas" -ForegroundColor $script:c.Cyan
     Write-Host "$p        << Discord: atdas >>" -ForegroundColor $script:c.DarkGray
