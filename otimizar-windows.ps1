@@ -979,9 +979,9 @@ function Run-Browsers {
 
 function Run-DriverUpdater {
     $itens = @(
-        @{Nome = "Driver Easy";       Desc = "Driver Easy";        URL = "https://www.drivereasy.com/download-free/"; Detalhe = "Escaneia o PC e encontra drivers desatualizados. Versao gratuita baixa um driver por vez. Interface simples e intuitiva."}
-        @{Nome = "Driver Booster";    Desc = "Driver Booster";     URL = "https://www.iobit.com/pt/driver-booster.php"; Detalhe = "Da IObit. Atualiza drivers com um clique, tem modo game e faz backup antes de atualizar. Versao gratuita tem limite de velocidade."}
-        @{Nome = "Snappy Driver Installer Lite"; Desc = "SDI Lite"; URL = "https://www.snappy-driver-installer.org/download/"; Detalhe = "Ferramenta offline que baixa pacote de drivers. Versao Lite baixa so os drivers necessarios. Codigo aberto e sem propagandas."}
+        @{Nome = "Driver Easy";       Desc = "Driver Easy";        URL = "https://www.drivereasy.com/download-free/"; DownloadURL = "https://www.drivereasy.com/DriverEasy_Setup.exe"; Detalhe = "Escaneia o PC e encontra drivers desatualizados. Versao gratuita baixa um driver por vez. Interface simples e intuitiva."}
+        @{Nome = "Driver Booster";    Desc = "Driver Booster";     URL = "https://www.iobit.com/pt/driver-booster.php"; DownloadURL = "https://download.iobit.com/driver_booster_setup.exe"; Detalhe = "Da IObit. Atualiza drivers com um clique, tem modo game e faz backup antes de atualizar. Versao gratuita tem limite de velocidade."}
+        @{Nome = "Snappy Driver Installer"; Desc = "SDI"; URL = "https://www.snappy-driver-installer.org/download/"; DownloadURL = "https://sdi-tool.org/releases/SDI_R2604.zip"; Detalhe = "Ferramenta portatil que baixa e instala drivers. Codigo aberto, sem propagandas e sem limitacoes."}
     )
     do {
         Clear-Host; Show-Banner
@@ -1013,7 +1013,7 @@ function Run-DriverUpdater {
         Write-Host "  $([char]0x2554)$($h*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
         Write-Host "  $v  $($item.Desc)  $v" -ForegroundColor $script:c.White
         Write-Host "  $([char]0x2560)$($h*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [I] Instalar - abrir pagina de download       $v" -ForegroundColor $script:c.Green
+        Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
         Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
         Write-Host "  $v  [V] Voltar                                    $v" -ForegroundColor $script:c.Yellow
         Write-Host "  $([char]0x255A)$($h*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
@@ -1022,10 +1022,40 @@ function Run-DriverUpdater {
         switch ($acao.ToUpper()) {
             "I" {
                 Show-Banner
-                Write-Host "Abrindo pagina de download..." -ForegroundColor $script:c.Green
-                Write-Host "$($item.URL)" -ForegroundColor $script:c.DarkGray
-                try { Start-Process $item.URL -ErrorAction Stop; Write-Host "Pagina aberta no navegador!" -ForegroundColor $script:c.Green }
-                catch { Write-Host "Erro ao abrir navegador: $($_.Exception.Message)" -ForegroundColor $script:c.Red }
+                Write-Host "Baixando $($item.Desc)..." -ForegroundColor $script:c.Green
+                $tempDir = "$env:TEMP\TLDriverUpd"
+                $null = New-Item -ItemType Directory -Path $tempDir -Force -ErrorAction SilentlyContinue
+                $fileName = ($item.DownloadURL -split '/')[-1]
+                $filePath = "$tempDir\$fileName"
+                try {
+                    Write-Host "URL: $($item.DownloadURL)" -ForegroundColor $script:c.DarkGray
+                    Invoke-WebRequest -Uri $item.DownloadURL -OutFile $filePath -ErrorAction Stop
+                    Write-Host "Download concluido! ($([math]::Round((Get-Item $filePath -ErrorAction SilentlyContinue).Length/1MB, 1)) MB)" -ForegroundColor $script:c.Green
+                    if ($fileName -match '\.zip$') {
+                        $extractDir = "$tempDir\SDI"
+                        Write-Host "Extraindo arquivos..." -NoNewline
+                        Expand-Archive -Path $filePath -DestinationPath $extractDir -Force -ErrorAction Stop
+                        Write-Host " OK" -ForegroundColor $script:c.Green
+                        $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Where-Object { $_.Name -match '^SDI' } | Select-Object -First 1
+                        if (-not $exe) { $exe = Get-ChildItem $extractDir -Filter "*.exe" -Recurse | Select-Object -First 1 }
+                        if ($exe) {
+                            Write-Host "Iniciando $($exe.Name)..." -ForegroundColor $script:c.Cyan
+                            Start-Process $exe.FullName
+                        } else { throw "Nenhum executavel encontrado na extracao." }
+                    } else {
+                        Write-Host "Iniciando instalador..." -ForegroundColor $script:c.Cyan
+                        Start-Process $filePath
+                    }
+                    Write-Host ""; Write-Host "Instalador iniciado! Siga as instrucoes na tela." -ForegroundColor $script:c.Yellow
+                } catch {
+                    Write-Host " FALHOU: $($_.Exception.Message)" -ForegroundColor $script:c.Red
+                    Write-Host ""; Write-Host "Deseja abrir a pagina de download no navegador? (S/N)" -ForegroundColor $script:c.Yellow
+                    $fallback = Read-Host
+                    if ($fallback -eq "S" -or $fallback -eq "s") {
+                        try { Start-Process $item.URL -ErrorAction Stop; Write-Host "Pagina aberta no navegador!" -ForegroundColor $script:c.Green }
+                        catch { Write-Host "Erro ao abrir navegador." -ForegroundColor $script:c.Red }
+                    }
+                }
                 Wait-Key
             }
             "D" {
