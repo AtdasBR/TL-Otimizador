@@ -1754,8 +1754,7 @@ function Install-Browser {
     Write-Host "`n[+] $($b.Name) - Baixando..." -ForegroundColor $script:c.Green
     $tempFile = Join-Path $env:TEMP "browser_install.exe"
     try {
-        $wc = New-Object System.Net.WebClient
-        $wc.DownloadFile($b.Url, $tempFile)
+        Invoke-WebRequest -Uri $b.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
         Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
         $argList = "$($b.Args)"
         Start-Process $tempFile -ArgumentList $argList -Wait -ErrorAction SilentlyContinue
@@ -1803,8 +1802,7 @@ function Show-SoftwareInstaller {
         Write-Host "`n[+] $($sw.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "software_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($sw.Url, $tempFile)
+            Invoke-WebRequest -Uri $sw.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             Start-Process $tempFile -ArgumentList $sw.Args -Wait -ErrorAction SilentlyContinue
             Write-Host "[OK] $($sw.Name) instalado com sucesso" -ForegroundColor $script:c.Green
@@ -1839,8 +1837,7 @@ function Show-ImageEditorInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "editor_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -1885,8 +1882,7 @@ function Show-VideoEditorInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "video_editor_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -1925,8 +1921,7 @@ function Show-PhotoViewerInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "photo_viewer_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -1967,8 +1962,7 @@ function Show-StreamingInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "streaming_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -2007,8 +2001,7 @@ function Show-ConverterInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "converter_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -2045,8 +2038,7 @@ function Show-ZipInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "zip_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
@@ -2085,8 +2077,7 @@ function Show-MediaPlayerInstaller {
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "mediaplayer_install.exe"
         try {
-            $wc = New-Object System.Net.WebClient
-            $wc.DownloadFile($ed.Url, $tempFile)
+            Invoke-WebRequest -Uri $ed.Url -OutFile $tempFile -UseBasicParsing -ErrorAction Stop
             Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
             if ($ed.Args) {
                 Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
