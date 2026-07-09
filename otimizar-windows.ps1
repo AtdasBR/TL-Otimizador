@@ -2410,7 +2410,7 @@ function Show-BootSequence {
     $padItem = " " * 5
     foreach ($chk in $checks) {
         Write-Host "$p$padItem$chk..." -NoNewline -ForegroundColor $c.DarkGray
-        Start-Sleep -Milliseconds 200
+        Start-Sleep -Milliseconds 300
         Write-Host " [OK]" -ForegroundColor $c.Green
     }
     Write-Host ""
