@@ -160,8 +160,8 @@ function Show-Banner {
     $inner = $Width - 2
     $top = "$p$tl$("$h"*$inner)$tr"
     $bot = "$p$bl$("$h"*$inner)$br"
-    $padL = [Math]::Max(0, [Math]::Floor(($inner - 13) / 2))
-    $padR = $inner - 13 - $padL
+    $padL = [Math]::Max(0, [Math]::Floor(($inner - 12) / 2))
+    $padR = $inner - 12 - $padL
     Write-Host $top -ForegroundColor $script:c.White
     Write-Host "$p$v$(" "*$padL)TL OPTIMIZER$(" "*$padR)$v" -ForegroundColor $script:c.White
     $padL = [Math]::Max(0, [Math]::Floor(($inner - 4) / 2))
