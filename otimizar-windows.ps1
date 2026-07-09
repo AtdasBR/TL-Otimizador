@@ -1422,7 +1422,12 @@ function Install-Local {
             $shortcut.IconLocation = "%SystemRoot%\System32\imageres.dll,23"
         }
         $shortcut.Save()
-        Write-Host "$p Atalho criado na Area de Trabalho." -ForegroundColor $script:c.Green
+        try {
+            $bytes = [System.IO.File]::ReadAllBytes($shortcutPath)
+            $bytes[0x15] = $bytes[0x15] -bor 0x20
+            [System.IO.File]::WriteAllBytes($shortcutPath, $bytes)
+        } catch {}
+        Write-Host "$p Atalho criado na Area de Trabalho (admin automatico)." -ForegroundColor $script:c.Green
     } catch {
         Write-Host "$p Nao foi possivel criar atalho na Area de Trabalho." -ForegroundColor $script:c.DarkGray
     }
