@@ -1372,7 +1372,8 @@ function Uninstall-TL {
     } else { Write-Host "$p [--] Perfil PowerShell nao encontrado" -ForegroundColor $script:c.DarkGray }
     Write-Host ""
     Write-Host "$p TL Optimizer foi completamente removido." -ForegroundColor $script:c.Green
-    Wait-Key
+    Start-Sleep -Seconds 2
+    exit
 }
 
 function Install-Local {
