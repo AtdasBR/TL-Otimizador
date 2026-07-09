@@ -92,24 +92,37 @@ function EscolherTema {
     } while ($true)
 }
 
+function Get-ScriptPath {
+    if ($PSCommandPath) { return $PSCommandPath }
+    if ($MyInvocation.MyCommand.Path) { return $MyInvocation.MyCommand.Path }
+    return "$env:USERPROFILE\TL-Optimizer\otimizar-windows.ps1"
+}
+
 function VerificarAtualizacao {
-    param([switch]$Silencioso)
+    param([switch]$Silencioso, [switch]$Forcar)
     try {
         $resp = Invoke-WebRequest -Uri $rawUrl -UseBasicParsing -ErrorAction Stop
         if ($resp.Content -match '\$script:versao\s*=\s*"([^"]+)"') {
             $novaVer = $Matches[1]
-            if ($novaVer -ne $script:versao) {
-                Write-Host "Nova versao ($novaVer) disponivel!" -ForegroundColor $script:c.Yellow
-                if ($PSCommandPath) {
-                    Write-Host "Atualizando..." -NoNewline
-                    [System.IO.File]::WriteAllText($PSCommandPath, $resp.Content, [System.Text.UTF8Encoding]::new($false))
-                    Write-Host " OK" -ForegroundColor $script:c.Green
-                    Write-Host "Execute 'tl' novamente para usar a nova versao." -ForegroundColor $script:c.Green
+            if ($Forcar -or $novaVer -ne $script:versao) {
+                if ($Forcar) {
+                    Write-Host "Forcando atualizacao..." -NoNewline -ForegroundColor $script:c.Yellow
                 } else {
+                    Write-Host "Nova versao ($novaVer) disponivel!" -ForegroundColor $script:c.Yellow
+                    Write-Host "Atualizando..." -NoNewline
+                }
+                $scriptPath = Get-ScriptPath
+                try {
+                    [System.IO.File]::WriteAllText($scriptPath, $resp.Content, [System.Text.UTF8Encoding]::new($false))
+                    Write-Host " OK - v$novaVer" -ForegroundColor $script:c.Green
+                    Write-Host "Execute 'tl' novamente para usar a nova versao." -ForegroundColor $script:c.Green
+                    Start-Sleep -Seconds 3; if (-not $Forcar) { exit }
+                } catch {
+                    Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor $script:c.Red
                     Write-Host "Reexecute o comando abaixo para obter a nova versao:" -ForegroundColor $script:c.Yellow
                     Write-Host "  iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
+                    if (-not $Forcar) { Start-Sleep -Seconds 5; exit }
                 }
-                Start-Sleep -Seconds 3; exit
             } elseif (-not $Silencioso) {
                 Write-Host "Voce ja esta na versao mais recente ($script:versao)." -ForegroundColor $script:c.Green
             }
@@ -305,7 +318,7 @@ function Show-Menu {
 
     Show-ColPair -left $i -right $o -hdrL "INSTALADOR" -hdrR "OUTROS" -color $script:c.Blue
 
-    Write-Host "$p[0] Sair" -ForegroundColor $script:c.Red
+    Write-Host "$p[0] Sair  [U] Forcar Atualizacao" -ForegroundColor $script:c.Red
     Write-Host ""
 }
 
@@ -2458,6 +2471,8 @@ do {
         "48" { Show-Gaming }
         "49" { EscolherTema }
         "50" { Show-Banner; Show-Sobre; Wait-Key }
+        "U" { Show-Banner; VerificarAtualizacao -Forcar; Wait-Key }
+        "u" { Show-Banner; VerificarAtualizacao -Forcar; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor $script:c.Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor $script:c.Red; Start-Sleep -Seconds 1 }
     }
