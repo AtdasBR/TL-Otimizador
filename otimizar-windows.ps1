@@ -22,6 +22,20 @@ function Pad-W {
     return " " * [Math]::Max(0, [Math]::Floor(($tw - $Width) / 2))
 }
 
+function Set-TermSize {
+    param([int]$Width, [int]$Height)
+    try {
+        $max = $Host.UI.RawUI.MaxWindowSize
+        $buf = $Host.UI.RawUI.BufferSize
+        $w = [Math]::Min($Width, $max.Width)
+        $h = [Math]::Min($Height, $max.Height)
+        if ($buf.Width -lt $w -or $buf.Height -lt $h) {
+            $Host.UI.RawUI.BufferSize = New-Object Management.Automation.Host.Size ([Math]::Max($buf.Width, $w), [Math]::Max($buf.Height, $h))
+        }
+        $Host.UI.RawUI.WindowSize = New-Object Management.Automation.Host.Size ($w, $h)
+    } catch {}
+}
+
 function CarregarTema {
     if (Test-Path $script:temaArquivo) {
         try {
@@ -233,10 +247,11 @@ function Show-Menu {
     $boxW = [Math]::Max(63, $maxLen + 5)
     if ($boxW % 2 -eq 0) { $boxW++ }
     $contentW = $boxW - 5
+    Set-TermSize -Width ($boxW + 4) -Height $Host.UI.RawUI.WindowSize.Height
     Show-Banner -Width $boxW
     $p = Pad-W $boxW
     $cw = [Math]::Floor(($boxW - 3) / 2)
-    $nw = $cw - 7
+    $nw = $cw - 9
     $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
     $st = "$p$tt$("$th"*($boxW-2))$tr"
     $sb = "$p$tb$("$th"*($boxW-2))$te"
@@ -262,10 +277,10 @@ function Show-Menu {
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
             if ($i -lt $left.Count -and $left[$i][0] -ne "") {
-                $ls = " [{0,2}] $(T $left[$i][1] $nw) "
+                $ls = " [{0,2}] | $(T $left[$i][1] $nw) "
             } else { $ls = " "*$cw }
             if ($i -lt $right.Count -and $right[$i][0] -ne "") {
-                $rs = " [{0,2}] $(T $right[$i][1] $nw) "
+                $rs = " [{0,2}] | $(T $right[$i][1] $nw) "
             } else { $rs = " "*$cw }
             Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
@@ -280,6 +295,11 @@ function Show-Menu {
 
     $i = @( @("22","Atualizar Drivers"), @("28","Conv. Video/Audio"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("",""), @("30","Media Player"), @("20","Navegadores"), @("21","Softwares"), @("27","Streaming/Gravacao"), @("26","Visualizador Fotos"), @("29","Zip/Unzip") )
     $o = @( @("41","Backup Sistema"), @("45","CMD Cores"), @("43","Edicoes Windows"), @("48","Gaming"), @("44","Usuarios"), @("",""), @("42","Restaurar Sistema"), @("50","Sobre"), @("47","Som Mod"), @("49","Tema"), @("46","Windows Update") )
+
+    $rows1 = [Math]::Max($t.Count, $l.Count)
+    $rows2 = [Math]::Max($i.Count, $o.Count)
+    $totalH = 20 + $specLines.Count + $rows1 + $rows2
+    Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
 
     Show-ColPair -left $i -right $o -hdrL "INSTALADOR" -hdrR "OUTROS" -color $script:c.Green
 
