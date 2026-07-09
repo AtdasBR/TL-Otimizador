@@ -104,24 +104,37 @@ function Get-ScriptPath {
 }
 
 function VerificarAtualizacao {
+    param([switch]$Silencioso)
     try {
         $resp = Invoke-WebRequest -Uri $rawUrl -UseBasicParsing -ErrorAction Stop
         $scriptPath = Get-ScriptPath
-        if (-not (Test-Path $scriptPath)) { Write-Host "Instalacao nao encontrada." -ForegroundColor $script:c.Yellow; return }
+        if (-not (Test-Path $scriptPath)) { if (-not $Silencioso) { Write-Host "Instalacao nao encontrada." -ForegroundColor $script:c.Yellow }; return }
         $tmp = "$env:TEMP\tl_update.ps1"
         $utf8Bom = New-Object System.Text.UTF8Encoding $true
         [System.IO.File]::WriteAllText($tmp, $resp.Content, $utf8Bom)
         if ((Get-FileHash $scriptPath).Hash -eq (Get-FileHash $tmp).Hash) {
             Remove-Item $tmp -Force
-            Write-Host "Ja esta no ultimo commit." -ForegroundColor $script:c.Green
+            if (-not $Silencioso) { Write-Host "Ja esta no ultimo commit." -ForegroundColor $script:c.Green }
             return
         }
-        if ($resp.Content -match '\$script:versao\s*=\s*"([^"]+)"') { $novaVer = $Matches[1] } else { $novaVer = "?" }
-        Write-Host "Nova versao disponivel (v$novaVer)!" -ForegroundColor $script:c.Yellow
-        Write-Host "Para atualizar, execute o comando abaixo:" -ForegroundColor $script:c.Yellow
-        Write-Host "  iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
-        Remove-Item $tmp -Force
-    } catch { Write-Host "Falha na conexao: $($_.Exception.Message)" -ForegroundColor $script:c.Red }    
+        if ($Silencioso) {
+            try { Copy-Item $tmp $scriptPath -Force } catch {}
+            Remove-Item $tmp -Force
+            return
+        }
+        Write-Host "Atualizando..." -NoNewline -ForegroundColor $script:c.Yellow
+        try {
+            Copy-Item $tmp $scriptPath -Force
+            Remove-Item $tmp -Force
+            Write-Host " OK" -ForegroundColor $script:c.Green
+            Write-Host "Execute 'tl' novamente para usar a nova versao." -ForegroundColor $script:c.Green
+        } catch {
+            Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+            Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor $script:c.Red
+            Write-Host "Reexecute o comando abaixo para obter a nova versao:" -ForegroundColor $script:c.Yellow
+            Write-Host "  iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
+        }
+    } catch { if (-not $Silencioso) { Write-Host "Falha na conexao: $($_.Exception.Message)" -ForegroundColor $script:c.Red } }
 }
 
 function Get-SystemSpecs {
@@ -2437,6 +2450,9 @@ if (-not $PSCommandPath) {
         if ($modo -eq "I" -or $modo -eq "i") { Install-Local; break }
     } while ($true)
 }
+
+# === AUTO-UPDATE (silencioso) ===
+VerificarAtualizacao -Silencioso
 
 # === LOADING SCREEN (uma vez por sessao) ===
 Show-LoadingScreen
