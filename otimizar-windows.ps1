@@ -302,61 +302,51 @@ function Show-Menu {
     Write-Host $sb -ForegroundColor $script:c.White
     Write-Host ""
 
-    $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
-    $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
-    $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
-    $f_top = "$p$tl$("$h"*$cw)$tc$("$h"*$cw)$tr"
-    $f_sep = "$p$ml$("$h"*$cw)$mc$("$h"*$cw)$mr"
-    $f_bot = "$p$bl$("$h"*$cw)$bc$("$h"*$cw)$br"
+    $h=[char]0x2500;$v=[char]0x2502
 
-    function Show-ColPair {
-        param($left, $right, $hdrL, $hdrR, $color)
+    function Show-GridRow {
+        param($c1, $c2, $c3, $hdr1, $hdr2, $hdr3, $color)
         function T { param($s, $n) if (-not $s) { " " * $n } elseif ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
-        $rows = [Math]::Max($left.Count, $right.Count)
-        Write-Host $f_top -ForegroundColor $color
-        Write-Host ("$p$v  {0,-$($cw-3)} $v  {1,-$($cw-3)} $v" -f $hdrL, $hdrR) -ForegroundColor $color
-        Write-Host $f_sep -ForegroundColor $color
+        $rows = [Math]::Max($c1.Count, $c2.Count, $c3.Count)
+        $cw3 = [Math]::Floor(($boxW - 4) / 3)
+        $nw3 = $cw3 - 9
+        $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
+        $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
+        $grid_top = "$p$tl$("$h"*$cw3)$tc$("$h"*$cw3)$tc$("$h"*$cw3)$tr"
+        $grid_sep = "$p$ml$("$h"*$cw3)$mc$("$h"*$cw3)$mc$("$h"*$cw3)$mr"
+        $grid_bot = "$p$bl$("$h"*$cw3)$bc$("$h"*$cw3)$bc$("$h"*$cw3)$br"
+        Write-Host $grid_top -ForegroundColor $color
+        Write-Host ("$p$v  {0,-$($cw3-3)} $v  {1,-$($cw3-3)} $v  {2,-$($cw3-3)} $v" -f $hdr1, $hdr2, $hdr3) -ForegroundColor White
+        Write-Host $grid_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
-            $lval = if ($i -lt $left.Count) { $left[$i] } else { $null }
-            $rval = if ($i -lt $right.Count) { $right[$i] } else { $null }
-            if ($lval -and $lval[0] -is [string] -and $lval[0] -ne "") {
-                $ls = " [$($lval[0].PadLeft(2))] | $(T $lval[1] $nw) "
-            } else { $ls = " "*$cw }
-            if ($rval -and $rval[0] -is [string] -and $rval[0] -ne "") {
-                $rs = " [$($rval[0].PadLeft(2))] | $(T $rval[1] $nw) "
-            } else { $rs = " "*$cw }
-            Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
+            $v1 = if ($i -lt $c1.Count) { $c1[$i] } else { $null }
+            $v2 = if ($i -lt $c2.Count) { $c2[$i] } else { $null }
+            $v3 = if ($i -lt $c3.Count) { $c3[$i] } else { $null }
+            $s1 = if ($v1 -and $v1[0] -is [string] -and $v1[0] -ne "") { " [$($v1[0].PadLeft(2))] | $(T $v1[1] $nw3) " } else { " "*$cw3 }
+            $s2 = if ($v2 -and $v2[0] -is [string] -and $v2[0] -ne "") { " [$($v2[0].PadLeft(2))] | $(T $v2[1] $nw3) " } else { " "*$cw3 }
+            $s3 = if ($v3 -and $v3[0] -is [string] -and $v3[0] -ne "") { " [$($v3[0].PadLeft(2))] | $(T $v3[1] $nw3) " } else { " "*$cw3 }
+            Write-Host "$p$v$s1$v$s2$v$s3$v" -ForegroundColor $color
         }
-        Write-Host $f_bot -ForegroundColor $color
+        Write-Host $grid_bot -ForegroundColor $color
         Write-Host ""
     }
 
-    $t = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("",""), @("7","Compact/LZX"), @("8","Remover UWP") )
-    $l = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("","") )
+    $t1 = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("",""), @("7","Compact/LZX"), @("8","Remover UWP") )
+    $t2 = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("",""), @("",""), @("","") )
+    $t3 = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa") )
 
-    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA" -color $script:c.Green
+    Show-GridRow -c1 $t1 -c2 $t2 -c3 $t3 -hdr1 "TWEAK" -hdr2 "LIMPEZA" -hdr3 "INSTALAR + REDE" -color $script:c.Green
 
-    $i = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("",""), @("",""), @("","") )
-    $r = @( @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa") )
+    $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("",""), @("",""), @("",""), @("","") )
+    $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa"), @("",""), @("",""), @("","") )
+    $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("",""), @("",""), @("",""), @("",""), @("",""), @("","") )
 
-    Show-ColPair -left $i -right $r -hdrL "INSTALADOR" -hdrR "REDE" -color $script:c.Green
+    Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 "SISTEMA" -hdr2 "FERRAMENTAS" -hdr3 "PRIVACIDADE" -color $script:c.Blue
 
-    $s = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("","") )
-    $f = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa") )
-
-    Show-ColPair -left $s -right $f -hdrL "SISTEMA" -hdrR "FERRAMENTAS" -color $script:c.Blue
-
-    $p = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual") )
-    $pe = @( @("","") )
-
-    $rows1 = [Math]::Max($t.Count, $l.Count)
-    $rows2 = [Math]::Max($i.Count, $r.Count)
-    $rows3 = [Math]::Max($s.Count, $f.Count)
-    $rows4 = [Math]::Max($p.Count, $pe.Count)
-    $totalH = 28 + $specLines.Count + $rows1 + $rows2 + $rows3 + $rows4
+    $rows1 = [Math]::Max($t1.Count, $t2.Count, $t3.Count)
+    $rows2 = [Math]::Max($t4.Count, $t5.Count, $t6.Count)
+    $totalH = 16 + $specLines.Count + $rows1 + $rows2
     Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
-
-    Show-ColPair -left $p -right $pe -hdrL "PRIVACIDADE" -hdrR "" -color $script:c.Magenta
 
     Write-Host "$p[0] Sair  [U] Verificar Atualizacao  [H] Ajuda  [D] Desinstalar" -ForegroundColor $script:c.Red
     Write-Host ""
