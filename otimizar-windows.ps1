@@ -15,6 +15,7 @@ $script:temas = @{
 $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
 $script:carregouTema = $false
+$Host.UI.RawUI.BackgroundColor = "Black"
 
 function Pad-W {
     param([int]$Width)
