@@ -7,10 +7,10 @@ $script:versao = "1.4"
 
 $script:temaArquivo = "$backupDir\tema.json"
 $script:temas = @{
-    Padrao = @{ Cyan = "Cyan"; DarkCyan = "DarkCyan"; DarkGray = "DarkGray"; Gray = "Gray"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow" }
-    Claro  = @{ Cyan = "DarkBlue"; DarkCyan = "Blue"; DarkGray = "DarkGray"; Gray = "DarkGray"; Green = "DarkGreen"; Magenta = "DarkMagenta"; Red = "Red"; White = "Black"; Yellow = "DarkYellow" }
-    Matrix = @{ Cyan = "Green"; DarkCyan = "DarkGreen"; DarkGray = "DarkGreen"; Gray = "Green"; Green = "Green"; Magenta = "Green"; Red = "Red"; White = "Green"; Yellow = "Yellow" }
-    Synthwave = @{ Cyan = "Cyan"; DarkCyan = "Magenta"; DarkGray = "DarkMagenta"; Gray = "Cyan"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow" }
+    Padrao = @{ Cyan = "Cyan"; DarkCyan = "DarkCyan"; DarkGray = "DarkGray"; Gray = "Gray"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Blue"; DarkBlue = "DarkBlue" }
+    Claro  = @{ Cyan = "DarkBlue"; DarkCyan = "Blue"; DarkGray = "DarkGray"; Gray = "DarkGray"; Green = "DarkGreen"; Magenta = "DarkMagenta"; Red = "Red"; White = "Black"; Yellow = "DarkYellow"; Blue = "Blue"; DarkBlue = "DarkBlue" }
+    Matrix = @{ Cyan = "Green"; DarkCyan = "DarkGreen"; DarkGray = "DarkGreen"; Gray = "Green"; Green = "Green"; Magenta = "Green"; Red = "Red"; White = "Green"; Yellow = "Yellow"; Blue = "Green"; DarkBlue = "DarkGreen" }
+    Synthwave = @{ Cyan = "Cyan"; DarkCyan = "Magenta"; DarkGray = "DarkMagenta"; Gray = "Cyan"; Green = "Green"; Magenta = "Magenta"; Red = "Red"; White = "White"; Yellow = "Yellow"; Blue = "Cyan"; DarkBlue = "Magenta" }
 }
 $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
@@ -292,7 +292,7 @@ function Show-Menu {
     $t = @( @("2","Cache Updates"), @("1","Central de Acao"), @("7","Compact/LZX"), @("3","Hibernacao"), @("4","Pagefile"), @("",""), @("8","Remover UWP"), @("5","Take Ownership"), @("6","Updates 2077") )
     $l = @( @("11","Cache Windows"), @("15","CleanMgr"), @("16","DISM"), @("12","DNS Cache"), @("",""), @("14","Limpeza Extrema"), @("10","Logs Eventos"), @("13","Temporarios") )
 
-    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA" -color $script:c.Yellow
+    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA" -color $script:c.Green
 
     $i = @( @("22","Atualizar Drivers"), @("28","Conv. Video/Audio"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("",""), @("30","Media Player"), @("20","Navegadores"), @("21","Softwares"), @("27","Streaming/Gravacao"), @("26","Visualizador Fotos"), @("29","Zip/Unzip") )
     $o = @( @("41","Backup Sistema"), @("45","CMD Cores"), @("43","Edicoes Windows"), @("48","Gaming"), @("44","Usuarios"), @("",""), @("42","Restaurar Sistema"), @("50","Sobre"), @("47","Som Mod"), @("49","Tema"), @("46","Windows Update") )
@@ -302,7 +302,7 @@ function Show-Menu {
     $totalH = 20 + $specLines.Count + $rows1 + $rows2
     Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
 
-    Show-ColPair -left $i -right $o -hdrL "INSTALADOR" -hdrR "OUTROS" -color $script:c.Green
+    Show-ColPair -left $i -right $o -hdrL "INSTALADOR" -hdrR "OUTROS" -color $script:c.Blue
 
     Write-Host "$p[0] Sair" -ForegroundColor $script:c.Red
     Write-Host ""
