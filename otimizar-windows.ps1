@@ -213,13 +213,11 @@ function Show-Menu {
     Write-Host $sb -ForegroundColor $script:c.DarkGray
     Write-Host ""
 
-    $t=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514
-    $r=[char]0x2510;$e=[char]0x2518;$d=[char]0x25CF;$s=[char]0x25C9
-    $c=[char]0x250C;$a=[char]0x2510;$l=[char]0x2514;$k=[char]0x2518
+    $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
+    $a=[char]0x2510;$l=[char]0x2514;$k=[char]0x2518
 
-    $top = "  $t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$a"
-    $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
-    $bot = "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
+    $top = "  $([char]0x250C)$("$h"*40)$a"
+    $bot = "  $l$("$h"*40)$k"
     $fmt = "     {0,-2}. {1}  {2,-27} "
 
     Write-Host "  TWEAK" -ForegroundColor $script:c.Yellow
@@ -1528,14 +1526,17 @@ function Tweak-Updates2077 {
     try {
         if ($opt -eq "A" -or $opt -eq "a") {
             Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\Settings" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" -Name "DeferQualityUpdates" -Force -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" -Name "DeferQualityUpdatesPeriodInDays" -Force -ErrorAction SilentlyContinue
             Write-Host "[OK] Updates ativados (padrao do Windows)" -ForegroundColor $script:c.Green
         } elseif ($opt -eq "D" -or $opt -eq "d") {
-            $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate"
-            Set-ItemProperty -Path $regPath -Name "DeferQualityUpdates" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-            Set-ItemProperty -Path $regPath -Name "DeferQualityUpdatesPeriodInDays" -Value 365 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" -Name "DeferQualityUpdates" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" -Name "DeferQualityUpdatesPeriodInDays" -Value 365 -Type DWord -Force -ErrorAction SilentlyContinue
             $regPath2 = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UpdatePolicy\Settings"
             New-Item -Path $regPath2 -Force -ErrorAction SilentlyContinue | Out-Null
             Set-ItemProperty -Path $regPath2 -Name "PausedQualityDate" -Value "2077-12-31" -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath2 -Name "PausedFeatureDate" -Value "2077-12-31" -Force -ErrorAction SilentlyContinue
             Write-Host "[OK] Updates pausados ate 2077" -ForegroundColor $script:c.Green
         }
     } catch {
@@ -1894,27 +1895,29 @@ function Run-CmdCores {
     try {
         $regPath = "HKCU:\Console"
         $cores = @(
-            @{Name="Verde Matrix"; FG=10; BG=0},
-            @{Name="Azul Neon"; FG=11; BG=0},
-            @{Name="Vermelho Synthwave"; FG=12; BG=0},
-            @{Name="Amarelo Classico"; FG=14; BG=0},
-            @{Name="Branco Preto"; FG=15; BG=0}
+            @{Name="Verde Matrix";       BG=0; FG=7; BG_RGB=0x00000000; FG_RGB=0x0000FF00},
+            @{Name="Azul Neon";          BG=0; FG=7; BG_RGB=0x00000000; FG_RGB=0x0000FFFF},
+            @{Name="Vermelho Synthwave"; BG=0; FG=7; BG_RGB=0x00000000; FG_RGB=0x00FF0000},
+            @{Name="Amarelo Classico";   BG=0; FG=7; BG_RGB=0x00000000; FG_RGB=0x00FFFF00},
+            @{Name="Branco Preto";       BG=0; FG=7; BG_RGB=0x00000000; FG_RGB=0x00FFFFFF}
         )
         Write-Host ""
         $i = 0
-        foreach ($c in $cores) { $i++; Write-Host "  $i. $($c.Name)" -ForegroundColor $script:c.White }
+        foreach ($cor in $cores) { $i++; Write-Host "  $i. $($cor.Name)" -ForegroundColor $script:c.White }
         Write-Host "  0. Padrao" -ForegroundColor $script:c.Red
         Write-Host ""
         $escolha = Read-Host "Escolha a cor"
         if ($escolha -ge 1 -and $escolha -le 5) {
             $sel = $cores[$escolha - 1]
-            Set-ItemProperty -Path $regPath -Name "ColorTable00" -Value ($sel.BG + $sel.FG * 16) -Type DWord -Force -ErrorAction SilentlyContinue
-            Set-ItemProperty -Path $regPath -Name "ColorTable07" -Value ($sel.FG + $sel.BG * 16) -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "ScreenColors" -Value ($sel.BG * 16 + $sel.FG) -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "ColorTable00" -Value $sel.BG_RGB -Type DWord -Force -ErrorAction SilentlyContinue
+            Set-ItemProperty -Path $regPath -Name "ColorTable07" -Value $sel.FG_RGB -Type DWord -Force -ErrorAction SilentlyContinue
             Write-Host "[OK] Cor do CMD alterada para: $($sel.Name)" -ForegroundColor $script:c.Green
         } elseif ($escolha -eq "0") {
-            Set-ItemProperty -Path $regPath -Name "ColorTable00" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-            Set-ItemProperty -Path $regPath -Name "ColorTable07" -Value 7 -Type DWord -Force -ErrorAction SilentlyContinue
-            Write-Host "[OK] Cor do CMD restaurada" -ForegroundColor $script:c.Green
+            Remove-ItemProperty -Path $regPath -Name "ScreenColors" -Force -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path $regPath -Name "ColorTable00" -Force -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path $regPath -Name "ColorTable07" -Force -ErrorAction SilentlyContinue
+            Write-Host "[OK] Cor do CMD restaurada para o padrao" -ForegroundColor $script:c.Green
         }
     } catch {
         Write-Host "[ERRO] Falha ao configurar cores do CMD" -ForegroundColor $script:c.Red
