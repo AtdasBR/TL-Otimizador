@@ -1470,26 +1470,25 @@ function Tweak-Pagefile {
     $opt = Read-Host "Escolha"
     try {
         if ($opt -eq "A" -or $opt -eq "a") {
-            $ram = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1MB
-            $pagefile = [math]::Round($ram * 0.5)
-            $cs = Get-WmiObject Win32_ComputerSystem
-            $cs.AutomaticManagedPagefile = $false
-            $cs.Put() | Out-Null
-            $pf = Get-WmiObject Win32_PageFileSetting
-            if ($pf) {
-                $pf.InitialSize = $pagefile
-                $pf.MaximumSize = [math]::Round($ram * 1.5)
-                $pf.Put() | Out-Null
+            $ram = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory
+            $init = [math]::Round($ram / 1MB * 0.5)
+            $max = [math]::Round($ram / 1MB * 1.5)
+            $cs = Get-CimInstance Win32_ComputerSystem
+            Invoke-CimMethod -InputObject $cs -MethodName SetAutomaticManagedPagefile -Arguments @{AutomaticManagedPagefile=$false} -ErrorAction SilentlyContinue | Out-Null
+            $pf = Get-CimInstance Win32_PageFileSetting -ErrorAction SilentlyContinue
+            if (-not $pf) {
+                Invoke-CimMethod -ClassName Win32_PageFileSetting -MethodName Create -Arguments @{Name="C:\pagefile.sys"; InitialSize=$init; MaximumSize=$max} -ErrorAction SilentlyContinue | Out-Null
+            } else {
+                Set-CimInstance -InputObject $pf -Property @{InitialSize=$init; MaximumSize=$max} -ErrorAction SilentlyContinue | Out-Null
             }
-            Write-Host "[OK] Pagefile configurado: ${pagefile}MB inicial" -ForegroundColor $script:c.Green
+            Write-Host "[OK] Pagefile configurado: ${init}MB / ${max}MB" -ForegroundColor $script:c.Green
         } elseif ($opt -eq "D" -or $opt -eq "d") {
-            $cs = Get-WmiObject Win32_ComputerSystem
-            $cs.AutomaticManagedPagefile = $true
-            $cs.Put() | Out-Null
+            $cs = Get-CimInstance Win32_ComputerSystem
+            Invoke-CimMethod -InputObject $cs -MethodName SetAutomaticManagedPagefile -Arguments @{AutomaticManagedPagefile=$true} -ErrorAction SilentlyContinue | Out-Null
             Write-Host "[OK] Pagefile em gerenciamento automatico" -ForegroundColor $script:c.Green
         }
     } catch {
-        Write-Host "[ERRO] Falha ao configurar pagefile" -ForegroundColor $script:c.Red
+        Write-Host "[ERRO] Falha ao configurar pagefile: $_" -ForegroundColor $script:c.Red
     }
 }
 
