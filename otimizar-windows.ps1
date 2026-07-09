@@ -2074,7 +2074,13 @@ function Show-WingetInstaller {
             "C" { $busca = "" }
             "M" { $modo = if ($modo -eq "I") { "U" } else { "I" }; $selecionados = @{} }
             "T" {
-                if ($selecionados.Count -eq $lista.Count) { $selecionados = @{} }
+                $uniqueIDs = @{}
+                foreach ($app in $lista) { $uniqueIDs[$app.ID] = $true }
+                $allSelected = $true
+                foreach ($id in $uniqueIDs.Keys) {
+                    if (-not $selecionados.ContainsKey($id)) { $allSelected = $false; break }
+                }
+                if ($allSelected) { $selecionados = @{} }
                 else { foreach ($app in $lista) { $selecionados[$app.ID] = $true } }
             }
             "A" {
@@ -2093,9 +2099,10 @@ function Show-WingetInstaller {
             }
             "0" { return }
             default {
-                $num = [int]::TryParse($cmd, [ref]$null)
-                if ($num -and [int]$cmd -ge 1 -and [int]$cmd -le $lista.Count) {
-                    $appAlvo = $lista[[int]$cmd - 1]
+                $parsed = 0
+                $num = [int]::TryParse($cmd, [ref]$parsed)
+                if ($num -and $parsed -ge 1 -and $parsed -le $lista.Count) {
+                    $appAlvo = $lista[$parsed - 1]
                     if ($selecionados.ContainsKey($appAlvo.ID)) { $selecionados.Remove($appAlvo.ID) }
                     else { $selecionados[$appAlvo.ID] = $true }
                 } else {
