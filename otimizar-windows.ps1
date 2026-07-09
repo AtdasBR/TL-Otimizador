@@ -31,10 +31,6 @@ function SalvarTema {
     @{ Tema = $script:temaAtual } | ConvertTo-Json | Set-Content $script:temaArquivo -Force
 }
 function EscolherTema {
-    Show-Banner
-    $h=[char]0x2550;$v=[char]0x2551;$w=46
-    $top = "  $([char]0x2554)$($h*$w)$([char]0x2557)"
-    $bot = "  $([char]0x255A)$($h*$w)$([char]0x255D)"
     $lista = @()
     $temp = 1
     foreach ($t in $script:temas.Keys | Sort-Object) {
@@ -44,9 +40,13 @@ function EscolherTema {
     }
     do {
         Clear-Host; Show-Banner
+        $h=[char]0x2550;$v=[char]0x2551;$w=46
+        $top = "  $([char]0x2554)$("$h"*$w)$([char]0x2557)"
+        $sep = "  $([char]0x2560)$("$h"*$w)$([char]0x2563)"
+        $bot = "  $([char]0x255A)$("$h"*$w)$([char]0x255D)"
         Write-Host $top -ForegroundColor $script:c.Cyan
         Write-Host "  $v  Digite NUMERO para escolher o tema         $v" -ForegroundColor $script:c.DarkCyan
-        Write-Host "  $([char]0x2560)$($h*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
+        Write-Host $sep -ForegroundColor $script:c.Cyan
         $temp = 1
         foreach ($t in $script:temas.Keys | Sort-Object) {
             $marcador = if ($t -eq $script:temaAtual) { "[X]" } else { "[ ]" }
@@ -63,6 +63,7 @@ function EscolherTema {
             $chaves = @($script:temas.Keys | Sort-Object)
             $script:temaAtual = $chaves[[int]$choice - 1]
             $script:c = $script:temas[$script:temaAtual].Clone()
+            SalvarTema
             Write-Host "Tema alterado para: $($script:temaAtual)" -ForegroundColor $script:c.Green
             Start-Sleep 1
         }
