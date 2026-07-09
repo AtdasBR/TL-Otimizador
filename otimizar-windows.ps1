@@ -56,8 +56,8 @@ function EscolherTema {
         }
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
-        $choice = Read-Host "Numero (ou V para voltar)"
-        if ($choice -eq "V" -or $choice -eq "v") { SalvarTema; return }
+        $choice = Read-Host "Numero (ou 0 para voltar)"
+        if ($choice -eq "0") { SalvarTema; return }
         $num = [int]::TryParse($choice, [ref]$null)
         if ($num -and [int]$choice -ge 1 -and [int]$choice -le $script:temas.Count) {
             $chaves = @($script:temas.Keys | Sort-Object)
@@ -170,17 +170,24 @@ function Show-Help {
     Write-Host "  $v   15. CleanMgr - Ferramenta nativa             $v" -ForegroundColor $script:c.DarkGray
     Write-Host "  $v   16. DISM - Repara o Windows                  $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  INSTALADOR (20-23) - Instalar/remover        $v" -ForegroundColor $script:c.Green
+    Write-Host "  $v  INSTALADOR (20-25) - Instalar/remover        $v" -ForegroundColor $script:c.Green
     Write-Host "  $v   20. Navegadores - Chrome, Firefox, etc       $v" -ForegroundColor $script:c.DarkGray
     Write-Host "  $v   21. Softwares - 7-Zip, VLC, VS Code, etc    $v" -ForegroundColor $script:c.DarkGray
     Write-Host "  $v   22. Drivers - Atualizar drivers              $v" -ForegroundColor $script:c.DarkGray
     Write-Host "  $v   23. Desinstalar - Programas                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   24. Editor de Imagem - GIMP, Paint, etc      $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   25. Editor de Video - CapCut, Shotcut, etc   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   26. Visualizador de Fotos - Photos, XnView, etc$v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   27. Streaming/Gravacao - OBS, Streamlabs, etc  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   28. Conversor Video/Audio - HandBrake, etc     $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   29. Zip/Unzip - 7-Zip, WinRAR                   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   30. Media Player - Pot Player, VLC, etc        $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "  $v  OUTROS (30-40) - Utilidades                  $v" -ForegroundColor $script:c.White
-    Write-Host "  $v   30. Backup / 31. Restaurar / 32. WinRE       $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   33. Edicoes / 34. Usuarios / 35. CMD Cores   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   36. Windows Update / 37. Som / 38. Gaming    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "  $v   39. Tema / 40. Sobre                         $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v  OUTROS (41-50) - Utilidades                  $v" -ForegroundColor $script:c.White
+    Write-Host "  $v   41. Backup / 42. Restaurar                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   43. Edicoes / 44. Usuarios / 45. CMD Cores $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   46. Windows Update / 47. Som / 48. Gaming   $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "  $v   49. Tema / 50. Sobre                        $v" -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
     Write-Host "  $v  [0] Sair                                      $v" -ForegroundColor $script:c.Red
     Write-Host $bot -ForegroundColor $script:c.Cyan
@@ -252,22 +259,26 @@ function Show-Menu {
     Write-Host ("  $v" + ($fmt -f "22", $d, "Atualizar Drivers") + "$v") -ForegroundColor $script:c.Green
     Write-Host ("  $v" + ($fmt -f "23", $d, "Desinstalar") + "$v") -ForegroundColor $script:c.Green
     Write-Host ("  $v" + ($fmt -f "24", $d, "Editor de Imagem") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "25", $d, "Editor de Video") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "26", $d, "Visualizador Fotos") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "27", $d, "Streaming/Gravacao") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "28", $d, "Conv. Video/Audio") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "29", $d, "Zip/Unzip") + "$v") -ForegroundColor $script:c.Green
+    Write-Host ("  $v" + ($fmt -f "30", $d, "Media Player") + "$v") -ForegroundColor $script:c.Green
     Write-Host $bot -ForegroundColor $script:c.Green
     Write-Host ""
-
     Write-Host "  OUTROS" -ForegroundColor $script:c.White
     Write-Host $top -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "30", $d, "Backup Sistema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "31", $d, "Restaurar Sistema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "32", $d, "WinRE") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "33", $d, "Edicoes Windows") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "34", $d, "Usuarios") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "35", $d, "CMD Cores") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "36", $d, "Windows Update") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "37", $d, "Som Mod") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "38", $d, "Gaming") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "39", $d, "Tema") + "$v") -ForegroundColor $script:c.White
-    Write-Host ("  $v" + ($fmt -f "40", $d, "Sobre") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "41", $d, "Backup Sistema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "42", $d, "Restaurar Sistema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "43", $d, "Edicoes Windows") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "44", $d, "Usuarios") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "45", $d, "CMD Cores") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "46", $d, "Windows Update") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "47", $d, "Som Mod") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "48", $d, "Gaming") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "49", $d, "Tema") + "$v") -ForegroundColor $script:c.White
+    Write-Host ("  $v" + ($fmt -f "50", $d, "Sobre") + "$v") -ForegroundColor $script:c.White
     Write-Host $bot -ForegroundColor $script:c.White
     Write-Host ""
 
@@ -424,11 +435,11 @@ function Show-ServicosSubmenu {
         }
 
         Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [V] Voltar                $v" -ForegroundColor $script:c.Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [0] Voltar                $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
-        if ($choice -eq "V" -or $choice -eq "v") { return $null }
+        if ($choice -eq "0") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Servicos }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($s in $Servicos) { $s.Selected = $true }; continue }
         $num = [int]::TryParse($choice, [ref]$null)
@@ -616,11 +627,11 @@ function Show-GenericoSubmenu {
         }
 
         Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [V] Voltar           $v" -ForegroundColor $script:c.Yellow
+        Write-Host "  $v  [A] Aplicar  [T] Marcar todos  [0] Voltar           $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
         $choice = Read-Host "Escolha"
-        if ($choice -eq "V" -or $choice -eq "v") { return $null }
+        if ($choice -eq "0") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Itens }
         if ($choice -eq "T" -or $choice -eq "t") { foreach ($item in $Itens) { $item.Selected = $true }; continue }
         $num = [int]::TryParse($choice, [ref]$null)
@@ -921,8 +932,8 @@ function Run-Browsers {
         }
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
-        $choice = Read-Host "Numero (ou V para voltar)"
-        if ($choice -eq "V" -or $choice -eq "v") { return }
+        $choice = Read-Host "Numero (ou 0 para voltar)"
+        if ($choice -eq "0") { return }
         $num = [int]::TryParse($choice, [ref]$null)
         if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
         $item = $itens[[int]$choice - 1]
@@ -932,7 +943,7 @@ function Run-Browsers {
         Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
         Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
         Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
-        Write-Host "  $v  [V] Voltar                                    $v" -ForegroundColor $script:c.Yellow
+        Write-Host "  $v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
         Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
         Write-Host ""
         $acao = Read-Host "Escolha"
@@ -1050,8 +1061,8 @@ function Run-DriverUpdater {
         }
         Write-Host $bot -ForegroundColor $script:c.Cyan
         Write-Host ""
-        $choice = Read-Host "Numero (ou V para voltar)"
-        if ($choice -eq "V" -or $choice -eq "v") { return }
+        $choice = Read-Host "Numero (ou 0 para voltar)"
+        if ($choice -eq "0") { return }
         $num = [int]::TryParse($choice, [ref]$null)
         if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
         $item = $itens[[int]$choice - 1]
@@ -1061,7 +1072,7 @@ function Run-DriverUpdater {
         Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
         Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
         Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
-        Write-Host "  $v  [V] Voltar                                    $v" -ForegroundColor $script:c.Yellow
+        Write-Host "  $v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
         Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
         Write-Host ""
         $acao = Read-Host "Escolha"
@@ -1215,7 +1226,7 @@ function Run-UniversalUninstaller {
         $bot = "  $([char]0x255A)$("$h"*58)$([char]0x255D)"
         Write-Host $top -ForegroundColor $script:c.Magenta
         Write-Host "  $v              DESINSTALADOR UNIVERSAL                  $v" -ForegroundColor $script:c.Magenta
-        Write-Host "  $v  /texto = buscar   NUMERO = desinstalar   [V] Voltar $v" -ForegroundColor $script:c.DarkCyan
+        Write-Host "  $v  /texto = buscar   NUMERO = desinstalar   [0] Voltar $v" -ForegroundColor $script:c.DarkCyan
         Write-Host "  $v  Filtro: $(if ($filtro) { $filtro } else { '(todos)' })                          $v" -ForegroundColor $script:c.Yellow
         Write-Host $bot -ForegroundColor $script:c.Magenta
         if ($lista.Count -eq 0) {
@@ -1230,7 +1241,7 @@ function Run-UniversalUninstaller {
         Write-Host "  ---- $($lista.Count) programa(s) ----" -ForegroundColor $script:c.DarkGray
         Write-Host ""
         $cmd = Read-Host "Comando"
-        if ($cmd -eq "V" -or $cmd -eq "v") { return }
+        if ($cmd -eq "0") { return }
         if ($cmd -eq "U" -or $cmd -eq "u") {
             Write-Host "Digite o NUMERO do programa para desinstalar." -ForegroundColor $script:c.Yellow; Start-Sleep 1; continue
         }
@@ -1724,7 +1735,7 @@ function Show-BrowserInstaller {
         @{Name="Brave"; Url="https://laptop-updates.brave.com/latest/standalone"; Args="/silent /install"},
         @{Name="Vivaldi"; Url="https://downloads.vivaldi.net/stable/Vivaldi.8.0.4033.57.x64.exe"; Args="/S"},
         @{Name="Opera"; Url="https://net.geo.opera.com/opera/stable/windows"; Args="/silent /install"},
-        @{Name="Opera GX"; Url="https://net.geo.opera.com/gx/stable/windows"; Args="/silent /install"},
+        @{Name="Opera GX"; Url="https://net.geo.opera.com/opera_gx/stable/windows"; Args="/silent /install"},
         @{Name="Tor Browser"; Url="https://dist.torproject.org/torbrowser/15.0.17/tor-browser-windows-x86_64-portable-15.0.17.exe"; Args="/S"}
     )
     if ($escolha -eq "0") { return }
@@ -1781,10 +1792,10 @@ function Show-SoftwareInstaller {
         @{Name="Python"; Url="https://www.python.org/ftp/python/3.12.7/python-3.12.7-amd64.exe"; Args="/quiet InstallAllUsers=1 PrependPath=1"},
         @{Name="Node.js"; Url="https://nodejs.org/dist/v22.11.0/node-v22.11.0-x64.msi"; Args="/quiet INSTALLDIR=`"C:\Program Files\nodejs`""},
         @{Name="VS Code"; Url="https://update.code.visualstudio.com/latest/win32-x64-user/stable"; Args="/silent /install"},
-        @{Name="Discord"; Url="https://dl.discordapp.net/apps/win/DiscordSetup.exe"; Args="/silent"},
+        @{Name="Discord"; Url="https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64"; Args="/silent"},
         @{Name="Steam"; Url="https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe"; Args="/S"},
         @{Name="WhatsApp"; Url="https://web.whatsapp.com/desktop/windows/release/x64/WhatsAppSetup.exe"; Args="/silent"},
-        @{Name="Telegram"; Url="https://tdesktop.com/tdesktop/tdesktop.5.8.3.x64.exe"; Args="/S"}
+        @{Name="Telegram"; Url="https://telegram.org/dl/desktop/win64"; Args="/S"}
     )
     if ($escolha -eq "0") { return }
     if ($escolha -ge 1 -and $escolha -le 11) {
@@ -1818,7 +1829,7 @@ function Show-ImageEditorInstaller {
     Write-Host ""
     $escolha = Read-Host "Escolha o editor"
     $editores = @(
-        @{Name="GIMP"; Url="https://download.gimp.org/gimp/v3.0/windows/gimp-3.0.2-setup-3.exe"; Args="/VERYSILENT /NORESTART /ALLUSERS"},
+        @{Name="GIMP"; Url="https://download.gimp.org/gimp/v3.0/windows/gimp-3.0.4-setup.exe"; Args="/VERYSILENT /NORESTART /ALLUSERS"},
         @{Name="Microsoft Paint"; Url="https://codeload.github.com/microsoft/PowerToys/zip/refs/heads/main"; Args=""},
         @{Name="Paint.NET"; Url="https://www.dotpdn.com/files/paint.net.5.1.4.install.x64.zip"; Args=""}
     )
@@ -1827,6 +1838,252 @@ function Show-ImageEditorInstaller {
         $ed = $editores[$escolha - 1]
         Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
         $tempFile = Join-Path $env:TEMP "editor_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-VideoEditorInstaller {
+    Show-Banner
+    Write-Host "  EDITOR DE VIDEO" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. Microsoft Clipchamp" -ForegroundColor $script:c.White
+    Write-Host "  2. CapCut" -ForegroundColor $script:c.White
+    Write-Host "  3. OpenShot" -ForegroundColor $script:c.White
+    Write-Host "  4. DaVinci Resolve" -ForegroundColor $script:c.White
+    Write-Host "  5. Shotcut" -ForegroundColor $script:c.White
+    Write-Host "  6. Kdenlive" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o editor"
+    $editores = @(
+        @{Name="Clipchamp"; Url="https://aka.ms/clipchamp/win/install"; Args="/silent"},
+        @{Name="CapCut"; Url="https://sf16-web-tos-buz.capcutcdn-us.com/obj/capcut-web-buz-tx/packages/CapCut_8_7_0_3685_capcutpc_0_creatortool.exe"; Args="/silent"},
+        @{Name="OpenShot"; Url="https://github.com/OpenShot/openshot-qt/releases/download/v3.3.0/OpenShot-v3.3.0-x86_64.exe"; Args="/S"},
+        @{Name="DaVinci Resolve"; Url="https://www.blackmagicdesign.com/products/davinciresolve"; Args="/S"},
+        @{Name="Shotcut"; Url="https://github.com/mltframework/shotcut/releases/download/v26.6.25/shotcut-win64-26.6.25.exe"; Args="/S"},
+        @{Name="Kdenlive"; Url="https://download.kde.org/stable/kdenlive/26.04/windows/kdenlive-26.04.2.exe"; Args="/S"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 6) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "video_editor_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-PhotoViewerInstaller {
+    Show-Banner
+    Write-Host "  VISUALIZADOR DE FOTOS" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. Microsoft Photos" -ForegroundColor $script:c.White
+    Write-Host "  2. XnView" -ForegroundColor $script:c.White
+    Write-Host "  3. IrfanView" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o visualizador"
+    $editores = @(
+        @{Name="Microsoft Photos"; Url="https://www.microsoft.com/store/productId/9WZDNCRFJBH4"; Args="/silent"},
+        @{Name="XnView"; Url="https://download.xnview.com/XnViewMP-win-x64.exe"; Args="/S"},
+        @{Name="IrfanView"; Url="https://www.irfanview.com/iview64_x64_setup.exe"; Args="/silent"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 3) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "photo_viewer_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-StreamingInstaller {
+    Show-Banner
+    Write-Host "  STREAMING / GRAVACAO" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. OBS Studio" -ForegroundColor $script:c.White
+    Write-Host "  2. Streamlabs" -ForegroundColor $script:c.White
+    Write-Host "  3. XSplit" -ForegroundColor $script:c.White
+    Write-Host "  4. PRISM Live Studio" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o software"
+    $editores = @(
+        @{Name="OBS Studio"; Url="https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Full-Installer-x64.exe"; Args="/S"},
+        @{Name="Streamlabs"; Url="https://streamlabs.com/download/streamlabs-desktop"; Args="/silent"},
+        @{Name="XSplit"; Url="https://cdn.xsplit.com/download/win64/XSplit_Installer.exe"; Args="/silent"},
+        @{Name="PRISM Live Studio"; Url="https://prismlive.com/download/win"; Args="/silent"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 4) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "streaming_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-ConverterInstaller {
+    Show-Banner
+    Write-Host "  CONVERSOR VIDEO / AUDIO" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. HandBrake" -ForegroundColor $script:c.White
+    Write-Host "  2. VidCoder" -ForegroundColor $script:c.White
+    Write-Host "  3. Shutter Encoder" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o conversor"
+    $editores = @(
+        @{Name="HandBrake"; Url="https://github.com/HandBrake/HandBrake/releases/download/1.8.2/HandBrake-1.8.2-x86_64-Win_GUI.exe"; Args="/S"},
+        @{Name="VidCoder"; Url="https://github.com/RandomEngy/VidCoder/releases/download/v10.1b/VidCoder-10.1-beta.exe"; Args="/silent"},
+        @{Name="Shutter Encoder"; Url="https://www.shutterencoder.com/Shutter%20Encoder%2018.5%20Windows%2064bits.exe"; Args="/S"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 3) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "converter_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-ZipInstaller {
+    Show-Banner
+    Write-Host "  ZIP / UNZIP" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. 7-Zip" -ForegroundColor $script:c.White
+    Write-Host "  2. WinRAR (trial)" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o compactador"
+    $editores = @(
+        @{Name="7-Zip"; Url="https://www.7-zip.org/a/7z2409-x64.exe"; Args="/S"},
+        @{Name="WinRAR"; Url="https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701br.exe"; Args="/S"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 2) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "zip_install.exe"
+        try {
+            $wc = New-Object System.Net.WebClient
+            $wc.DownloadFile($ed.Url, $tempFile)
+            Write-Host "[OK] Download concluido. Instalando..." -ForegroundColor $script:c.Green
+            if ($ed.Args) {
+                Start-Process $tempFile -ArgumentList $ed.Args -Wait -ErrorAction SilentlyContinue
+            } else {
+                Start-Process $tempFile -Wait -ErrorAction SilentlyContinue
+            }
+            Write-Host "[OK] $($ed.Name) instalado com sucesso" -ForegroundColor $script:c.Green
+            Remove-Item -Path $tempFile -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "[ERRO] Falha ao instalar $($ed.Name): $_" -ForegroundColor $script:c.Red
+        }
+    } else {
+        Write-Host "Opcao invalida!" -ForegroundColor $script:c.Red
+    }
+    Wait-Key
+}
+
+function Show-MediaPlayerInstaller {
+    Show-Banner
+    Write-Host "  MEDIA PLAYER" -ForegroundColor $script:c.Green
+    Write-Host ""
+    Write-Host "  1. Pot Player" -ForegroundColor $script:c.White
+    Write-Host "  2. VLC Player" -ForegroundColor $script:c.White
+    Write-Host "  3. Windows Media Player" -ForegroundColor $script:c.White
+    Write-Host "  0. Voltar" -ForegroundColor $script:c.Red
+    Write-Host ""
+    $escolha = Read-Host "Escolha o player"
+    $editores = @(
+        @{Name="Pot Player"; Url="https://t1.daumcdn.net/potplayer/PotPlayerSetup64.exe"; Args="/S"},
+        @{Name="VLC"; Url="https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe"; Args="/S /L=1046"},
+        @{Name="Windows Media Player"; Url="https://www.microsoft.com/store/productId/9WZDNCRFJBD4"; Args="/silent"}
+    )
+    if ($escolha -eq "0") { return }
+    if ($escolha -ge 1 -and $escolha -le 3) {
+        $ed = $editores[$escolha - 1]
+        Write-Host "`n[+] $($ed.Name) - Baixando..." -ForegroundColor $script:c.Green
+        $tempFile = Join-Path $env:TEMP "mediaplayer_install.exe"
         try {
             $wc = New-Object System.Net.WebClient
             $wc.DownloadFile($ed.Url, $tempFile)
@@ -1867,24 +2124,6 @@ function Run-RestaurarSistema {
         Write-Host "[OK] Assistente de Restauracao aberto" -ForegroundColor $script:c.Green
     } catch {
         Write-Host "[ERRO] Falha ao abrir Restaurar Sistema" -ForegroundColor $script:c.Red
-    }
-}
-
-function Run-WinRE {
-    Write-Host "`n[+] WinRE - Gerenciando..." -ForegroundColor $script:c.Yellow
-    $status = reagentc /info 2>&1
-    if ($status -match "Enabled") {
-        Write-Host "[OK] WinRE esta ATIVADO" -ForegroundColor $script:c.Green
-    } else {
-        Write-Host "[--] WinRE esta DESATIVADO" -ForegroundColor $script:c.DarkGray
-    }
-    $res = Read-Host "Ativar/Desativar WinRE? (A/D/N)"
-    if ($res -eq "A" -or $res -eq "a") {
-        reagentc /enable 2>$null
-        Write-Host "[OK] WinRE ativado" -ForegroundColor $script:c.Green
-    } elseif ($res -eq "D" -or $res -eq "d") {
-        reagentc /disable 2>$null
-        Write-Host "[OK] WinRE desativado" -ForegroundColor $script:c.Green
     }
 }
 
@@ -2151,17 +2390,22 @@ do {
         "22" { Show-Banner; Run-DriverUpdater }
         "23" { Show-Banner; Run-UniversalUninstaller }
         "24" { Show-ImageEditorInstaller }
-        "30" { Show-Banner; Run-BackupSistema; Wait-Key }
-        "31" { Show-Banner; Run-RestaurarSistema; Wait-Key }
-        "32" { Show-Banner; Run-WinRE; Wait-Key }
-        "33" { Show-Banner; Run-EdicoesWindows; Wait-Key }
-        "34" { Show-Banner; Run-Usuarios; Wait-Key }
-        "35" { Show-Banner; Run-CmdCores; Wait-Key }
-        "36" { Show-Banner; Run-WindowsUpdate; Wait-Key }
-        "37" { Show-Banner; Run-SomMod; Wait-Key }
-        "38" { Show-Gaming }
-        "39" { EscolherTema }
-        "40" { Show-Banner; Show-Sobre; Wait-Key }
+        "25" { Show-VideoEditorInstaller }
+        "26" { Show-PhotoViewerInstaller }
+        "27" { Show-StreamingInstaller }
+        "28" { Show-ConverterInstaller }
+        "29" { Show-ZipInstaller }
+        "30" { Show-MediaPlayerInstaller }
+        "41" { Show-Banner; Run-BackupSistema; Wait-Key }
+        "42" { Show-Banner; Run-RestaurarSistema; Wait-Key }
+        "43" { Show-Banner; Run-EdicoesWindows; Wait-Key }
+        "44" { Show-Banner; Run-Usuarios; Wait-Key }
+        "45" { Show-Banner; Run-CmdCores; Wait-Key }
+        "46" { Show-Banner; Run-WindowsUpdate; Wait-Key }
+        "47" { Show-Banner; Run-SomMod; Wait-Key }
+        "48" { Show-Gaming }
+        "49" { EscolherTema }
+        "50" { Show-Banner; Show-Sobre; Wait-Key }
         "0" { Write-Host "Saindo..." -ForegroundColor $script:c.Green; break }
         default { Write-Host "Opcao invalida! Tente novamente." -ForegroundColor $script:c.Red; Start-Sleep -Seconds 1 }
     }
