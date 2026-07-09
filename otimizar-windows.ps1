@@ -1389,6 +1389,11 @@ function Install-Local {
             Wait-Key; return
         }
     }
+    $srcIcon = Join-Path (Get-Location) "icon.ico"
+    if (Test-Path $srcIcon) {
+        Copy-Item $srcIcon (Join-Path $targetDir "icon.ico") -Force
+        Write-Host "$p Icone personalizado copiado." -ForegroundColor $script:c.Green
+    }
     $profileLine = "`n# TL Optimizer`nfunction tl-optimizer { & `"$scriptPath`" }`nSet-Alias -Name tl -Value tl-optimizer -Force"
     $profilePath = $PROFILE.CurrentUserAllHosts
     $dir = Split-Path $profilePath -Parent
@@ -1407,6 +1412,12 @@ function Install-Local {
         $shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$scriptPath`""
         $shortcut.WorkingDirectory = $targetDir
         $shortcut.Description = "TL Optimizer - Otimizador de Windows"
+        $iconPath = Join-Path $targetDir "icon.ico"
+        if (Test-Path $iconPath) {
+            $shortcut.IconLocation = $iconPath
+        } else {
+            $shortcut.IconLocation = "%SystemRoot%\System32\imageres.dll,23"
+        }
         $shortcut.Save()
         Write-Host "$p Atalho criado na Area de Trabalho." -ForegroundColor $script:c.Green
     } catch {
