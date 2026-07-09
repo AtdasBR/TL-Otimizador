@@ -19,6 +19,7 @@ $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
 $script:carregouTema = $false
 $Host.UI.RawUI.BackgroundColor = "Black"
+$script:mostrouTela = $false
 
 function Pad-W {
     param([int]$Width)
@@ -2388,6 +2389,29 @@ function Show-Gaming {
     Wait-Key
 }
 
+function Show-LoadingScreen {
+    Clear-Host
+    $p = Pad-W 56
+    $logo = @(
+        "████████╗██╗     ███████╗██████╗ ████████╗██╗███╗   ███╗██╗███████╗██████╗",
+        "╚══██╔══╝██║     ██╔════╝╚════██╗╚══██╔══╝██║████╗ ████║██║╚══███╔╝╚════██╗",
+        "   ██║   ██║     █████╗   █████╔╝   ██║   ██║██╔████╔██║██║  ███╔╝  █████╔╝",
+        "   ██║   ██║     ██╔══╝  ██╔═══╝    ██║   ██║██║╚██╔╝██║██║ ███╔╝  ██╔═══╝",
+        "   ██║   ███████╗███████╗███████╗   ██║   ██║██║ ╚═╝ ██║██║███████╗███████╗",
+        "   ╚═╝   ╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝╚═╝╚══════╝╚══════╝"
+    )
+    foreach ($l in $logo) { Write-Host "$p$l" -ForegroundColor $script:c.White }
+    Write-Host ""
+    Write-Host ""
+    $p2 = Pad-W 40
+    Write-Host "$p2  by Thallas" -ForegroundColor $script:c.Cyan
+    Write-Host "$p2  Discord: thallin" -ForegroundColor $script:c.DarkGray
+    Write-Host ""
+    Write-Host "$p2  Iniciando..." -NoNewline -ForegroundColor $script:c.Green
+    for ($i = 0; $i -lt 3; $i++) { Start-Sleep -Milliseconds 400; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
+    Start-Sleep 1
+}
+
 function Show-Sobre {
     $p = Pad-W 44
     Write-Host ""
@@ -2423,6 +2447,9 @@ if (-not $PSCommandPath) {
 
 # === AUTO-UPDATE (silencioso, somente versao instalada) ===
 VerificarAtualizacao -Silencioso
+
+# === LOADING SCREEN (uma vez por sessao) ===
+Show-LoadingScreen
 
 # === MAIN LOOP ===
 do {
