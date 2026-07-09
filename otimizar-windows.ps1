@@ -291,8 +291,6 @@ function Show-Menu {
     Set-TermSize -Width ($boxW + 4) -Height $Host.UI.RawUI.WindowSize.Height
     Show-Banner -Width $boxW
     $p = Pad-W $boxW
-    $cw = [Math]::Floor(($boxW - 3) / 2)
-    $nw = $cw - 9
     $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
     $st = "$p$tt$("$th"*($boxW-2))$tr"
     $sb = "$p$tb$("$th"*($boxW-2))$te"
@@ -307,7 +305,7 @@ function Show-Menu {
     function Show-GridRow {
         param($c1, $c2, $c3, $hdr1, $hdr2, $hdr3, $color)
         function T { param($s, $n) if (-not $s) { " " * $n } elseif ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
-        $rows = [Math]::Max($c1.Count, $c2.Count, $c3.Count)
+        $rows = [Math]::Max([Math]::Max($c1.Count, $c2.Count), $c3.Count)
         $cw3 = [Math]::Floor(($boxW - 4) / 3)
         $nw3 = $cw3 - 9
         $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
@@ -343,8 +341,8 @@ function Show-Menu {
 
     Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 "SISTEMA" -hdr2 "FERRAMENTAS" -hdr3 "PRIVACIDADE" -color $script:c.Blue
 
-    $rows1 = [Math]::Max($t1.Count, $t2.Count, $t3.Count)
-    $rows2 = [Math]::Max($t4.Count, $t5.Count, $t6.Count)
+    $rows1 = [Math]::Max([Math]::Max($t1.Count, $t2.Count), $t3.Count)
+    $rows2 = [Math]::Max([Math]::Max($t4.Count, $t5.Count), $t6.Count)
     $totalH = 16 + $specLines.Count + $rows1 + $rows2
     Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
 
