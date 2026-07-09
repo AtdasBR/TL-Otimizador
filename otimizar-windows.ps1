@@ -2386,23 +2386,21 @@ function Show-Gaming {
 
 function Show-LoadingScreen {
     Clear-Host
-    $p = Pad-W 56
+    $p = Pad-W 48
     $logo = @(
-        "████████╗██╗     ███████╗██████╗ ████████╗██╗███╗   ███╗██╗███████╗██████╗",
-        "╚══██╔══╝██║     ██╔════╝╚════██╗╚══██╔══╝██║████╗ ████║██║╚══███╔╝╚════██╗",
-        "   ██║   ██║     █████╗   █████╔╝   ██║   ██║██╔████╔██║██║  ███╔╝  █████╔╝",
-        "   ██║   ██║     ██╔══╝  ██╔═══╝    ██║   ██║██║╚██╔╝██║██║ ███╔╝  ██╔═══╝",
-        "   ██║   ███████╗███████╗███████╗   ██║   ██║██║ ╚═╝ ██║██║███████╗███████╗",
-        "   ╚═╝   ╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝╚═╝     ╚═╝╚═╝╚══════╝╚══════╝"
+        "  _____ _    ____   _____  ______ ____",
+        " |_   _| |  |  _ \ / _ \ \/ /  _ \___ \",
+        "   | | | |  | |_) | | | \  /| |_) |__) |",
+        "   | | | |  |  __/| |_| /  \|  __/  __/",
+        "   |_| |_|  |_|    \___/_/\_\_|  |_____|"
     )
     foreach ($l in $logo) { Write-Host "$p$l" -ForegroundColor $script:c.White }
     Write-Host ""
-    Write-Host ""
-    $p2 = Pad-W 40
+    $p2 = Pad-W 36
     Write-Host "$p2  by Thallas" -ForegroundColor $script:c.Cyan
     Write-Host "$p2  Discord: atdas" -ForegroundColor $script:c.DarkGray
     Write-Host ""
-    Write-Host "$p2  Iniciando..." -NoNewline -ForegroundColor $script:c.Green
+    Write-Host "$p2  Iniciando" -NoNewline -ForegroundColor $script:c.Green
     for ($i = 0; $i -lt 3; $i++) { Start-Sleep -Milliseconds 400; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
     Start-Sleep 1
 }
