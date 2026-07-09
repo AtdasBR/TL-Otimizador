@@ -1735,14 +1735,21 @@ function Tweak-RemoverUWP {
             }
         } else { Write-Host "[--] Cancelado" -ForegroundColor $script:c.DarkGray }
     } elseif ($opt -eq "I" -or $opt -eq "i") {
-        Write-Host "[+] Abrindo Microsoft Store para reinstalar apps..." -ForegroundColor $script:c.Yellow
-        Write-Host "  Instale os apps desejados manualmente na Store:" -ForegroundColor $script:c.White
-        foreach ($app in $apps) {
-            $name = $app -replace 'Microsoft\.',''
-            Write-Host "  - $name" -ForegroundColor $script:c.DarkGray
+        Write-Host "[+] Reinstalando apps padrao do Windows..." -ForegroundColor $script:c.Yellow
+        $defaultApps = @(
+            "Microsoft.WindowsCamera", "Microsoft.Windows.Photos", "Microsoft.WindowsCalculator",
+            "Microsoft.WindowsAlarms", "Microsoft.WindowsSoundRecorder", "Microsoft.WindowsMaps",
+            "Microsoft.GetHelp", "Microsoft.Getstarted", "Microsoft.YourPhone",
+            "Microsoft.MicrosoftSolitaireCollection", "Microsoft.ZuneMusic", "Microsoft.ZuneVideo",
+            "Microsoft.People", "Microsoft.Todos", "Microsoft.Office.OneNote"
+        )
+        foreach ($app in $defaultApps) {
+            Write-Host "  Instalando $app..." -NoNewline
+            $result = winget install --id $app --silent --accept-package-agreements --accept-source-agreements 2>&1
+            if ($LASTEXITCODE -eq 0) { Write-Host " OK" -ForegroundColor $script:c.Green }
+            else { Write-Host " (ja instalado ou indisponivel)" -ForegroundColor $script:c.DarkGray }
         }
-        Start-Process "ms-windows-store:" -ErrorAction SilentlyContinue
-        Write-Host "[OK] Store aberta" -ForegroundColor $script:c.Green
+        Write-Host "[OK] Reinstalacao concluida" -ForegroundColor $script:c.Green
     } else {
         Write-Host "[--] Operacao cancelada" -ForegroundColor $script:c.DarkGray
     }
@@ -1851,6 +1858,8 @@ $script:wingetApps = @(
     @{Cat="Navegadores";     Name="Vivaldi";              ID="Vivaldi.Vivaldi"}
     @{Cat="Navegadores";     Name="Opera";                ID="Opera.Opera"}
     @{Cat="Navegadores";     Name="Tor Browser";          ID="TorProject.TorBrowser"}
+    @{Cat="Navegadores";     Name="Microsoft Edge";       ID="Microsoft.Edge"}
+    @{Cat="Navegadores";     Name="Opera GX";             ID="Opera.OperaGX"}
     @{Cat="Utilidades";      Name="7-Zip";                ID="7zip.7zip"}
     @{Cat="Utilidades";      Name="VLC";                  ID="VideoLAN.VLC"}
     @{Cat="Utilidades";      Name="Notepad++";            ID="Notepad++.Notepad++"}
@@ -1862,10 +1871,30 @@ $script:wingetApps = @(
     @{Cat="Utilidades";      Name="WhatsApp";             ID="WhatsApp.WhatsApp"}
     @{Cat="Utilidades";      Name="Telegram";             ID="Telegram.TelegramDesktop"}
     @{Cat="Utilidades";      Name="Steam";                ID="Valve.Steam"}
+    @{Cat="Utilidades";      Name="OBS Studio";           ID="OBSProject.OBSStudio"}
+    @{Cat="Utilidades";      Name="ShareX";               ID="ShareX.ShareX"}
+    @{Cat="Utilidades";      Name="Everything";           ID="Voidtools.Everything"}
+    @{Cat="Utilidades";      Name="PowerToys";            ID="Microsoft.PowerToys"}
+    @{Cat="Utilidades";      Name="Microsoft To Do";      ID="Microsoft.MicrosoftToDo"}
+    @{Cat="Utilidades";      Name="OneNote";              ID="Microsoft.Office.OneNote"}
+    @{Cat="Utilidades";      Name="EarTrumpet";           ID="FileNewProject.EarTrumpet"}
+    @{Cat="Utilidades";      Name="Fluent Search";        ID="FluentSearch.FluentSearch"}
+    @{Cat="Utilidades";      Name="Rufus";                ID="Rufus.Rufus"}
+    @{Cat="Utilidades";      Name="BalenaEtcher";         ID="Balena.Etcher"}
+    @{Cat="Utilidades";      Name="Ventoy";               ID="Ventoy.Ventoy"}
+    @{Cat="Utilidades";      Name="HWiNFO";               ID="HWiNFO.HWiNFO"}
+    @{Cat="Utilidades";      Name="CPU-Z";                ID="CPUID.CPU-Z"}
+    @{Cat="Utilidades";      Name="GPU-Z";                ID="TechPowerUp.GPU-Z"}
+    @{Cat="Utilidades";      Name="CrystalDiskInfo";      ID="CrystalDewWorld.CrystalDiskInfo"}
     @{Cat="Imagem";          Name="GIMP";                 ID="GIMP.GIMP"}
     @{Cat="Imagem";          Name="Paint.NET";            ID="dotPDN.PaintDotNet"}
     @{Cat="Imagem";          Name="IrfanView";            ID="IrfanSkiljan.IrfanView"}
     @{Cat="Imagem";          Name="XnView MP";            ID="XnView.XnViewMP"}
+    @{Cat="Imagem";          Name="Krita";                ID="KDE.Krita"}
+    @{Cat="Imagem";          Name="Inkscape";             ID="Inkscape.Inkscape"}
+    @{Cat="Imagem";          Name="Blender";              ID="BlenderFoundation.Blender"}
+    @{Cat="Imagem";          Name="Darktable";            ID="Darktable.Darktable"}
+    @{Cat="Imagem";          Name="Photopea";             ID="Photopea.Photopea"}
     @{Cat="Video";           Name="OBS Studio";           ID="OBSProject.OBSStudio"}
     @{Cat="Video";           Name="HandBrake";            ID="HandBrake.HandBrake"}
     @{Cat="Video";           Name="OpenShot";             ID="OpenShot.OpenShot"}
@@ -1873,15 +1902,105 @@ $script:wingetApps = @(
     @{Cat="Video";           Name="Kdenlive";             ID="KDE.Kdenlive"}
     @{Cat="Video";           Name="DaVinci Resolve";      ID="BlackmagicDesign.DaVinciResolve"}
     @{Cat="Video";           Name="CapCut";               ID="Bytedance.CapCut"}
+    @{Cat="Video";           Name="LosslessCut";          ID="Mifi.LosslessCut"}
+    @{Cat="Video";           Name="MKVToolNix";           ID="MoritzBunkus.MKVToolNix"}
+    @{Cat="Video";           Name="StaxRip";              ID="StaxRip.StaxRip"}
     @{Cat="Midia";           Name="Spotify";              ID="Spotify.Spotify"}
     @{Cat="Midia";           Name="Pot Player";           ID="Daum.PotPlayer"}
+    @{Cat="Midia";           Name="MPV";                  ID="Shizuku.MPV"}
+    @{Cat="Midia";           Name="AIMP";                 ID="AIMP.AIMP"}
+    @{Cat="Midia";           Name="MusicBee";             ID="MusicBee.MusicBee"}
+    @{Cat="Midia";           Name="foobar2000";           ID="PeterPawlowski.foobar2000"}
+    @{Cat="Midia";           Name="Plex";                 ID="Plex.Plex"}
+    @{Cat="Midia";           Name="Jellyfin Media Player"; ID="Jellyfin.JellyfinMediaPlayer"}
     @{Cat="Dev";             Name="Docker Desktop";       ID="Docker.DockerDesktop"}
     @{Cat="Dev";             Name="Postman";              ID="Postman.Postman"}
     @{Cat="Dev";             Name="PuTTY";                ID="PuTTY.PuTTY"}
     @{Cat="Dev";             Name="WinSCP";               ID="WinSCP.WinSCP"}
     @{Cat="Dev";             Name="Visual Studio 2022";   ID="Microsoft.VisualStudio.2022.Community"}
+    @{Cat="Dev";             Name="Visual Studio Code";   ID="Microsoft.VisualStudioCode"}
+    @{Cat="Dev";             Name="IntelliJ IDEA CE";     ID="JetBrains.IntelliJIDEA.Community"}
+    @{Cat="Dev";             Name="PyCharm CE";           ID="JetBrains.PyCharm.Community"}
+    @{Cat="Dev";             Name="WebStorm";             ID="JetBrains.WebStorm"}
+    @{Cat="Dev";             Name="DataGrip";             ID="JetBrains.DataGrip"}
+    @{Cat="Dev";             Name="Rider";                ID="JetBrains.Rider"}
+    @{Cat="Dev";             Name="GoLand";               ID="JetBrains.GoLand"}
+    @{Cat="Dev";             Name="RustRover";            ID="JetBrains.RustRover"}
+    @{Cat="Dev";             Name="Android Studio";       ID="Google.AndroidStudio"}
+    @{Cat="Dev";             Name="WSL";                  ID="Microsoft.WSL"}
+    @{Cat="Dev";             Name="Windows Terminal";     ID="Microsoft.WindowsTerminal"}
+    @{Cat="Dev";             Name="PowerShell 7";         ID="Microsoft.PowerShell"}
+    @{Cat="Dev";             Name="Node.js LTS";          ID="OpenJS.NodeJS.LTS"}
+    @{Cat="Dev";             Name="Python 3.13";          ID="Python.Python.3.13"}
+    @{Cat="Dev";             Name="Java 21 (Temurin)";    ID="EclipseAdoptium.Temurin.21.JDK"}
+    @{Cat="Dev";             Name="Rust";                 ID="Rustlang.Rustup"}
+    @{Cat="Dev";             Name="Git for Windows";      ID="Git.Git"}
+    @{Cat="Dev";             Name="GitHub Desktop";       ID="GitHub.GitHubDesktop"}
+    @{Cat="Dev";             Name="GitKraken";            ID="Axosoft.GitKraken"}
+    @{Cat="Dev";             Name="Sourcetree";           ID="Atlassian.Sourcetree"}
+    @{Cat="Dev";             Name="Insomnia";             ID="Insomnia.Insomnia"}
+    @{Cat="Dev";             Name="HTTPie";               ID="HTTPie.HTTPie"}
+    @{Cat="Dev";             Name="Bruno";                ID="UsmanB.Extract"}
     @{Cat="Compactacao";     Name="WinRAR";               ID="RARLab.WinRAR"}
+    @{Cat="Compactacao";     Name="PeaZip";               ID="PeaZip.PeaZip"}
+    @{Cat="Compactacao";     Name="Bandizip";             ID="Bandisoft.Bandizip"}
+    @{Cat="Compactacao";     Name="7-Zip";                ID="7zip.7zip"}
+    @{Cat="Compactacao";     Name="WinZip";               ID="WinZip.WinZip"}
+    @{Cat="Seguranca";       Name="Bitwarden";            ID="Bitwarden.Bitwarden"}
+    @{Cat="Seguranca";       Name="KeePassXC";            ID="KeePassXC.KeePassXC"}
+    @{Cat="Seguranca";       Name="VeraCrypt";            ID="IDRIX.VeraCrypt"}
+    @{Cat="Seguranca";       Name="OpenVPN Connect";      ID="OpenVPN.OpenVPNConnect"}
+    @{Cat="Seguranca";       Name="WireGuard";            ID="WireGuard.WireGuard"}
+    @{Cat="Seguranca";       Name="Malwarebytes";         ID="Malwarebytes.Malwarebytes"}
+    @{Cat="Escritorio";      Name="LibreOffice";          ID="TheDocumentFoundation.LibreOffice"}
+    @{Cat="Escritorio";      Name="OnlyOffice";           ID="AscensioSystem.OnlyOffice"}
+    @{Cat="Escritorio";      Name="WPS Office";           ID="Kingsoft.WPSOffice"}
+    @{Cat="Escritorio";      Name="Notion";               ID="Notion.Notion"}
+    @{Cat="Escritorio";      Name="Obsidian";             ID="Obsidian.Obsidian"}
+    @{Cat="Escritorio";      Name="Joplin";               ID="Joplin.Joplin"}
+    @{Cat="Escritorio";      Name="Typora";               ID="Typora.Typora"}
+    @{Cat="Escritorio";      Name="SumatraPDF";           ID="SumatraPDF.SumatraPDF"}
+    @{Cat="Escritorio";      Name="Adobe Acrobat Reader"; ID="Adobe.Acrobat.Reader"}
+    @{Cat="Escritorio";      Name="Foxit Reader";         ID="Foxit.FoxitReader"}
     @{Cat="Streaming";       Name="Streamlabs Desktop";   ID="Streamlabs.Streamlabs"}
+    @{Cat="Streaming";       Name="Streamer.bot";         ID="StreamerBot.StreamerBot"}
+    @{Cat="Streaming";       Name="VTube Studio";         ID="VTubeStudio.VTubeStudio"}
+    @{Cat="Streaming";       Name="OBS WebSocket";        ID="OBSProject.OBSWebSocket"}
+    @{Cat="Social";          Name="Discord";              ID="Discord.Discord"}
+    @{Cat="Social";          Name="Telegram";             ID="Telegram.TelegramDesktop"}
+    @{Cat="Social";          Name="WhatsApp";             ID="WhatsApp.WhatsApp"}
+    @{Cat="Social";          Name="Signal";               ID="Signal.Signal"}
+    @{Cat="Social";          Name="Threema";              ID="Threema.Threema"}
+    @{Cat="Social";          Name="Element";              ID="Element.Element"}
+    @{Cat="Social";          Name="Slack";                ID="Slack.Slack"}
+    @{Cat="Social";          Name="Zoom";                 ID="Zoom.Zoom"}
+    @{Cat="Social";          Name="Microsoft Teams";      ID="Microsoft.Teams"}
+    @{Cat="Social";          Name="Skype";                ID="Skype.Skype"}
+    @{Cat="Jogos";           Name="Steam";                ID="Valve.Steam"}
+    @{Cat="Jogos";           Name="Epic Games Launcher";  ID="EpicGames.EpicGamesLauncher"}
+    @{Cat="Jogos";           Name="GOG Galaxy";           ID="GOG.Galaxy"}
+    @{Cat="Jogos";           Name="Battle.net";           ID="Blizzard.BattleNet"}
+    @{Cat="Jogos";           Name="Ubisoft Connect";      ID="Ubisoft.UbisoftConnect"}
+    @{Cat="Jogos";           Name="EA App";               ID="ElectronicArts.EADesktop"}
+    @{Cat="Jogos";           Name="Xbox Game Bar";        ID="Microsoft.XboxGameBar"}
+    @{Cat="Jogos";           Name="Razer Synapse";        ID="Razer.Synapse"}
+    @{Cat="Jogos";           Name="Logitech G Hub";       ID="Logitech.GHub"}
+    @{Cat="Sistema";         Name="PowerToys";            ID="Microsoft.PowerToys"}
+    @{Cat="Sistema";         Name="Windows Terminal";     ID="Microsoft.WindowsTerminal"}
+    @{Cat="Sistema";         Name="PowerShell 7";         ID="Microsoft.PowerShell"}
+    @{Cat="Sistema";         Name="WSL";                  ID="Microsoft.WSL"}
+    @{Cat="Sistema";         Name="DriverStore Explorer"; ID="DriverStoreExplorer.RAPR"}
+    @{Cat="Sistema";         Name="Autoruns";             ID="Sysinternals.Autoruns"}
+    @{Cat="Sistema";         Name="Process Explorer";     ID="Sysinternals.ProcessExplorer"}
+    @{Cat="Sistema";         Name="Process Monitor";      ID="Sysinternals.ProcessMonitor"}
+    @{Cat="Sistema";         Name="TCPView";              ID="Sysinternals.TCPView"}
+    @{Cat="Sistema";         Name="Disk2vhd";             ID="Sysinternals.Disk2vhd"}
+    @{Cat="Sistema";         Name="ZoomIt";               ID="Sysinternals.ZoomIt"}
+    @{Cat="Sistema";         Name="BGInfo";               ID="Sysinternals.BGInfo"}
+    @{Cat="Sistema";         Name="Notepad++";            ID="Notepad++.Notepad++"}
+    @{Cat="Sistema";         Name="Notepad--";            ID="Milek7.Notepad--"}
+    @{Cat="Sistema";         Name="CLaunch";              ID="CLaunch.CLaunch"}
+    @{Cat="Sistema";         Name="Winaero Tweaker";      ID="Winaero.WinaeroTweaker"}
 )
 
 function Install-WingetApp {
