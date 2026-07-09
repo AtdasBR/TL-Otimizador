@@ -134,7 +134,10 @@ function VerificarAtualizacao {
             Remove-Item $tmp -Force
             Write-Host " OK" -ForegroundColor $script:c.Green
             Write-Host "Backup salvo em: $backupFile" -ForegroundColor $script:c.DarkGray
-            Write-Host "Execute 'tl' novamente para usar a nova versao." -ForegroundColor $script:c.Green
+            Write-Host "Reiniciando com a nova versao..." -ForegroundColor $script:c.Green
+            Start-Sleep -Seconds 1
+            & $scriptPath
+            exit
         } catch {
             Remove-Item $tmp -Force -ErrorAction SilentlyContinue
             Write-Host " ERRO: $($_.Exception.Message)" -ForegroundColor $script:c.Red
