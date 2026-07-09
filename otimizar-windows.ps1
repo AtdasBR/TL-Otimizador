@@ -140,65 +140,66 @@ function Get-SystemSpecs {
 
 function Show-Banner {
     Clear-Host
-    $p = Pad-W 44
+    $p = Pad-W 63
     $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
-    $ln = "$p$t$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
+    $ln = "$p$t$("$h"*61)$r"
     Write-Host $ln -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v            TL OPTIMIZER                $v" -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v              v$($script:versao)                    $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v                        TL OPTIMIZER                        $v" -ForegroundColor $script:c.Cyan
+    Write-Host "$p$v                            v$($script:versao)                             $v" -ForegroundColor $script:c.DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor $script:c.Cyan
     Write-Host ""
 }
 function Show-Help {
     Clear-Host
-    $p = Pad-W 44
+    $p = Pad-W 63
     $c=[char]0x250C;$h=[char]0x2500;$v=[char]0x2502;$b=[char]0x2514;$r=[char]0x2510;$e=[char]0x2518
-    $top = "$p$c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
-    $sep = "$p$c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$r"
-    $bot = "$p$b$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$e"
+    $top = "$p$c$("$h"*61)$r"
+    $sep = "$p$c$("$h"*61)$r"
+    $bot = "$p$b$("$h"*61)$e"
+    $sf = "$p$v{0,-61}$v"
 
     Write-Host $top -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  ### GUIA RAPIDO ###                             $v" -ForegroundColor $script:c.White
+    Write-Host ($sf -f "  ### GUIA RAPIDO ###") -ForegroundColor $script:c.White
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  TWEAK (1-8)  - Melhorias de sistema             $v" -ForegroundColor $script:c.Yellow
-    Write-Host "$p$v   1. Central de Acao - Notificacoes              $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   2. Cache Updates - Limpa downloads            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   3. Hibernacao - Libera RAM                    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   4. Pagefile - Otimiza memoria virtual         $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   5. Take Ownership - Menu de contexto          $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   6. Updates 2077 - Pausar atualizacoes         $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   7. Compact/LZX - Comprime o Windows           $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   8. Remover UWP - Apps desnecessarios          $v" -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "  TWEAK (1-8)  - Melhorias de sistema") -ForegroundColor $script:c.Yellow
+    Write-Host ($sf -f "   1. Central de Acao - Notificacoes") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   2. Cache Updates - Limpa downloads") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   3. Hibernacao - Libera RAM") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   4. Pagefile - Otimiza memoria virtual") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   5. Take Ownership - Menu de contexto") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   6. Updates 2077 - Pausar atualizacoes") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   7. Compact/LZX - Comprime o Windows") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   8. Remover UWP - Apps desnecessarios") -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  LIMPEZA (10-16) - Liberar espaco              $v" -ForegroundColor $script:c.Red
-    Write-Host "$p$v   10. Logs de Eventos - Limpa logs antigos     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   11. Cache Windows - Libera espaco            $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   12. DNS Cache - Reseta cache DNS             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   13. Temporarios - Limpa arquivos temp        $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   14. Limpeza Extrema - Libera GBs             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   15. CleanMgr - Ferramenta nativa             $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   16. DISM - Repara o Windows                  $v" -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "  LIMPEZA (10-16) - Liberar espaco") -ForegroundColor $script:c.Red
+    Write-Host ($sf -f "   10. Logs de Eventos - Limpa logs antigos") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   11. Cache Windows - Libera espaco") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   12. DNS Cache - Reseta cache DNS") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   13. Temporarios - Limpa arquivos temp") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   14. Limpeza Extrema - Libera GBs") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   15. CleanMgr - Ferramenta nativa") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   16. DISM - Repara o Windows") -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  INSTALADOR (20-25) - Instalar/remover        $v" -ForegroundColor $script:c.Green
-    Write-Host "$p$v   20. Navegadores - Chrome, Firefox, etc       $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   21. Softwares - 7-Zip, VLC, VS Code, etc    $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   22. Drivers - Atualizar drivers              $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   23. Desinstalar - Programas                  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   24. Editor de Imagem - GIMP, Paint, etc      $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   25. Editor de Video - CapCut, Shotcut, etc   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   26. Visualizador de Fotos - Photos, XnView, etc$v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   27. Streaming/Gravacao - OBS, Streamlabs, etc  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   28. Conversor Video/Audio - HandBrake, etc     $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   29. Zip/Unzip - 7-Zip, WinRAR                   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   30. Media Player - Pot Player, VLC, etc        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "  INSTALADOR (20-30) - Instalar/remover") -ForegroundColor $script:c.Green
+    Write-Host ($sf -f "   20. Navegadores - Chrome, Firefox, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   21. Softwares - 7-Zip, VLC, VS Code, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   22. Drivers - Atualizar drivers") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   23. Desinstalar - Programas") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   24. Editor de Imagem - GIMP, Paint, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   25. Editor de Video - CapCut, Shotcut, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   26. Visualizador de Fotos - Photos, XnView, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   27. Streaming/Gravacao - OBS, Streamlabs, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   28. Conversor Video/Audio - HandBrake, etc") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   29. Zip/Unzip - 7-Zip, WinRAR") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   30. Media Player - Pot Player, VLC, etc") -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  OUTROS (41-50) - Utilidades                  $v" -ForegroundColor $script:c.White
-    Write-Host "$p$v   41. Backup / 42. Restaurar                  $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   43. Edicoes / 44. Usuarios / 45. CMD Cores $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   46. Windows Update / 47. Som / 48. Gaming   $v" -ForegroundColor $script:c.DarkGray
-    Write-Host "$p$v   49. Tema / 50. Sobre                        $v" -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "  OUTROS (41-50) - Utilidades") -ForegroundColor $script:c.White
+    Write-Host ($sf -f "   41. Backup / 42. Restaurar") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   43. Edicoes / 44. Usuarios / 45. CMD Cores") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   46. Windows Update / 47. Som / 48. Gaming") -ForegroundColor $script:c.DarkGray
+    Write-Host ($sf -f "   49. Tema / 50. Sobre") -ForegroundColor $script:c.DarkGray
     Write-Host $sep -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v  [0] Sair                                      $v" -ForegroundColor $script:c.Red
+    Write-Host ($sf -f "  [0] Sair") -ForegroundColor $script:c.Red
     Write-Host $bot -ForegroundColor $script:c.Cyan
     Write-Host ""
     Write-Host "$p Como usar: iwr -useb https://is.gd/tlotimizador | iex" -ForegroundColor $script:c.Cyan
@@ -209,26 +210,33 @@ function Show-Help {
 function Show-Menu {
     Show-Banner
     $sp = Get-SystemSpecs
-    $p = Pad-W 55
-    $cw = 26
-    $nw = 19
-    $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
-    $st = "$p$tt$("$th"*53)$tr"
-    $sb = "$p$tb$("$th"*53)$te"
-    $sf = "$p$tv  {0,-50} $tv"
-    Write-Host $st -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "RAM:    $($sp.RAM)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "GPU:    $($sp.GPU)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "Uptime: $($sp.Uptime)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "Usuario: $($sp.Usuario)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "PC: $($sp.PC)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "TPM: $($sp.TPM)   NET 4: $($sp.Net4)") -ForegroundColor $script:c.DarkGray
-    Write-Host ($sf -f "Fuso: $($sp.Fuso)") -ForegroundColor $script:c.DarkGray
+    $specLines = @(
+        "SO:     $($sp.OS)",
+        "CPU:    $($sp.CPU)",
+        "RAM:    $($sp.RAM)",
+        "GPU:    $($sp.GPU)",
+        "Uptime: $($sp.Uptime)",
+        "Usuario: $($sp.Usuario)",
+        "PC: $($sp.PC)",
+        "TPM: $($sp.TPM)   NET 4: $($sp.Net4)",
+        "Fuso: $($sp.Fuso)"
+    )
     foreach ($d in $sp.Discos) {
-        Write-Host ($sf -f "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%") -ForegroundColor $script:c.DarkGray
+        $specLines += "Disco $($d.Letra):  $($d.Livre)/$($d.Total) GB  $($d.Bar)  $($d.Pct)%"
     }
+    $maxLen = ($specLines | ForEach-Object { $_.Length } | Measure-Object -Maximum).Maximum
+    $boxW = [Math]::Max(63, $maxLen + 5)
+    if ($boxW % 2 -eq 0) { $boxW++ }
+    $contentW = $boxW - 5
+    $p = Pad-W $boxW
+    $cw = [Math]::Floor(($boxW - 3) / 2)
+    $nw = $cw - 7
+    $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
+    $st = "$p$tt$("$th"*($boxW-2))$tr"
+    $sb = "$p$tb$("$th"*($boxW-2))$te"
+    $sf = "$p$tv  {0,-$contentW} $tv"
+    Write-Host $st -ForegroundColor $script:c.DarkGray
+    foreach ($s in $specLines) { Write-Host ($sf -f $s) -ForegroundColor $script:c.DarkGray }
     Write-Host $sb -ForegroundColor $script:c.DarkGray
     Write-Host ""
 
