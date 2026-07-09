@@ -248,41 +248,32 @@ function Show-Menu {
     $mid = "  $c$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $bot = "  $l$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$h$k"
     $fmt = "     {0,-2}. {1}  {2,-27} "
-    $df = "  $v {0,-38} $v"
-
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "1", $d, "Limpeza rapida") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "Remove arquivos temporarios") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "2", $s, "Limpeza profunda") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host ($df -f "Limpa bem mais fundo, libera GBs") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "3", $d, "Desligar servicos") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "Acelera o PC desligando servicos") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "4", $d, "Melhorar internet") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "DNS Cloudflare, reset de rede, TCP") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "5", $d, "Acelerar visual") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "Desliga animacoes e efeitos visuais") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "6", $s, "EXECUTAR TUDO") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host ($df -f "Roda servicos + internet + visual") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "7", $d, "Ponto de restauracao") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ($df -f "Cria checkpoint pra voltar se der erro") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
@@ -293,32 +284,26 @@ function Show-Menu {
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "11", $d, "Gerenciar navegadores") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ($df -f "Lista e desinstala navegadores") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "12", $s, "Desinstalador universal") + "$v") -ForegroundColor $script:c.Magenta
-    Write-Host ($df -f "Remove programas e limpa residuos") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "13", $d, "Driver Updater") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "Baixa atualizadores de drivers") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "14", $d, "Verificar atualizacao") + "$v") -ForegroundColor $script:c.Green
-    Write-Host ($df -f "Checa e baixa versao mais recente") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "15", $d, "Escolher tema") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ($df -f "Altera as cores do otimizador") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
     Write-Host ("  $v" + ($fmt -f "16", $d, "Ajuda") + "$v") -ForegroundColor $script:c.Yellow
-    Write-Host ($df -f "Explica cada opcao em detalhes") -ForegroundColor $script:c.DarkGray
     Write-Host $mid -ForegroundColor $script:c.DarkCyan
     Write-Host ""
     Write-Host $top -ForegroundColor $script:c.DarkCyan
