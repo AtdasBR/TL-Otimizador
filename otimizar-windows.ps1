@@ -209,11 +209,13 @@ function Show-Help {
 function Show-Menu {
     Show-Banner
     $sp = Get-SystemSpecs
-    $p = Pad-W 47
+    $p = Pad-W 55
+    $cw = 26
+    $nw = 19
     $tt=[char]0x2554;$tr=[char]0x2557;$tb=[char]0x255A;$te=[char]0x255D;$th=[char]0x2550;$tv=[char]0x2551
-    $st = "$p$tt$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$tr"
-    $sb = "$p$tb$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$th$te"
-    $sf = "$p$tv  {0,-38} $tv"
+    $st = "$p$tt$("$th"*53)$tr"
+    $sb = "$p$tb$("$th"*53)$te"
+    $sf = "$p$tv  {0,-50} $tv"
     Write-Host $st -ForegroundColor $script:c.DarkGray
     Write-Host ($sf -f "SO:     $($sp.OS)") -ForegroundColor $script:c.DarkGray
     Write-Host ($sf -f "CPU:    $($sp.CPU)") -ForegroundColor $script:c.DarkGray
@@ -233,35 +235,39 @@ function Show-Menu {
     $h=[char]0x2500;$v=[char]0x2502;$d=[char]0x25CF
     $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
     $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
-    $f_top = "$p$tl$("$h"*21)$tc$("$h"*21)$tr"
-    $f_sep = "$p$ml$("$h"*21)$mc$("$h"*21)$mr"
-    $f_bot = "$p$bl$("$h"*21)$bc$("$h"*21)$br"
+    $f_top = "$p$tl$("$h"*$cw)$tc$("$h"*$cw)$tr"
+    $f_sep = "$p$ml$("$h"*$cw)$mc$("$h"*$cw)$mr"
+    $f_bot = "$p$bl$("$h"*$cw)$bc$("$h"*$cw)$br"
 
     function Show-ColPair {
         param($left, $right, $hdrL, $hdrR, $color)
         function T { param($s, $n) if ($s.Length -gt $n) { $s.Substring(0, $n) } else { $s.PadRight($n) } }
         $rows = [Math]::Max($left.Count, $right.Count)
         Write-Host $f_top -ForegroundColor $color
-        Write-Host ("$p$v   {0,-18} $v   {1,-18} $v" -f $hdrL, $hdrR) -ForegroundColor $color
+        Write-Host ("$p$v  {0,-$($cw-3)} $v  {1,-$($cw-3)} $v" -f $hdrL, $hdrR) -ForegroundColor $color
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
-            if ($i -lt $left.Count) { $ls = "  $("{0,2}" -f $left[$i][0]) $d $(T $left[$i][1] 14) " } else { $ls = " "*21 }
-            if ($i -lt $right.Count) { $rs = "  $("{0,2}" -f $right[$i][0]) $d $(T $right[$i][1] 14) " } else { $rs = " "*21 }
+            if ($i -lt $left.Count -and $left[$i][0] -ne "") {
+                $ls = " $("{0,2}" -f $left[$i][0]) $d $(T $left[$i][1] $nw) "
+            } else { $ls = " "*$cw }
+            if ($i -lt $right.Count -and $right[$i][0] -ne "") {
+                $rs = " $("{0,2}" -f $right[$i][0]) $d $(T $right[$i][1] $nw) "
+            } else { $rs = " "*$cw }
             Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
         Write-Host $f_bot -ForegroundColor $color
         Write-Host ""
     }
 
-    $t = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("7","Compact/LZX"), @("8","Remover UWP") )
-    $l = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM") )
+    $t = @( @("2","Cache Updates"), @("1","Central de Acao"), @("7","Compact/LZX"), @("3","Hibernacao"), @("4","Pagefile"), @("",""), @("8","Remover UWP"), @("5","Take Ownership"), @("6","Updates 2077") )
+    $l = @( @("11","Cache Windows"), @("15","CleanMgr"), @("16","DISM"), @("12","DNS Cache"), @("",""), @("14","Limpeza Extrema"), @("10","Logs Eventos"), @("13","Temporarios") )
 
-    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA (10-16)" -color $script:c.Yellow
+    Show-ColPair -left $t -right $l -hdrL "TWEAK" -hdrR "LIMPEZA" -color $script:c.Yellow
 
-    $i = @( @("20","Navegadores"), @("21","Softwares"), @("22","Atualizar Drivers"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("26","Visualizador Fotos"), @("27","Streaming/Gravacao"), @("28","Conv. Video/Audio"), @("29","Zip/Unzip"), @("30","Media Player") )
-    $o = @( @("41","Backup Sistema"), @("42","Restaurar Sistema"), @("43","Edicoes Windows"), @("44","Usuarios"), @("45","CMD Cores"), @("46","Windows Update"), @("47","Som Mod"), @("48","Gaming"), @("49","Tema"), @("50","Sobre") )
+    $i = @( @("22","Atualizar Drivers"), @("28","Conv. Video/Audio"), @("23","Desinstalar"), @("24","Editor de Imagem"), @("25","Editor de Video"), @("",""), @("30","Media Player"), @("20","Navegadores"), @("21","Softwares"), @("27","Streaming/Gravacao"), @("26","Visualizador Fotos"), @("29","Zip/Unzip") )
+    $o = @( @("41","Backup Sistema"), @("45","CMD Cores"), @("43","Edicoes Windows"), @("48","Gaming"), @("44","Usuarios"), @("",""), @("42","Restaurar Sistema"), @("50","Sobre"), @("47","Som Mod"), @("49","Tema"), @("46","Windows Update") )
 
-    Show-ColPair -left $i -right $o -hdrL "INSTALADOR 20-30" -hdrR "OUTROS (41-50)" -color $script:c.Green
+    Show-ColPair -left $i -right $o -hdrL "INSTALADOR" -hdrR "OUTROS" -color $script:c.Green
 
     Write-Host "$p[0] Sair" -ForegroundColor $script:c.Red
     Write-Host ""
@@ -905,12 +911,12 @@ function Run-Browsers {
         foreach ($item in $itens) {
             if ($i -eq 1) {
                 Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "  $v  Digite NUMERO para instalar ou desinstalar    $v" -ForegroundColor $script:c.DarkCyan
+                Write-Host "$p$v  Digite NUMERO para instalar ou desinstalar    $v" -ForegroundColor $script:c.DarkCyan
                 Write-Host $sep -ForegroundColor $script:c.Cyan
             }
-            Write-Host "  $v  $("{0,2}" -f $i). $("{0,-38}" -f $item.Desc) $v" -ForegroundColor $script:c.White
+            Write-Host "$p$v  $("{0,2}" -f $i). $("{0,-38}" -f $item.Desc) $v" -ForegroundColor $script:c.White
             foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
-                Write-Host "  $v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
+                Write-Host "$p$v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
             }
             $i++
         }
@@ -922,13 +928,13 @@ function Run-Browsers {
         if (-not $num -or [int]$choice -lt 1 -or [int]$choice -gt $itens.Count) { continue }
         $item = $itens[[int]$choice - 1]
         Show-Banner
-        Write-Host "  $([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  $($item.Desc)  $v" -ForegroundColor $script:c.White
-        Write-Host "  $([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
-        Write-Host "  $v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
-        Write-Host "  $v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
-        Write-Host "  $v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
-        Write-Host "  $([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$v  $($item.Desc)  $v" -ForegroundColor $script:c.White
+        Write-Host "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)" -ForegroundColor $script:c.Cyan
+        Write-Host "$p$v  [I] Instalar - baixar e instalar automaticamente $v" -ForegroundColor $script:c.Green
+        Write-Host "$p$v  [D] Desinstalar - remover do PC               $v" -ForegroundColor $script:c.Red
+        Write-Host "$p$v  [0] Voltar                                    $v" -ForegroundColor $script:c.Yellow
+        Write-Host "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)" -ForegroundColor $script:c.Cyan
         Write-Host ""
         $acao = Read-Host "Escolha"
         switch ($acao.ToUpper()) {
