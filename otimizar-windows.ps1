@@ -934,7 +934,7 @@ function Run-Browsers {
         @{Nome = "Brave";           Desc = "Brave";             Selected = $false; URL = "https://laptop-updates.brave.com/latest/winx64"; Detalhe = "Navegador com bloqueador de anuncios e rastreadores nativo. Recompensa usuarios com criptomoedas."}
         @{Nome = "Opera";           Desc = "Opera";             Selected = $false; URL = "https://net.geo.opera.com/opera/stable/windows"; Detalhe = "Navegador com VPN gratuita integrada, bloqueador de anuncios e Messenger na barra lateral."}
         @{Nome = "Opera GX";        Desc = "Opera GX";          Selected = $false; URL = "https://net.geo.opera.com/opera_gx/stable/windows"; Detalhe = "Navegador para gamers com limitador de CPU/RAM, integracao com Twitch e Discord."}
-        @{Nome = "Vivaldi";         Desc = "Vivaldi";           Selected = $false; URL = "https://downloads.vivaldi.com/stable/VivaldiSetup.exe"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
+        @{Nome = "Vivaldi";         Desc = "Vivaldi";           Selected = $false; URL = "https://downloads.vivaldi.com/stable/Vivaldi.8.0.4033.57.x64.exe"; Detalhe = "Navegador altamente personalizavel. Ideal para quem gosta de configurar cada detalhe."}
         @{Nome = "Tor Browser";     Desc = "Tor Browser";       Selected = $false; URL = "https://www.torproject.org/dist/torbrowser/latest/torbrowser-install-win64.exe"; Detalhe = "Navegador focado em anonimato. Roteia o trafego por varios servidores ao redor do mundo."}
     )
     $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "INSTALAR NAVEGADORES"
