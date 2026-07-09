@@ -277,10 +277,10 @@ function Show-Menu {
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
             if ($i -lt $left.Count -and $left[$i][0] -ne "") {
-                $ls = " [{0,2}] | $(T $left[$i][1] $nw) "
+                $ls = " [$("{0,2}" -f $left[$i][0])] | $(T $left[$i][1] $nw) "
             } else { $ls = " "*$cw }
             if ($i -lt $right.Count -and $right[$i][0] -ne "") {
-                $rs = " [{0,2}] | $(T $right[$i][1] $nw) "
+                $rs = " [$("{0,2}" -f $right[$i][0])] | $(T $right[$i][1] $nw) "
             } else { $rs = " "*$cw }
             Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
