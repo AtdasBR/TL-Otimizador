@@ -2405,7 +2405,7 @@ function Show-LoadingScreen {
     Write-Host ""
     $p2 = Pad-W 40
     Write-Host "$p2  by Thallas" -ForegroundColor $script:c.Cyan
-    Write-Host "$p2  Discord: thallin" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p2  Discord: atdas" -ForegroundColor $script:c.DarkGray
     Write-Host ""
     Write-Host "$p2  Iniciando..." -NoNewline -ForegroundColor $script:c.Green
     for ($i = 0; $i -lt 3; $i++) { Start-Sleep -Milliseconds 400; Write-Host "." -NoNewline -ForegroundColor $script:c.Green }
