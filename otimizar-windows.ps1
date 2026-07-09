@@ -1084,21 +1084,10 @@ function Run-DriverUpdater {
                 Write-Host "[1/3] Executando desinstalador..." -NoNewline
                 try {
                     $uninst = $prog.UninstallString
-                    if ($uninst -match 'msiexec') {
-                        $args = "/x $($uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart"
-                        Start-Process "msiexec.exe" -ArgumentList $args -Wait -ErrorAction Stop
-                    } else {
-                        if ($uninst -match '^"([^"]+)"\s*(.*)$') {
-                            $exe = $Matches[1]; $args = $Matches[2]
-                        } else {
-                            $parts = $uninst -split '\s+', 2
-                            $exe = $parts[0]; $args = if ($parts.Count -gt 1) { $parts[1] } else { '' }
-                        }
-                        if ($args) { Start-Process -FilePath $exe -ArgumentList $args -Wait -ErrorAction Stop }
-                        else { Start-Process -FilePath $exe -Wait -ErrorAction Stop }
-                    }
+                    Write-Host " $uninst" -ForegroundColor $script:c.DarkGray
+                    Start-Process cmd.exe -ArgumentList '/c', $uninst -Wait -ErrorAction Stop
                     Write-Host " OK" -ForegroundColor $script:c.Green
-                } catch { Write-Host " FALHOU" -ForegroundColor $script:c.Red }
+                } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
                 $nomeBase = $prog.DisplayName -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
                 Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
                 $pastas = @("$env:PROGRAMFILES\$nomeBase*", "${env:ProgramFiles(x86)}\$nomeBase*", "$env:LOCALAPPDATA\$nomeBase*", "$env:APPDATA\$nomeBase*", "$env:PROGRAMDATA\$nomeBase*", "$env:USERPROFILE\$nomeBase*")
@@ -1120,7 +1109,7 @@ function Run-UniversalUninstaller {
     $todos = @()
     foreach ($p in $paths) {
         Get-ItemProperty $p -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -and $_.UninstallString } | ForEach-Object {
-            $todos += @{ Nome = $_.DisplayName; Uninst = $_.UninstallString -replace '"',''; Pub = $_.Publisher }
+            $todos += @{ Nome = $_.DisplayName; Uninst = $_.UninstallString; Pub = $_.Publisher }
         }
     }
     $todos = $todos | Sort-Object Nome
@@ -1174,20 +1163,10 @@ function Run-UniversalUninstaller {
             Write-Host "[1/3] Executando desinstalador..." -NoNewline
             try {
                 $uninst = $prog.Uninst
-                if ($uninst -match 'msiexec') {
-                    Start-Process "msiexec.exe" -ArgumentList "/x $($uninst -replace '.*msiexec.*/x\s*|/I\s*','') /quiet /norestart" -Wait -ErrorAction Stop
-                } else {
-                    if ($uninst -match '^"([^"]+)"\s*(.*)$') {
-                        $exe = $Matches[1]; $args = $Matches[2]
-                    } else {
-                        $parts = $uninst -split '\s+', 2
-                        $exe = $parts[0]; $args = if ($parts.Count -gt 1) { $parts[1] } else { '' }
-                    }
-                    if ($args) { Start-Process -FilePath $exe -ArgumentList $args -Wait -ErrorAction Stop }
-                    else { Start-Process -FilePath $exe -Wait -ErrorAction Stop }
-                }
+                Write-Host " $uninst" -ForegroundColor $script:c.DarkGray
+                Start-Process cmd.exe -ArgumentList '/c', $uninst -Wait -ErrorAction Stop
                 Write-Host " OK" -ForegroundColor $script:c.Green
-            } catch { Write-Host " FALHOU" -ForegroundColor $script:c.Red }
+            } catch { Write-Host " FALHOU ($($_.Exception.Message))" -ForegroundColor $script:c.Red }
             $nomeBase = $prog.Nome -replace '[\d\.\s\(\)]+$','' -replace '^The ',''
             $pubBase = if ($prog.Pub) { $prog.Pub -replace '[\s\,]+$','' } else { "" }
             Write-Host "[2/3] Limpando arquivos residuais..." -NoNewline
