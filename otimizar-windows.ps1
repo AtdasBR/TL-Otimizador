@@ -139,13 +139,19 @@ function Get-SystemSpecs {
 }
 
 function Show-Banner {
+    param([int]$Width = 63)
     Clear-Host
-    $p = Pad-W 63
+    $p = Pad-W $Width
     $t=[char]0x2554;$r=[char]0x2557;$b=[char]0x255A;$e=[char]0x255D;$h=[char]0x2550;$v=[char]0x2551
-    $ln = "$p$t$("$h"*61)$r"
+    $inner = $Width - 2
+    $ln = "$p$t$("$h"*$inner)$r"
+    $padL = [Math]::Max(0, [Math]::Floor(($inner - 13) / 2))
+    $padR = $inner - 13 - $padL
     Write-Host $ln -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v                        TL OPTIMIZER                        $v" -ForegroundColor $script:c.Cyan
-    Write-Host "$p$v                            v$($script:versao)                             $v" -ForegroundColor $script:c.DarkGray
+    Write-Host "$p$v$(" "*$padL)TL OPTIMIZER$(" "*$padR)$v" -ForegroundColor $script:c.Cyan
+    $padL = [Math]::Max(0, [Math]::Floor(($inner - 4) / 2))
+    $padR = $inner - 4 - $padL
+    Write-Host "$p$v$(" "*$padL)v$($script:versao)$(" "*$padR)$v" -ForegroundColor $script:c.DarkGray
     Write-Host ($ln -replace $t,$b -replace $r,$e) -ForegroundColor $script:c.Cyan
     Write-Host ""
 }
@@ -208,7 +214,6 @@ function Show-Help {
 }
 
 function Show-Menu {
-    Show-Banner
     $sp = Get-SystemSpecs
     $specLines = @(
         "SO:     $($sp.OS)",
@@ -228,6 +233,7 @@ function Show-Menu {
     $boxW = [Math]::Max(63, $maxLen + 5)
     if ($boxW % 2 -eq 0) { $boxW++ }
     $contentW = $boxW - 5
+    Show-Banner -Width $boxW
     $p = Pad-W $boxW
     $cw = [Math]::Floor(($boxW - 3) / 2)
     $nw = $cw - 7
@@ -256,10 +262,10 @@ function Show-Menu {
         Write-Host $f_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
             if ($i -lt $left.Count -and $left[$i][0] -ne "") {
-                $ls = " $("{0,2}" -f $left[$i][0]) $d $(T $left[$i][1] $nw) "
+                $ls = " [{0,2}] $(T $left[$i][1] $nw) "
             } else { $ls = " "*$cw }
             if ($i -lt $right.Count -and $right[$i][0] -ne "") {
-                $rs = " $("{0,2}" -f $right[$i][0]) $d $(T $right[$i][1] $nw) "
+                $rs = " [{0,2}] $(T $right[$i][1] $nw) "
             } else { $rs = " "*$cw }
             Write-Host "$p$v$ls$v$rs$v" -ForegroundColor $color
         }
