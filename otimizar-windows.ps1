@@ -21,6 +21,26 @@ $script:temaAtual = "Padrao"
 $script:c = $script:temas.Padrao.Clone()
 $Host.UI.RawUI.BackgroundColor = "Black"
 
+# === MAXIMIZAR JANELA DO CONSOLE (ANTES DE QUALQUER OUTPUT) ===
+try {
+    Add-Type -Name "Win32" -Namespace "ConsoleUtil" -MemberDefinition @"
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+"@
+    $hWnd = [ConsoleUtil.Win32]::GetConsoleWindow()
+    if ($hWnd -ne [IntPtr]::Zero) {
+        [ConsoleUtil.Win32]::ShowWindow($hWnd, 3)  # SW_MAXIMIZE = 3
+    }
+    # Buffer width fixo para evitar quebra de linha em tela cheia
+    $buf = $Host.UI.RawUI.BufferSize
+    if ($buf.Width -lt 120) {
+        $Host.UI.RawUI.BufferSize = New-Object Management.Automation.Host.Size 120, $buf.Height
+    }
+    Clear-Host
+} catch {}
+
 function Pad-W {
     param([int]$Width)
     $tw = $Host.UI.RawUI.WindowSize.Width
@@ -41,6 +61,42 @@ function Set-TermSize {
     } catch {}
 }
 
+# === FUNCOES DE RENDERIZACAO (tema unificado) ===
+function Show-TopBorder {
+    param([int]$Width, [string]$Color = $script:c.Cyan)
+    $p = Pad-W $Width; $h = [char]0x2550
+    Write-Host "$p$([char]0x2554)$("$h"*($Width-2))$([char]0x2557)" -ForegroundColor $Color
+}
+function Show-MidBorder {
+    param([int]$Width, [string]$Color = $script:c.Cyan)
+    $p = Pad-W $Width; $h = [char]0x2550
+    Write-Host "$p$([char]0x2560)$("$h"*($Width-2))$([char]0x2563)" -ForegroundColor $Color
+}
+function Show-BotBorder {
+    param([int]$Width, [string]$Color = $script:c.Cyan)
+    $p = Pad-W $Width; $h = [char]0x2550
+    Write-Host "$p$([char]0x255A)$("$h"*($Width-2))$([char]0x255D)" -ForegroundColor $Color
+}
+function Show-SubBorder {
+    param([int]$Width, [string]$Color = $script:c.Cyan)
+    $p = Pad-W $Width; $h = [char]0x2550
+    Write-Host "$p$([char]0x255F)$("$h"*($Width-2))$([char]0x2562)" -ForegroundColor $Color
+}
+function Show-BoxLine {
+    param([int]$Width, [string]$Text = "", [string]$Color = $script:c.White)
+    $p = Pad-W $Width; $v = [char]0x2551
+    $inner = $Width - 3
+    $display = if ($Text.Length -gt $inner) { $Text.Substring(0, $inner - 2) + ".." } else { $Text.PadRight($inner) }
+    Write-Host "$p$v $display$v" -ForegroundColor $Color
+}
+function Show-BoxTitle {
+    param([int]$Width, [string]$Title, [string]$Color = $script:c.Cyan)
+    $p = Pad-W $Width; $v = [char]0x2551; $inner = $Width - 4
+    $padL = [Math]::Max(0, [Math]::Floor(($inner - $Title.Length) / 2))
+    $padR = $inner - $Title.Length - $padL
+    Write-Host "$p$v $(" "*$padL)$Title$(" "*$padR) $v" -ForegroundColor $Color
+}
+
 function CarregarTema {
     if (Test-Path $script:temaArquivo) {
         try {
@@ -56,33 +112,20 @@ function SalvarTema {
     @{ Tema = $script:temaAtual } | ConvertTo-Json | Set-Content $script:temaArquivo -Force
 }
 function EscolherTema {
-    $lista = @()
-    $temp = 1
-    foreach ($t in $script:temas.Keys | Sort-Object) {
-        $marcador = if ($t -eq $script:temaAtual) { "[X]" } else { "[ ]" }
-        $lista += "$("{0,2}" -f $temp). $marcador $t"
-        $temp++
-    }
-    do {
+    $wid = 50; do {
         Clear-Host; Show-Banner
-        $p = Pad-W 48
-        $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        Write-Host $top -ForegroundColor $script:c.Cyan
-        Write-Host "$p$v  Digite NUMERO para escolher o tema         $v" -ForegroundColor $script:c.DarkCyan
-        Write-Host $sep -ForegroundColor $script:c.Cyan
+        Show-TopBorder $wid
+        Show-BoxLine $wid "  Digite NUMERO para escolher o tema" $script:c.DarkCyan
+        Show-MidBorder $wid
         $temp = 1
         foreach ($t in $script:temas.Keys | Sort-Object) {
             $marcador = if ($t -eq $script:temaAtual) { "[X]" } else { "[ ]" }
             $corItem = if ($t -eq $script:temaAtual) { $script:c.Green } else { $script:c.DarkGray }
-            $itemStr = "  $("{0,2}" -f $temp). $marcador $("{0,-20}" -f $t)"
-            Write-Host "$p$v$itemStr$(" " * ($w - $itemStr.Length))$v" -ForegroundColor $corItem
+            Show-BoxLine $wid ("  {0,2}. {1} {2,-20}" -f $temp, $marcador, $t) $corItem
             $temp++
         }
-        Write-Host $bot -ForegroundColor $script:c.Cyan
-        Write-Host ""
+        Show-BotBorder $wid
+        ""
         $choice = Read-Host "Numero (ou 0 para voltar)"
         if ($choice -eq "0") { SalvarTema; return }
         $num = [int]::TryParse($choice, [ref]$null)
@@ -126,6 +169,7 @@ function VerificarAtualizacao {
             return
         }
         Write-Host "Atualizando..." -NoNewline -ForegroundColor $script:c.Yellow
+        $backupFile = $null
         try {
             $ts = Get-Date -Format "yyyyMMdd_HHmmss"
             $backupFile = "$($env:LOCALAPPDATA)\Otimizador\tl_backup_$ts.ps1"
@@ -293,13 +337,13 @@ function Show-Menu {
         function T { param($s, $n) if (-not $s) { " " * $n } else { $s.PadRight($n) } }
         $rows = [Math]::Max([Math]::Max($c1.Count, $c2.Count), $c3.Count)
         $nw3 = $cw3 - 9
-        $tl=[char]0x250C;$tr=[char]0x2510;$bl=[char]0x2514;$br=[char]0x2518
-        $tc=[char]0x252C;$bc=[char]0x2534;$ml=[char]0x251C;$mr=[char]0x2524;$mc=[char]0x253C
+        $tl=[char]0x2554;$tr=[char]0x2557;$bl=[char]0x255A;$br=[char]0x255D
+        $tc=[char]0x2566;$bc=[char]0x2569;$ml=[char]0x2560;$mr=[char]0x2563;$mc=[char]0x256C
         $grid_top = "$p$tl$("$h"*$cw3)$tc$("$h"*$cw3)$tc$("$h"*$cw3)$tr"
         $grid_sep = "$p$ml$("$h"*$cw3)$mc$("$h"*$cw3)$mc$("$h"*$cw3)$mr"
         $grid_bot = "$p$bl$("$h"*$cw3)$bc$("$h"*$cw3)$bc$("$h"*$cw3)$br"
         Write-Host $grid_top -ForegroundColor $color
-        Write-Host ("$p$v  {0,-$($cw3-3)} $v  {1,-$($cw3-3)} $v  {2,-$($cw3-3)} $v" -f $hdr1, $hdr2, $hdr3) -ForegroundColor White
+        Write-Host ("$p$v  {0,-$($cw3-3)} $v  {1,-$($cw3-3)} $v  {2,-$($cw3-3)} $v" -f $hdr1, $hdr2, $hdr3) -ForegroundColor $script:c.White
         Write-Host $grid_sep -ForegroundColor $color
         for ($i = 0; $i -lt $rows; $i++) {
             $v1 = if ($i -lt $c1.Count) { $c1[$i] } else { $null }
@@ -437,38 +481,30 @@ function Wrap-Texto {
 
 function Show-ServicosSubmenu {
     param([array]$Servicos, [string]$Titulo)
-
+    $wid = 58
     do {
         Clear-Host; Show-Banner
-        $p = Pad-W 56
-        $h=[char]0x2550;$v=[char]0x2551;$w=54
-        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        $sub = "$p$([char]0x255F)$("$h"*$w)$([char]0x2562)"
-
         $i = 1
         foreach ($s in $Servicos) {
             $check = if ($s.Selected) { "[X]" } else { "[ ]" }
             $svc = Get-Service -Name $s.Nome -ErrorAction SilentlyContinue
             $status = if ($svc) { "$($svc.Status)" } else { "AUSENTE" }
-            $cor = if ($s.Selected) { "Green" } else { "DarkGray" }
+            $corItem = if ($s.Selected) { $script:c.Green } else { $script:c.DarkGray }
             if ($i -eq 1) {
-                Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "$p$v  Digite NUMERO para marcar/desmarcar               $v" -ForegroundColor $script:c.DarkCyan
-                Write-Host $sep -ForegroundColor $script:c.Cyan
+                Show-TopBorder $wid
+                Show-BoxLine $wid "  Digite NUMERO para marcar/desmarcar" $script:c.DarkCyan
+                Show-MidBorder $wid
             }
-            Write-Host "$p$v  $("{0,2}" -f $i). $check $("{0,-30}" -f $s.Desc) $("{0,-12}" -f $status) $v" -ForegroundColor $cor
+            Show-BoxLine $wid ("  {0,2}. {1} {2,-28} {3,-9}" -f $i, $check, $s.Desc, $status) $corItem
             foreach ($linha in (Wrap-Texto -Texto $s.Detalhe -Largura 48)) {
-                Write-Host "$p$v  $("{0,-50}" -f "  $linha") $v" -ForegroundColor $script:c.DarkGray
+                Show-BoxLine $wid ("    {0,-48}" -f $linha) $script:c.DarkGray
             }
             $i++
         }
-
-        Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "$p$v  [A] Aplicar  [T] Marcar todos  [0] Voltar                $v" -ForegroundColor $script:c.Yellow
-        Write-Host $bot -ForegroundColor $script:c.Cyan
-        Write-Host ""
+        Show-SubBorder $wid
+        Show-BoxLine $wid "  [A] Aplicar  [T] Marcar todos  [0] Voltar" $script:c.Yellow
+        Show-BotBorder $wid
+        ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "0") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Servicos }
@@ -693,36 +729,28 @@ function Run-Rede {
 
 function Show-GenericoSubmenu {
     param([array]$Itens, [string]$Titulo)
-
+    $wid = 50
     do {
         Clear-Host; Show-Banner
-        $p = Pad-W 48
-        $h=[char]0x2550;$v=[char]0x2551;$w=46
-        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        $sub = "$p$([char]0x255F)$("$h"*$w)$([char]0x2562)"
-
         $i = 1
         foreach ($item in $Itens) {
             $check = if ($item.Selected) { "[X]" } else { "[ ]" }
-            $cor = if ($item.Selected) { "Green" } else { "DarkGray" }
+            $corItem = if ($item.Selected) { $script:c.Green } else { $script:c.DarkGray }
             if ($i -eq 1) {
-                Write-Host $top -ForegroundColor $script:c.Cyan
-                Write-Host "$p$v  Digite NUMERO para marcar/desmarcar          $v" -ForegroundColor $script:c.DarkCyan
-                Write-Host $sep -ForegroundColor $script:c.Cyan
+                Show-TopBorder $wid
+                Show-BoxLine $wid "  Digite NUMERO para marcar/desmarcar" $script:c.DarkCyan
+                Show-MidBorder $wid
             }
-            Write-Host "$p$v  $("{0,2}" -f $i). $check $("{0,-35}" -f $item.Desc) $v" -ForegroundColor $cor
-            foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 40)) {
-                Write-Host "$p$v  $("{0,-42}" -f "  $linha")   $v" -ForegroundColor $script:c.DarkGray
+            Show-BoxLine $wid ("  {0,2}. {1} {2,-37}" -f $i, $check, $item.Desc) $corItem
+            foreach ($linha in (Wrap-Texto -Texto $item.Detalhe -Largura 42)) {
+                Show-BoxLine $wid ("    {0,-40}" -f $linha) $script:c.DarkGray
             }
             $i++
         }
-
-        Write-Host $sub -ForegroundColor $script:c.Cyan
-        Write-Host "$p$v  [A] Aplicar  [T] Marcar todos  [0] Voltar           $v" -ForegroundColor $script:c.Yellow
-        Write-Host $bot -ForegroundColor $script:c.Cyan
-        Write-Host ""
+        Show-SubBorder $wid
+        Show-BoxLine $wid "  [A] Aplicar  [T] Marcar todos  [0] Voltar" $script:c.Yellow
+        Show-BotBorder $wid
+        ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "0") { return $null }
         if ($choice -eq "A" -or $choice -eq "a") { return $Itens }
@@ -1726,12 +1754,16 @@ function Tweak-RemoverUWP {
     if ($opt -eq "R" -or $opt -eq "r") {
         $opt2 = Read-Host "Confirma remocao? (S/N)"
         if ($opt2 -eq "S" -or $opt2 -eq "s") {
-            foreach ($app in $apps) {
-                $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
-                if ($found) {
-                    Remove-AppxPackage -Package $found.PackageFullName -AllUsers -ErrorAction SilentlyContinue
-                    Write-Host "[OK] Removido: $app" -ForegroundColor $script:c.Green
+            try {
+                foreach ($app in $apps) {
+                    $found = Get-AppxPackage -Name $app -AllUsers -ErrorAction SilentlyContinue
+                    if ($found) {
+                        Remove-AppxPackage -Package $found.PackageFullName -AllUsers -ErrorAction SilentlyContinue
+                        Write-Host "[OK] Removido: $app" -ForegroundColor $script:c.Green
+                    }
                 }
+            } catch {
+                Write-Host "[!] Alguns apps nao puderam ser removidos: $($_.Exception.Message)" -ForegroundColor $script:c.Yellow
             }
         } else { Write-Host "[--] Cancelado" -ForegroundColor $script:c.DarkGray }
     } elseif ($opt -eq "I" -or $opt -eq "i") {
@@ -1777,20 +1809,13 @@ function Clear-EventLogs {
 
 function Clear-CacheWindows {
     Write-Host "`n[+] Cache Windows - Limpando..." -ForegroundColor $script:c.Red
-    $paths = @(
-        "$env:LOCALAPPDATA\Microsoft\Windows\INetCache",
-        "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db",
-        "$env:LOCALAPPDATA\Temp",
-        "$env:SystemRoot\Temp"
-    )
-    $freed = 0
-    foreach ($path in $paths) {
-        $items = Get-ChildItem -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-        $freed += ($items | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-        Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-    }
-    $mb = [math]::Round($freed / 1MB, 2)
-    Write-Host "[OK] Cache limpo: ${mb}MB liberados" -ForegroundColor $script:c.Green
+    try {
+        Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\Windows\INetCache\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db" -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:LOCALAPPDATA\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:SystemRoot\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Cache limpo" -ForegroundColor $script:c.Green
+    } catch { Write-Host "[OK] Cache limpo" -ForegroundColor $script:c.Green }
 }
 
 function Clear-DNSCache {
@@ -1806,20 +1831,13 @@ function Clear-DNSCache {
 
 function Clear-Temporarios {
     Write-Host "`n[+] Temporarios - Limpando..." -ForegroundColor $script:c.Red
-    $paths = @(
-        "$env:TEMP\*",
-        "$env:LOCALAPPDATA\Temp\*",
-        "$env:SystemRoot\Temp\*",
-        "$env:SystemRoot\Prefetch\*"
-    )
-    $freed = 0
-    foreach ($path in $paths) {
-        $items = Get-ChildItem -Path $path -Force -ErrorAction SilentlyContinue
-        $freed += ($items | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
-        Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
-    }
-    $mb = [math]::Round($freed / 1MB, 2)
-    Write-Host "[OK] Temporarios limpos: ${mb}MB liberados" -ForegroundColor $script:c.Green
+    try {
+        Remove-Item -Path "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:LOCALAPPDATA\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:SystemRoot\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "$env:SystemRoot\Prefetch\*" -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "[OK] Temporarios limpos" -ForegroundColor $script:c.Green
+    } catch { Write-Host "[OK] Temporarios limpos" -ForegroundColor $script:c.Green }
 }
 
 function Run-CleanMgr {
@@ -2277,8 +2295,26 @@ function Run-SomMod {
                 Write-Host "[OK] Todos os sons desativados" -ForegroundColor $script:c.Green
             }
             "2" {
-                Set-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name "(Default)" -Value ".Default" -Force -ErrorAction SilentlyContinue
-                Write-Host "[OK] Sons padrao restaurados" -ForegroundColor $script:c.Green
+                try {
+                    $apps = Get-ChildItem "HKCU:\AppEvents\Schemes\Apps" -ErrorAction Stop
+                    foreach ($app in $apps) {
+                        $events = Get-ChildItem $app.PSPath -ErrorAction SilentlyContinue
+                        foreach ($event in $events) {
+                            $def = Get-ItemProperty $event.PSPath -Name ".default" -ErrorAction SilentlyContinue
+                            if ($def -and $def.'.default') {
+                                Set-ItemProperty -Path $event.PSPath -Name ".current" -Value $def.'.default' -Force -ErrorAction SilentlyContinue
+                            } else {
+                                Set-ItemProperty -Path $event.PSPath -Name ".current" -Value "" -Force -ErrorAction SilentlyContinue
+                            }
+                        }
+                    }
+                    Set-ItemProperty -Path "HKCU:\AppEvents\Schemes" -Name "(Default)" -Value ".Default" -Force -ErrorAction SilentlyContinue
+                    Write-Host "[OK] Sons padrao restaurados" -ForegroundColor $script:c.Green
+                } catch {
+                    Write-Host "[ERRO] Nao foi possivel restaurar: $_" -ForegroundColor $script:c.Red
+                    Write-Host "  Abrindo painel de som para configuracao manual..." -ForegroundColor $script:c.Yellow
+                    Start-Process rundll32.exe -ArgumentList "shell32.dll,Control_RunDLL mmsys.cpl,,2" -ErrorAction SilentlyContinue
+                }
             }
             "3" {
                 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
@@ -2292,6 +2328,7 @@ function Run-SomMod {
 
 # === WINDOWS FEATURES ===
 function Show-WindowsFeatures {
+    $wid = 50
     $features = @(
         @{Nome = "NetFx3";           Desc = ".NET Framework 3.5 (inclui 2.0)";        Selected = $false; Detalhe = "Necessario para programas antigos que usam .NET 2.0/3.5. VÃ¡rios jogos e softwares corporativos ainda dependem."}
         @{Nome = "Microsoft-Hyper-V"; Desc = "Hyper-V (Virtualizacao)";                Selected = $false; Detalhe = "Plataforma de maquinas virtuais da Microsoft. Permite rodar Linux, Windows Server, etc. dentro do Windows."}
@@ -2303,30 +2340,24 @@ function Show-WindowsFeatures {
     )
     do {
         Clear-Host; Show-Banner
-        $c = $script:c; $p = Pad-W 50
-        $h=[char]0x2550;$v=[char]0x2551;$w=48
-        $top = "$p$([char]0x2554)$("$h"*$w)$([char]0x2557)"
-        $sep = "$p$([char]0x2560)$("$h"*$w)$([char]0x2563)"
-        $bot = "$p$([char]0x255A)$("$h"*$w)$([char]0x255D)"
-        $sub = "$p$([char]0x255F)$("$h"*$w)$([char]0x2562)"
         $i = 1
         foreach ($feat in $features) {
             $check = if ($feat.Selected) { "[X]" } else { "[ ]" }
-            $cor = if ($feat.Selected) { "Green" } else { "DarkGray" }
+            $corItem = if ($feat.Selected) { $script:c.Green } else { $script:c.DarkGray }
             if ($i -eq 1) {
-                Write-Host $top -ForegroundColor $c.Cyan
-                Write-Host "$p$v  WINDOWS FEATURES - Digite NUMERO para marcar    $v" -ForegroundColor $c.DarkCyan
-                Write-Host $sep -ForegroundColor $c.Cyan
+                Show-TopBorder $wid
+                Show-BoxLine $wid "  WINDOWS FEATURES - Digite NUMERO para marcar" $script:c.DarkCyan
+                Show-MidBorder $wid
             }
-            Write-Host "$p$v  $("{0,2}" -f $i). $check $("{0,-40}" -f $feat.Desc) $v" -ForegroundColor $cor
-            foreach ($linha in (Wrap-Texto -Texto $feat.Detalhe -Largura 42)) {
-                Write-Host "$p$v  $("{0,-44}" -f "  $linha")   $v" -ForegroundColor $c.DarkGray
+            Show-BoxLine $wid ("  {0,2}. {1} {2,-42}" -f $i, $check, $feat.Desc) $corItem
+            foreach ($linha in (Wrap-Texto -Texto $feat.Detalhe -Largura 44)) {
+                Show-BoxLine $wid ("    {0,-44}" -f $linha) $script:c.DarkGray
             }
             $i++
         }
-        Write-Host $sub -ForegroundColor $c.Cyan
-        Write-Host "$p$v  [A] Aplicar  [T] Marcar todos  [0] Voltar                $v" -ForegroundColor $c.Yellow
-        Write-Host $bot -ForegroundColor $c.Cyan
+        Show-SubBorder $wid
+        Show-BoxLine $wid "  [A] Aplicar  [T] Marcar todos  [0] Voltar" $script:c.Yellow
+        Show-BotBorder $wid
         Write-Host ""
         $choice = Read-Host "Escolha"
         if ($choice -eq "0") { return }
