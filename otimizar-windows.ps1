@@ -2822,125 +2822,125 @@ function Run-RedeAvancada {
 $script:FuncInfo = @{}
 $script:fi = @(
 # === GRID SLOTS (1-95) ===
-  @("1","Central de Acao","Abre o centro de notificacoes e acoes rapidas","Digite o numero para executar","Seguro","")
-, @("2","Temp. Atualizacao","Remove temporarios baixados pelo Windows Update","Digite o numero para executar","Moderado","Remove o cache de atualizacao. Se uma atualizacao estiver baixando, ela sera reiniciada. Reversivel rodando Windows Update novamente.")
-, @("3","Hibernacao","Libera espaco em disco desligando a hibernacao","Digite o numero para ativar/desativar","Moderado","Desliga o modo hibernar. O PC nao podera retomar exatamente de onde parou. Reversivel rodando a opcao novamente.")
-, @("4","Memoria Virtual","Ajusta o arquivo de paginacao do Windows","Digite o numero para executar","Arriscado","Altera o tamanho do arquivo de paginacao. Configuracao inadequada pode causar falta de memoria ou travamentos. Reversivel com restauracao de sistema.")
-, @("5","Tomar Posse","Adiciona a opcao Tomar Posse no menu de contexto","Digite o numero para executar","Seguro","")
-, @("6","Pausar Updates","Pausa as atualizacoes do Windows por 30 dias","Digite o numero para executar","Moderado","Adia atualizacoes de seguranca. O PC fica desprotegido ate retomar as atualizacoes. Reversivel em Configuracoes > Windows Update.")
-, @("7","Comprimir Sistema","Comprime arquivos do sistema com CompactOS","Digite o numero para executar","Moderado","Libera espaco em disco compactando arquivos do sistema. Pode reduzir desempenho em HDs e PCs fracos. Reversivel rodando a opcao novamente.")
-, @("8","Remover Apps Desnecessarios","Remove aplicativos UWP pre-instalados","Digite o numero para executar","Arriscado","Remove apps do sistema como Xbox, Cortana, Skype. Alguns apps removidos nao podem ser reinstalados facilmente pela Loja. Crie um ponto de restauracao antes.")
-, @("10","Logs Eventos","Limpa logs do Visualizador de Eventos","Digite o numero para executar","Seguro","")
-, @("11","Temp. do Windows","Apaga arquivos temporarios do sistema","Digite o numero para executar","Seguro","")
-, @("12","Cache de Internet","Limpa o cache DNS e arquivos temporarios de rede","Digite o numero para executar","Seguro","")
-, @("13","Temporarios","Remove arquivos temporarios de usuario e sistema","Digite o numero para executar","Seguro","")
-, @("14","Limpeza Extrema","Limpeza profunda incluindo cache de drivers e fontes","Digite o numero para executar","Moderado","Remove caches que podem ser uteis para suporte tecnico. Pode exigir reboot se algum arquivo estiver em uso. E seguro na maioria dos casos.")
-, @("15","Limpeza de Disco","Abre a ferramenta CleanMgr integrada do Windows","Digite o numero para abrir a ferramenta","Seguro","")
-, @("16","Reparar Sistema","Executa SFC e DISM para reparar arquivos do sistema","Digite o numero para executar","Moderado","Leva varios minutos para concluir. Nao desligue o PC durante a execucao. Pode pedir reboot ao final.")
-, @("17","Limpar Cache Fivem","Remove cache do jogo FiveM (GTA RP)","Digite o numero para executar","Seguro","")
-, @("18","Finalizar na Barra","Adiciona opcao Finalizar tarefa no menu da barra de tarefas","Digite o numero para executar","Seguro","")
-, @("19","Menu Classico","Restaura o menu de contexto classico do Windows 10","Digite o numero para executar","Seguro","")
-, @("20","Catalogo Programas","Abre o catalogo para instalar programas via Winget","Digite o numero para abrir o catalogo","Seguro","")
-, @("22","Drivers","Abre o atualizador de drivers","Digite o numero para abrir","Moderado","Drivers incompatveis podem causar tela azul. Faca backup antes de atualizar drivers criticos.")
-, @("23","Desinstalar","Abre o desinstalador universal de programas","Digite o numero para abrir","Moderado","Alguns programas podem deixar residuos no registro. A ferramenta tenta remover tudo, mas verifique apos desinstalar.")
-, @("24","Remover Home/Galeria","Remove as pastas Home e Galeria do Explorador de Arquivos","Digite o numero para executar","Moderado","Remove entradas do Explorador. Para reverter, restaure o registro via backup ou opcao de Undo.")
-, @("25","Bloquear Programas Ocultos","Bloqueia programas ocultos (WPBT) iniciados pelo fabricante","Digite o numero para executar","Moderado","Alguns fabricantes usam WPBT para suporte e recuperacao. Bloquear pode impedir funcionamento de teclas Fn ou utilitarios da marca.")
-, @("26","Bloquear Apps Fabricante","Impede que fabricantes instalem apps automaticamente","Digite o numero para executar","Moderado","Bloqueia o download automatico de apps do fabricante. Nao afeta drivers ou firmware.")
-, @("27","Notificacoes","Desativa central de notificacoes e alertas do Windows","Digite o numero para ativar/desativar","Seguro","")
-, @("28","Storage Sense","Desativa o sensor de armazenamento automatico","Digite o numero para ativar/desativar","Seguro","")
-, @("29","Desativar Protecao Memoria","Desliga o isolamento de nucleo (Core Isolation)","Digite o numero para executar","Arriscado","Desativa a virtualizacao de seguranca. Melhora performance em jogos mas REDUZ a protecao contra malware. Reversivel reativando nas configs do Windows Defender.")
-, @("30","DNS Google","Usa DNS Google (8.8.8.8) para navegacao mais rapida","Digite o numero para ativar","Seguro","")
-, @("31","DNS Cloudflare","Usa DNS Cloudflare (1.1.1.1) com foco em privacidade","Digite o numero para ativar","Seguro","")
-, @("32","DNS OpenDNS","Usa DNS OpenDNS (208.67.222.222) com filtro anti-phishing","Digite o numero para ativar","Seguro","")
-, @("33","DNS Quad9","Usa DNS Quad9 (9.9.9.9) com bloqueio de dominios maliciosos","Digite o numero para ativar","Seguro","")
-, @("34","DNS AdGuard","Usa DNS AdGuard (94.140.14.14) com bloqueio de anuncios","Digite o numero para ativar","Seguro","")
-, @("35","DNS Automatico","Volta ao DNS fornecido pelo roteador (DHCP)","Digite o numero para ativar","Seguro","")
-, @("36","Rede Completa","Aplica varias otimizacoes de rede de uma vez","Digite o numero para abrir o submenu","Moderado","Executa liberacao de IP, resets de pilha de rede e ajustes de DNS em sequencia. Pode desconectar a internet temporariamente.")
-, @("37","Rede Avancada","Configuracoes avancadas de protocolos de rede","Digite o numero para abrir o submenu","Arriscado","Desativa protocolos como IPv6 e Teredo. Pode quebrar conectividade com redes corporativas ou VPNs. Reversivel reativando nas configuracoes de rede.")
-, @("40","Recursos do Windows","Ativa ou desativa recursos opcionais do Windows","Digite o numero para abrir o submenu","Moderado","Ativar recursos incorretos pode consumir recursos. Desativar recursos em uso pode quebrar funcionalidades. Reversivel reativando o recurso.")
-, @("41","Plano de Energia","Altera o plano de energia do Windows","Digite o numero para executar","Seguro","")
-, @("42","Edicao do Windows","Exibe a edicao atual e permite upgrades com chave","Digite o numero para abrir","Moderado","Upgrade de edicao requer chave de produto valida. Usar chaves publicas encontradas na internet pode violar termos de licenca.")
-, @("43","Atualizacoes","Gerencia o servico de atualizacao do Windows","Digite o numero para abrir","Moderado","Parar o servico de atualizacao impede que o Windows receba correcoes de seguranca. Reative periodicamente para manter o PC protegido.")
-, @("45","Tema","Altera o esquema de cores da interface","Digite o numero para abrir","Seguro","")
-, @("46","Sobre","Exibe informacoes sobre a ferramenta","Digite o numero para ver","Seguro","")
-, @("48","Modo Jogo","Ativa o modo jogo do Windows para melhor performance","Digite o numero para ativar","Seguro","")
-, @("49","Barra de Jogos","Desativa a barra de jogos e gravacao em segundo plano","Digite o numero para desativar","Seguro","")
-, @("52","Desfazer Servicos","Restaura os servicos do Windows ao estado anterior","Digite o numero para executar","Seguro","")
-, @("53","Desfazer Rede","Restaura as configuracoes de rede ao estado anterior","Digite o numero para executar","Seguro","")
-, @("54","Desfazer Visual","Restaura as configuracao visuais ao estado anterior","Digite o numero para executar","Seguro","")
-, @("55","Desfazer Privacidade","Restaura as configuracao de privacidade ao estado anterior","Digite o numero para executar","Seguro","")
-, @("56","Acelerar Placa Video","Ativa o agendamento GPU por hardware","Digite o numero para ativar","Seguro","")
-, @("57","Prioridade","Define prioridade alta para um processo especifico","Digite o numero para usar","Seguro","")
-, @("58","Alto Desempenho","Ativa o plano de energia de alto desempenho","Digite o numero para ativar","Seguro","")
-, @("59","Otimizar Internet","Desativa algoritmo Nagle para reduzir latencia","Digite o numero para executar","Moderado","Desabilitar Nagle pode aumentar o trafego de rede em conexoes lentas. Recomendado apenas para jogos e chamadas de video.")
-, @("60","Backup","Cria um ponto de restauracao do sistema","Digite o numero para executar","Seguro","")
-, @("61","Restaurar","Abre a ferramenta de restauracao do sistema","Digite o numero para abrir","Seguro","")
-, @("62","Usuarios","Gerencia contas de usuario locais","Digite o numero para abrir","Moderado","Alterar contas de usuario pode travar acesso se feito incorretamente. Crie sempre uma conta administrador reserva antes.")
-, @("63","Prompt Colorido","Personaliza as cores do terminal (CMD)","Digite o numero para abrir","Seguro","")
-, @("64","Melhorar Som","Ajusta o esquema de sons do Windows","Digite o numero para abrir","Seguro","")
-, @("66","Historico","Exibe o log de acoes para desfazer tweaks individuais","Digite o numero para abrir","Seguro","")
-, @("67","Rotina Completa","Executa limpeza, otimiza servicos, rede e visual","Digite o numero para executar","Moderado","Executa multiplas alteracoes de uma vez. Algumas podem exigir reboot. Para reverter, use as opcoes Undo (52-55) no menu.")
-, @("70","Modo Escuro","Ativa o tema escuro no Windows","Digite o numero para ativar","Seguro","")
-, @("71","Extensoes","Mostra extensoes de arquivo no Explorador","Digite o numero para ativar","Seguro","")
-, @("72","Ocultos","Mostra arquivos e pastas ocultos no Explorador","Digite o numero para ativar","Seguro","")
-, @("73","Detalhes Tela Azul","Exibe informacoes detalhadas em telas azuis (BSoD)","Digite o numero para ativar","Seguro","")
-, @("74","Bateria %","Mostra o percentual da bateria na barra de tarefas","Digite o numero para ativar","Seguro","")
-, @("75","Barras Rolagem","Mantem as barras de rolagem sempre visiveis","Digite o numero para ativar","Seguro","")
-, @("76","Detalhes Inicializacao","Exibe mensagens detalhadas durante a inicializacao","Digite o numero para ativar","Seguro","")
-, @("77","Corrigir Travamentos Video","Desativa o MPO para corrigir travamentos em videos e jogos","Digite o numero para executar","Moderado","Desativa o Multiplane Overlay. Pode aumentar consumo de GPU em algumas configuracao. Reversivel reativando o MPO manualmente.")
-, @("80","Exportar Config","Salva a configuracao atual em um arquivo preset","Digite o numero para exportar","Seguro","")
-, @("81","Importar Config","Carrega uma configuracao salva anteriormente","Digite o numero para importar","Seguro","")
-, @("84","Ferramenta Privacidade","Baixa e abre O&O ShutUp10++ para ajustes de privacidade","Digite o numero para abrir","Arriscado","Ferramenta de terceiros que modifica dezenas de configuracoes de privacidade de uma vez. Pode quebrar funcionalidades do Windows. Use com moderacao.")
-, @("85","Baixar Novamente","Baixa novamente o O&O ShutUp10++ (substitui versao anterior)","Digite o numero para baixar","Seguro","")
-, @("86","Telemetria","Desativa coleta de dados de uso do Windows","Digite o numero para desativar","Seguro","")
-, @("87","Cortana","Desativa a assistente virtual Cortana","Digite o numero para desativar","Moderado","Desabilita a assistente de voz. Buscas locais no Windows podem perder alguns recursos, mas o sistema continua normal.")
-, @("88","Localizacao","Desativa o servico de localizacao do Windows","Digite o numero para desativar","Seguro","")
-, @("89","Anuncios","Bloqueia o ID de publicidade do Windows","Digite o numero para bloquear","Seguro","")
-, @("90","Compart. Wi-Fi","Desativa o compartilhamento de redes Wi-Fi (Wi-Fi Sense)","Digite o numero para desativar","Seguro","")
-, @("91","Ativ. Voz","Desativa a ativacao por voz do assistente","Digite o numero para desativar","Seguro","")
-, @("92","Bloquear Rastreadores","Adiciona dominios de telemetria ao arquivo Hosts","Digite o numero para bloquear","Seguro","")
-, @("93","Desat. Atualizacoes","Desativa completamente o servico Windows Update","Digite o numero para desativar","Arriscado","Impede todas as atualizacoes de seguranca. O PC fica vulneravel. Apenas para maquinas isoladas da internet. Reversivel reativando o servico wuauserv.")
-, @("94","Remover Conta Microsoft","Remove a opcao de conta Microsoft da tela de login","Digite o numero para executar","Moderado","Altera politicas de login. Contas Microsoft existentes continuam funcionando, mas novas nao podem ser vinculadas. Reversivel reativando a politica.")
-, @("95","Desativar Antivirus","Desativa o Windows Defender e protecao em tempo real","Digite o numero para desativar","Arriscado","Remove a protecao contra malware do Windows. Instale outro antivirus antes de desativar. Reversivel reativando o Defender pelo script.")
+  @("1","Central de Acao","Abre o centro de notificacoes e acoes rapidas","Digite o numero para executar","Seguro",""),
+  @("2","Temp. Atualizacao","Remove temporarios baixados pelo Windows Update","Digite o numero para executar","Moderado","Remove o cache de atualizacao. Se uma atualizacao estiver baixando, ela sera reiniciada. Reversivel rodando Windows Update novamente."),
+  @("3","Hibernacao","Libera espaco em disco desligando a hibernacao","Digite o numero para ativar/desativar","Moderado","Desliga o modo hibernar. O PC nao podera retomar exatamente de onde parou. Reversivel rodando a opcao novamente."),
+  @("4","Memoria Virtual","Ajusta o arquivo de paginacao do Windows","Digite o numero para executar","Arriscado","Altera o tamanho do arquivo de paginacao. Configuracao inadequada pode causar falta de memoria ou travamentos. Reversivel com restauracao de sistema."),
+  @("5","Tomar Posse","Adiciona a opcao Tomar Posse no menu de contexto","Digite o numero para executar","Seguro",""),
+  @("6","Pausar Updates","Pausa as atualizacoes do Windows por 30 dias","Digite o numero para executar","Moderado","Adia atualizacoes de seguranca. O PC fica desprotegido ate retomar as atualizacoes. Reversivel em Configuracoes > Windows Update."),
+  @("7","Comprimir Sistema","Comprime arquivos do sistema com CompactOS","Digite o numero para executar","Moderado","Libera espaco em disco compactando arquivos do sistema. Pode reduzir desempenho em HDs e PCs fracos. Reversivel rodando a opcao novamente."),
+  @("8","Remover Apps Desnecessarios","Remove aplicativos UWP pre-instalados","Digite o numero para executar","Arriscado","Remove apps do sistema como Xbox, Cortana, Skype. Alguns apps removidos nao podem ser reinstalados facilmente pela Loja. Crie um ponto de restauracao antes."),
+  @("10","Logs Eventos","Limpa logs do Visualizador de Eventos","Digite o numero para executar","Seguro",""),
+  @("11","Temp. do Windows","Apaga arquivos temporarios do sistema","Digite o numero para executar","Seguro",""),
+  @("12","Cache de Internet","Limpa o cache DNS e arquivos temporarios de rede","Digite o numero para executar","Seguro",""),
+  @("13","Temporarios","Remove arquivos temporarios de usuario e sistema","Digite o numero para executar","Seguro",""),
+  @("14","Limpeza Extrema","Limpeza profunda incluindo cache de drivers e fontes","Digite o numero para executar","Moderado","Remove caches que podem ser uteis para suporte tecnico. Pode exigir reboot se algum arquivo estiver em uso. E seguro na maioria dos casos."),
+  @("15","Limpeza de Disco","Abre a ferramenta CleanMgr integrada do Windows","Digite o numero para abrir a ferramenta","Seguro",""),
+  @("16","Reparar Sistema","Executa SFC e DISM para reparar arquivos do sistema","Digite o numero para executar","Moderado","Leva varios minutos para concluir. Nao desligue o PC durante a execucao. Pode pedir reboot ao final."),
+  @("17","Limpar Cache Fivem","Remove cache do jogo FiveM (GTA RP)","Digite o numero para executar","Seguro",""),
+  @("18","Finalizar na Barra","Adiciona opcao Finalizar tarefa no menu da barra de tarefas","Digite o numero para executar","Seguro",""),
+  @("19","Menu Classico","Restaura o menu de contexto classico do Windows 10","Digite o numero para executar","Seguro",""),
+  @("20","Catalogo Programas","Abre o catalogo para instalar programas via Winget","Digite o numero para abrir o catalogo","Seguro",""),
+  @("22","Drivers","Abre o atualizador de drivers","Digite o numero para abrir","Moderado","Drivers incompatveis podem causar tela azul. Faca backup antes de atualizar drivers criticos."),
+  @("23","Desinstalar","Abre o desinstalador universal de programas","Digite o numero para abrir","Moderado","Alguns programas podem deixar residuos no registro. A ferramenta tenta remover tudo, mas verifique apos desinstalar."),
+  @("24","Remover Home/Galeria","Remove as pastas Home e Galeria do Explorador de Arquivos","Digite o numero para executar","Moderado","Remove entradas do Explorador. Para reverter, restaure o registro via backup ou opcao de Undo."),
+  @("25","Bloquear Programas Ocultos","Bloqueia programas ocultos (WPBT) iniciados pelo fabricante","Digite o numero para executar","Moderado","Alguns fabricantes usam WPBT para suporte e recuperacao. Bloquear pode impedir funcionamento de teclas Fn ou utilitarios da marca."),
+  @("26","Bloquear Apps Fabricante","Impede que fabricantes instalem apps automaticamente","Digite o numero para executar","Moderado","Bloqueia o download automatico de apps do fabricante. Nao afeta drivers ou firmware."),
+  @("27","Notificacoes","Desativa central de notificacoes e alertas do Windows","Digite o numero para ativar/desativar","Seguro",""),
+  @("28","Storage Sense","Desativa o sensor de armazenamento automatico","Digite o numero para ativar/desativar","Seguro",""),
+  @("29","Desativar Protecao Memoria","Desliga o isolamento de nucleo (Core Isolation)","Digite o numero para executar","Arriscado","Desativa a virtualizacao de seguranca. Melhora performance em jogos mas REDUZ a protecao contra malware. Reversivel reativando nas configs do Windows Defender."),
+  @("30","DNS Google","Usa DNS Google (8.8.8.8) para navegacao mais rapida","Digite o numero para ativar","Seguro",""),
+  @("31","DNS Cloudflare","Usa DNS Cloudflare (1.1.1.1) com foco em privacidade","Digite o numero para ativar","Seguro",""),
+  @("32","DNS OpenDNS","Usa DNS OpenDNS (208.67.222.222) com filtro anti-phishing","Digite o numero para ativar","Seguro",""),
+  @("33","DNS Quad9","Usa DNS Quad9 (9.9.9.9) com bloqueio de dominios maliciosos","Digite o numero para ativar","Seguro",""),
+  @("34","DNS AdGuard","Usa DNS AdGuard (94.140.14.14) com bloqueio de anuncios","Digite o numero para ativar","Seguro",""),
+  @("35","DNS Automatico","Volta ao DNS fornecido pelo roteador (DHCP)","Digite o numero para ativar","Seguro",""),
+  @("36","Rede Completa","Aplica varias otimizacoes de rede de uma vez","Digite o numero para abrir o submenu","Moderado","Executa liberacao de IP, resets de pilha de rede e ajustes de DNS em sequencia. Pode desconectar a internet temporariamente."),
+  @("37","Rede Avancada","Configuracoes avancadas de protocolos de rede","Digite o numero para abrir o submenu","Arriscado","Desativa protocolos como IPv6 e Teredo. Pode quebrar conectividade com redes corporativas ou VPNs. Reversivel reativando nas configuracoes de rede."),
+  @("40","Recursos do Windows","Ativa ou desativa recursos opcionais do Windows","Digite o numero para abrir o submenu","Moderado","Ativar recursos incorretos pode consumir recursos. Desativar recursos em uso pode quebrar funcionalidades. Reversivel reativando o recurso."),
+  @("41","Plano de Energia","Altera o plano de energia do Windows","Digite o numero para executar","Seguro",""),
+  @("42","Edicao do Windows","Exibe a edicao atual e permite upgrades com chave","Digite o numero para abrir","Moderado","Upgrade de edicao requer chave de produto valida. Usar chaves publicas encontradas na internet pode violar termos de licenca."),
+  @("43","Atualizacoes","Gerencia o servico de atualizacao do Windows","Digite o numero para abrir","Moderado","Parar o servico de atualizacao impede que o Windows receba correcoes de seguranca. Reative periodicamente para manter o PC protegido."),
+  @("45","Tema","Altera o esquema de cores da interface","Digite o numero para abrir","Seguro",""),
+  @("46","Sobre","Exibe informacoes sobre a ferramenta","Digite o numero para ver","Seguro",""),
+  @("48","Modo Jogo","Ativa o modo jogo do Windows para melhor performance","Digite o numero para ativar","Seguro",""),
+  @("49","Barra de Jogos","Desativa a barra de jogos e gravacao em segundo plano","Digite o numero para desativar","Seguro",""),
+  @("52","Desfazer Servicos","Restaura os servicos do Windows ao estado anterior","Digite o numero para executar","Seguro",""),
+  @("53","Desfazer Rede","Restaura as configuracoes de rede ao estado anterior","Digite o numero para executar","Seguro",""),
+  @("54","Desfazer Visual","Restaura as configuracao visuais ao estado anterior","Digite o numero para executar","Seguro",""),
+  @("55","Desfazer Privacidade","Restaura as configuracao de privacidade ao estado anterior","Digite o numero para executar","Seguro",""),
+  @("56","Acelerar Placa Video","Ativa o agendamento GPU por hardware","Digite o numero para ativar","Seguro",""),
+  @("57","Prioridade","Define prioridade alta para um processo especifico","Digite o numero para usar","Seguro",""),
+  @("58","Alto Desempenho","Ativa o plano de energia de alto desempenho","Digite o numero para ativar","Seguro",""),
+  @("59","Otimizar Internet","Desativa algoritmo Nagle para reduzir latencia","Digite o numero para executar","Moderado","Desabilitar Nagle pode aumentar o trafego de rede em conexoes lentas. Recomendado apenas para jogos e chamadas de video."),
+  @("60","Backup","Cria um ponto de restauracao do sistema","Digite o numero para executar","Seguro",""),
+  @("61","Restaurar","Abre a ferramenta de restauracao do sistema","Digite o numero para abrir","Seguro",""),
+  @("62","Usuarios","Gerencia contas de usuario locais","Digite o numero para abrir","Moderado","Alterar contas de usuario pode travar acesso se feito incorretamente. Crie sempre uma conta administrador reserva antes."),
+  @("63","Prompt Colorido","Personaliza as cores do terminal (CMD)","Digite o numero para abrir","Seguro",""),
+  @("64","Melhorar Som","Ajusta o esquema de sons do Windows","Digite o numero para abrir","Seguro",""),
+  @("66","Historico","Exibe o log de acoes para desfazer tweaks individuais","Digite o numero para abrir","Seguro",""),
+  @("67","Rotina Completa","Executa limpeza, otimiza servicos, rede e visual","Digite o numero para executar","Moderado","Executa multiplas alteracoes de uma vez. Algumas podem exigir reboot. Para reverter, use as opcoes Undo (52-55) no menu."),
+  @("70","Modo Escuro","Ativa o tema escuro no Windows","Digite o numero para ativar","Seguro",""),
+  @("71","Extensoes","Mostra extensoes de arquivo no Explorador","Digite o numero para ativar","Seguro",""),
+  @("72","Ocultos","Mostra arquivos e pastas ocultos no Explorador","Digite o numero para ativar","Seguro",""),
+  @("73","Detalhes Tela Azul","Exibe informacoes detalhadas em telas azuis (BSoD)","Digite o numero para ativar","Seguro",""),
+  @("74","Bateria %","Mostra o percentual da bateria na barra de tarefas","Digite o numero para ativar","Seguro",""),
+  @("75","Barras Rolagem","Mantem as barras de rolagem sempre visiveis","Digite o numero para ativar","Seguro",""),
+  @("76","Detalhes Inicializacao","Exibe mensagens detalhadas durante a inicializacao","Digite o numero para ativar","Seguro",""),
+  @("77","Corrigir Travamentos Video","Desativa o MPO para corrigir travamentos em videos e jogos","Digite o numero para executar","Moderado","Desativa o Multiplane Overlay. Pode aumentar consumo de GPU em algumas configuracao. Reversivel reativando o MPO manualmente."),
+  @("80","Exportar Config","Salva a configuracao atual em um arquivo preset","Digite o numero para exportar","Seguro",""),
+  @("81","Importar Config","Carrega uma configuracao salva anteriormente","Digite o numero para importar","Seguro",""),
+  @("84","Ferramenta Privacidade","Baixa e abre O&O ShutUp10++ para ajustes de privacidade","Digite o numero para abrir","Arriscado","Ferramenta de terceiros que modifica dezenas de configuracoes de privacidade de uma vez. Pode quebrar funcionalidades do Windows. Use com moderacao."),
+  @("85","Baixar Novamente","Baixa novamente o O&O ShutUp10++ (substitui versao anterior)","Digite o numero para baixar","Seguro",""),
+  @("86","Telemetria","Desativa coleta de dados de uso do Windows","Digite o numero para desativar","Seguro",""),
+  @("87","Cortana","Desativa a assistente virtual Cortana","Digite o numero para desativar","Moderado","Desabilita a assistente de voz. Buscas locais no Windows podem perder alguns recursos, mas o sistema continua normal."),
+  @("88","Localizacao","Desativa o servico de localizacao do Windows","Digite o numero para desativar","Seguro",""),
+  @("89","Anuncios","Bloqueia o ID de publicidade do Windows","Digite o numero para bloquear","Seguro",""),
+  @("90","Compart. Wi-Fi","Desativa o compartilhamento de redes Wi-Fi (Wi-Fi Sense)","Digite o numero para desativar","Seguro",""),
+  @("91","Ativ. Voz","Desativa a ativacao por voz do assistente","Digite o numero para desativar","Seguro",""),
+  @("92","Bloquear Rastreadores","Adiciona dominios de telemetria ao arquivo Hosts","Digite o numero para bloquear","Seguro",""),
+  @("93","Desat. Atualizacoes","Desativa completamente o servico Windows Update","Digite o numero para desativar","Arriscado","Impede todas as atualizacoes de seguranca. O PC fica vulneravel. Apenas para maquinas isoladas da internet. Reversivel reativando o servico wuauserv."),
+  @("94","Remover Conta Microsoft","Remove a opcao de conta Microsoft da tela de login","Digite o numero para executar","Moderado","Altera politicas de login. Contas Microsoft existentes continuam funcionando, mas novas nao podem ser vinculadas. Reversivel reativando a politica."),
+  @("95","Desativar Antivirus","Desativa o Windows Defender e protecao em tempo real","Digite o numero para desativar","Arriscado","Remove a protecao contra malware do Windows. Instale outro antivirus antes de desativar. Reversivel reativando o Defender pelo script."),
 # === SUBMENU - SERVICOS (chave = Nome do servico) ===
-, @("XblAuthManager","Autenticacao Xbox","Autentica contas Xbox Live em jogos e apps","Selecione e pressione A para aplicar","Seguro","")
-, @("XblGameSave","Save game Xbox","Salva jogos Xbox na nuvem da Microsoft","Selecione e pressione A para aplicar","Seguro","")
-, @("XboxNetApiSvc","Rede Xbox","Conecta jogos Xbox a internet para multiplayer","Selecione e pressione A para aplicar","Seguro","")
-, @("XboxGipSvc","Perifericos Xbox","Suporte a controles e perifericos Xbox","Selecione e pressione A para aplicar","Seguro","")
-, @("DiagTrack","Tracking Microsoft","Coleta dados de uso e telemetria para a Microsoft","Selecione e pressione A para aplicar","Seguro","")
-, @("dmwappushservice","Roteamento WAP","Roteamento de mensagens de operadora de celular","Selecione e pressione A para aplicar","Seguro","")
-, @("WSearch","Windows Search","Indexa arquivos para buscas rapidas no sistema","Selecione e pressione A para aplicar","Moderado","Desligar libera CPU e RAM, mas pesquisas no Windows ficam mais lentas. Reversivel reativando o servico WSearch.")
-, @("SysMain","SysMain (Superfetch)","Pre-carrega programas na memoria para abrir mais rapido","Selecione e pressione A para aplicar","Seguro","")
-, @("TabletInputService","Entrada Tablet","Suporte a caneta digital e touch screen","Selecione e pressione A para aplicar","Seguro","")
-, @("RemoteRegistry","Registro Remoto","Permite editar o registro do Windows remotamente","Selecione e pressione A para aplicar","Seguro","")
-, @("RemoteDesktopServices","Area Remota","Permite acesso remoto ao PC via RDP","Selecione e pressione A para aplicar","Moderado","Desligar impede acesso remoto ao PC. Se voce usa RDP para trabalhar, mantenha ativado.")
-, @("TermService","Servico Terminal","Servico base para area de trabalho remota (RDP)","Selecione e pressione A para aplicar","Moderado","Necessario para RDP. Desligar tambem impede conexoes remotas.")
-, @("lfsvc","Geolocalizacao","Servico de localizacao geografica do Windows","Selecione e pressione A para aplicar","Seguro","")
-, @("MapsBroker","Download Mapas","Gerenciador de mapas offline do Windows","Selecione e pressione A para aplicar","Seguro","")
-, @("WbioSrvc","Biometria","Leitor de digital e reconhecimento facial (Windows Hello)","Selecione e pressione A para aplicar","Moderado","Desliga Windows Hello e biometria. Impede login por digital ou facial.")
+  @("XblAuthManager","Autenticacao Xbox","Autentica contas Xbox Live em jogos e apps","Selecione e pressione A para aplicar","Seguro",""),
+  @("XblGameSave","Save game Xbox","Salva jogos Xbox na nuvem da Microsoft","Selecione e pressione A para aplicar","Seguro",""),
+  @("XboxNetApiSvc","Rede Xbox","Conecta jogos Xbox a internet para multiplayer","Selecione e pressione A para aplicar","Seguro",""),
+  @("XboxGipSvc","Perifericos Xbox","Suporte a controles e perifericos Xbox","Selecione e pressione A para aplicar","Seguro",""),
+  @("DiagTrack","Tracking Microsoft","Coleta dados de uso e telemetria para a Microsoft","Selecione e pressione A para aplicar","Seguro",""),
+  @("dmwappushservice","Roteamento WAP","Roteamento de mensagens de operadora de celular","Selecione e pressione A para aplicar","Seguro",""),
+  @("WSearch","Windows Search","Indexa arquivos para buscas rapidas no sistema","Selecione e pressione A para aplicar","Moderado","Desligar libera CPU e RAM, mas pesquisas no Windows ficam mais lentas. Reversivel reativando o servico WSearch."),
+  @("SysMain","SysMain (Superfetch)","Pre-carrega programas na memoria para abrir mais rapido","Selecione e pressione A para aplicar","Seguro",""),
+  @("TabletInputService","Entrada Tablet","Suporte a caneta digital e touch screen","Selecione e pressione A para aplicar","Seguro",""),
+  @("RemoteRegistry","Registro Remoto","Permite editar o registro do Windows remotamente","Selecione e pressione A para aplicar","Seguro",""),
+  @("RemoteDesktopServices","Area Remota","Permite acesso remoto ao PC via RDP","Selecione e pressione A para aplicar","Moderado","Desligar impede acesso remoto ao PC. Se voce usa RDP para trabalhar, mantenha ativado."),
+  @("TermService","Servico Terminal","Servico base para area de trabalho remota (RDP)","Selecione e pressione A para aplicar","Moderado","Necessario para RDP. Desligar tambem impede conexoes remotas."),
+  @("lfsvc","Geolocalizacao","Servico de localizacao geografica do Windows","Selecione e pressione A para aplicar","Seguro",""),
+  @("MapsBroker","Download Mapas","Gerenciador de mapas offline do Windows","Selecione e pressione A para aplicar","Seguro",""),
+  @("WbioSrvc","Biometria","Leitor de digital e reconhecimento facial (Windows Hello)","Selecione e pressione A para aplicar","Moderado","Desliga Windows Hello e biometria. Impede login por digital ou facial."),
 # === SUBMENU - REDE (chave = Nome da opcao) ===
-, @("LiberarRenovarIP","Liberar e renovar IP","Libera o IP atual e solicita um novo do roteador","Selecione e pressione A para aplicar","Seguro","")
-, @("ResetWinsock","Resetar pilha de rede","Reseta Winsock e TCP/IP para corrigir erros de conexao","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSGoogle","DNS Google (8.8.8.8)","DNS publico rapido e confiavel do Google","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSCloudflare","DNS Cloudflare (1.1.1.1)","DNS com privacidade e velocidade do Cloudflare","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSOpenDNS","DNS OpenDNS (208.67.222.222)","DNS da Cisco com filtro anti-phishing integrado","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSQuad9","DNS Quad9 (9.9.9.9)","DNS que bloqueia dominios maliciosos automaticamente","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSAdGuard","DNS AdGuard (94.140.14.14)","DNS com bloqueio de anuncios e rastreadores","Selecione e pressione A para aplicar","Seguro","")
-, @("DNSDefault","DNS Padrao (DHCP)","Volta ao DNS automatico do roteador","Selecione e pressione A para aplicar","Seguro","")
-, @("AutoTuning","Ajustar velocidade de download","Ajusta algoritmo TCP para melhorar velocidade","Selecione e pressione A para aplicar","Seguro","")
+  @("LiberarRenovarIP","Liberar e renovar IP","Libera o IP atual e solicita um novo do roteador","Selecione e pressione A para aplicar","Seguro",""),
+  @("ResetWinsock","Resetar pilha de rede","Reseta Winsock e TCP/IP para corrigir erros de conexao","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSGoogle","DNS Google (8.8.8.8)","DNS publico rapido e confiavel do Google","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSCloudflare","DNS Cloudflare (1.1.1.1)","DNS com privacidade e velocidade do Cloudflare","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSOpenDNS","DNS OpenDNS (208.67.222.222)","DNS da Cisco com filtro anti-phishing integrado","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSQuad9","DNS Quad9 (9.9.9.9)","DNS que bloqueia dominios maliciosos automaticamente","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSAdGuard","DNS AdGuard (94.140.14.14)","DNS com bloqueio de anuncios e rastreadores","Selecione e pressione A para aplicar","Seguro",""),
+  @("DNSDefault","DNS Padrao (DHCP)","Volta ao DNS automatico do roteador","Selecione e pressione A para aplicar","Seguro",""),
+  @("AutoTuning","Ajustar velocidade de download","Ajusta algoritmo TCP para melhorar velocidade","Selecione e pressione A para aplicar","Seguro",""),
 # === SUBMENU - VISUAL (chave = Nome da opcao) ===
-, @("ModoDesempenho","Modo desempenho (VisualFX)","Desliga todas as animacoes e efeitos visuais","Selecione e pressione A para aplicar","Seguro","")
-, @("Transparencia","Desativar transparencia","Remove efeito acrylic das janelas e barra de tarefas","Selecione e pressione A para aplicar","Seguro","")
-, @("Animacoes","Desativar animacoes","Desliga animacoes de abrir e fechar janelas","Selecione e pressione A para aplicar","Seguro","")
-, @("SombrasEfeitos","Desativar sombras e efeitos","Remove sombras de janelas e efeitos da barra","Selecione e pressione A para aplicar","Seguro","")
+  @("ModoDesempenho","Modo desempenho (VisualFX)","Desliga todas as animacoes e efeitos visuais","Selecione e pressione A para aplicar","Seguro",""),
+  @("Transparencia","Desativar transparencia","Remove efeito acrylic das janelas e barra de tarefas","Selecione e pressione A para aplicar","Seguro",""),
+  @("Animacoes","Desativar animacoes","Desliga animacoes de abrir e fechar janelas","Selecione e pressione A para aplicar","Seguro",""),
+  @("SombrasEfeitos","Desativar sombras e efeitos","Remove sombras de janelas e efeitos da barra","Selecione e pressione A para aplicar","Seguro",""),
 # === SUBMENU - WINDOWS FEATURES (chave = Nome do recurso) ===
-, @("NetFx3",".NET Framework 3.5","Framework .NET 3.5 para programas antigos","Selecione e pressione A para aplicar","Moderado","Ativar adiciona componentes do .NET 2.0/3.5. O download pode levar alguns minutos. Reversivel desativando o recurso.")
-, @("Microsoft-Hyper-V","Hyper-V (Virtualizacao)","Plataforma de maquinas virtuais da Microsoft","Selecione e pressione A para aplicar","Moderado","Ativar Hyper-V consome recursos do sistema e pode conflitar com outros hipervisores como VMWare e VirtualBox.")
-, @("Microsoft-Windows-Subsystem-Linux","WSL (Windows Subsystem for Linux)","Roda Linux nativamente dentro do Windows","Selecione e pressione A para aplicar","Moderado","Ativar altera configuracoes de virtualizacao. Pode exigir reboot. Reversivel desativando o recurso.")
-, @("Containers-DisposableClientVM","Windows Sandbox","Ambiente isolado e descartavel para testar programas","Selecione e pressione A para aplicar","Moderado","Requer virtualizacao ativa na BIOS. Consome recursos do sistema enquanto estiver em uso.")
-, @("ServicesForNFS-ClientOnly","NFS (Network File System)","Acesso a pastas compartilhadas em servidores Linux","Selecione e pressione A para aplicar","Seguro","")
-, @("MediaPlayback","Legacy Media (WMP, DirectPlay)","Componentes de midia antigos para compatibilidade","Selecione e pressione A para aplicar","Seguro","")
-, @("NetFx4",".NET Framework 4.8","Ultima versao do .NET Framework (ja incluso no Windows)","Selecione e pressione A para aplicar","Seguro","")
+  @("NetFx3",".NET Framework 3.5","Framework .NET 3.5 para programas antigos","Selecione e pressione A para aplicar","Moderado","Ativar adiciona componentes do .NET 2.0/3.5. O download pode levar alguns minutos. Reversivel desativando o recurso."),
+  @("Microsoft-Hyper-V","Hyper-V (Virtualizacao)","Plataforma de maquinas virtuais da Microsoft","Selecione e pressione A para aplicar","Moderado","Ativar Hyper-V consome recursos do sistema e pode conflitar com outros hipervisores como VMWare e VirtualBox."),
+  @("Microsoft-Windows-Subsystem-Linux","WSL (Windows Subsystem for Linux)","Roda Linux nativamente dentro do Windows","Selecione e pressione A para aplicar","Moderado","Ativar altera configuracoes de virtualizacao. Pode exigir reboot. Reversivel desativando o recurso."),
+  @("Containers-DisposableClientVM","Windows Sandbox","Ambiente isolado e descartavel para testar programas","Selecione e pressione A para aplicar","Moderado","Requer virtualizacao ativa na BIOS. Consome recursos do sistema enquanto estiver em uso."),
+  @("ServicesForNFS-ClientOnly","NFS (Network File System)","Acesso a pastas compartilhadas em servidores Linux","Selecione e pressione A para aplicar","Seguro",""),
+  @("MediaPlayback","Legacy Media (WMP, DirectPlay)","Componentes de midia antigos para compatibilidade","Selecione e pressione A para aplicar","Seguro",""),
+  @("NetFx4",".NET Framework 4.8","Ultima versao do .NET Framework (ja incluso no Windows)","Selecione e pressione A para aplicar","Seguro","")
 )
 foreach ($entry in $script:fi) {
     $script:FuncInfo[$entry[0]] = @{ NomeExibido=$entry[1]; Descricao=$entry[2]; ComoUsar=$entry[3]; NivelRisco=$entry[4]; MotivoRisco=$entry[5] }
