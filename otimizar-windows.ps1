@@ -358,13 +358,13 @@ function Show-Menu {
         Write-Host ""
     }
 
-    $t1 = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("7","Compact/LZX"), @("8","Remover UWP"), @("9","Tweaks Essenciais") )
+    $t1 = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("7","Compact/LZX"), @("8","Remover UWP"), @("18","End Task"), @("19","Menu Classico"), @("24","Home/Gallery"), @("25","WPBT"), @("26","Device Companio"), @("27","Notificacoes"), @("28","Storage Sense"), @("29","Core Isolation") )
     $t2 = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("",""), @("",""), @("","") )
     $t3 = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa"), @("37","Rede Avancada") )
 
-    $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("47","Tweaks Visuais"), @("",""), @("",""), @("","") )
-    $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa"), @("",""), @("",""), @("","") )
-    $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("55","Undo Privacidade"), @("",""), @("",""), @("",""), @("",""), @("","") )
+    $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("45","Tema"), @("46","Sobre"), @("48","Game Mode"), @("49","Game Bar"), @("56","GPU Scheduling"), @("57","Prioridade"), @("58","HiPerf Plan"), @("59","Nagle"), @("70","Dark Mode"), @("71","Extensoes"), @("72","Ocultos"), @("73","BSoD Verbose"), @("74","Bateria %"), @("75","Scrollbars"), @("76","Logon Verbose"), @("77","MPO") )
+    $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("66","Undo Log"), @("67","Rotina Completa"), @("80","Exportar Preset"), @("81","Importar Preset"), @("","") )
+    $t6 = @( @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("55","Undo Privacidade"), @("84","ShutUp10 Abrir"), @("85","ShutUp10 Redown"), @("86","Telemetria"), @("87","Cortana"), @("88","Localizacao"), @("89","Anuncios"), @("90","Wi-Fi Sense"), @("91","Ativ. Voz"), @("92","Hosts"), @("93","Win Update"), @("94","MS Account"), @("95","Defender") )
 
     $t7 = @( @("17","Limpar Cache Fivem") )
 
@@ -403,11 +403,17 @@ function Show-Menu {
 
     Show-GridRow -c1 $t1 -c2 $t2 -c3 $t3 -hdr1 $hdrG1 -hdr2 $hdrG2 -hdr3 $hdrG3 -color $script:c.Green -cw3 $cw3
     Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 $hdrB1 -hdr2 $hdrB2 -hdr3 $hdrB3 -color $script:c.Blue -cw3 $cw3
-    Show-GridRow -c1 $t7 -c2 @() -c3 @() -hdr1 $hdrC1 -hdr2 "" -hdr3 "" -color $script:c.Magenta -cw3 $cw3
+    $hv = [char]0x2550; $vv = [char]0x2551
+    Write-Host "$p$([char]0x2554)$("$hv"*($boxW-2))$([char]0x2557)" -ForegroundColor $script:c.Magenta
+    Write-Host "$p$vv  FIVEM$(" " * ($boxW-8))$vv" -ForegroundColor $script:c.Magenta
+    Write-Host "$p$([char]0x2560)$("$hv"*($boxW-2))$([char]0x2563)" -ForegroundColor $script:c.Magenta
+    Write-Host "$p$vv  [17] Limpar Cache Fivem$(" " * ($boxW-26))$vv" -ForegroundColor $script:c.White
+    Write-Host "$p$([char]0x255A)$("$hv"*($boxW-2))$([char]0x255D)" -ForegroundColor $script:c.Magenta
+    Write-Host ""
 
     $rows1 = [Math]::Max([Math]::Max($t1.Count, $t2.Count), $t3.Count)
     $rows2 = [Math]::Max([Math]::Max($t4.Count, $t5.Count), $t6.Count)
-    $rows3 = $t7.Count
+    $rows3 = 6
     $totalH = 16 + $specLines.Count + $rows1 + $rows2 + $rows3
     Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
 
@@ -2581,271 +2587,8 @@ function Import-Preset {
     Wait-Key
 }
 
-function Show-PresetMenu {
-    do {
-        Clear-Host; Show-Banner
-        $c = $script:c; $p = Pad-W 40
-        Write-Host "$p  GERENCIAR PRESETS" -ForegroundColor $c.Cyan; Write-Host ""
-        Write-Host "$p  1. Exportar configuracao atual" -ForegroundColor $c.White
-        Write-Host "$p  2. Importar configuracao salva" -ForegroundColor $c.White
-        Write-Host "$p  0. Voltar" -ForegroundColor $c.Red; Write-Host ""
-        switch (Read-Host "$p> ") {
-            "1" { Export-Preset }
-            "2" { Import-Preset }
-            "0" { return }
-        }
-    } while ($true)
-}
-
 # === O&O ShutUp10++ INTEGRATION ===
-function Show-ShutUp10 {
-    Show-Banner
-    $c = $script:c; $p = Pad-W 44
-    Write-Host "$p  O&O ShutUp10++" -ForegroundColor $c.Cyan; Write-Host ""
-    Write-Host "$p  Ferramenta de privacidade para Windows 10/11." -ForegroundColor $c.White
-    Write-Host "$p  Baixar e abrir o O&O ShutUp10++:" -ForegroundColor $c.White; Write-Host ""
-    Write-Host "$p  1. Baixar e abrir ShutUp10++" -ForegroundColor $c.Green
-    Write-Host "$p  2. Baixar novamente (se perder o arquivo)" -ForegroundColor $c.White
-    Write-Host "$p  0. Voltar" -ForegroundColor $c.Red; Write-Host ""
-    $shutupPath = "$backupDir\OOSU10.exe"
-    switch (Read-Host "$p> ") {
-        "1" {
-            if (-not (Test-Path $shutupPath)) {
-                Write-Host "[+] Baixando O&O ShutUp10++..." -ForegroundColor $c.Yellow
-                try {
-                    Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $shutupPath -UseBasicParsing -ErrorAction Stop
-                    Write-Host "[OK] Download concluido" -ForegroundColor $c.Green
-                } catch { Write-Host "[ERRO] Falha no download: $_" -ForegroundColor $c.Red; Wait-Key; return }
-            }
-            if (Confirm-Assinatura -FilePath $shutupPath -Origem "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe") {
-                Write-Host "[+] Abrindo O&O ShutUp10++..." -ForegroundColor $c.Green
-                Start-Process $shutupPath -ErrorAction SilentlyContinue
-                Write-Host "[OK] Recomendacao: clique em 'Apply all recommended settings'" -ForegroundColor $c.Yellow
-            } else { Write-Host "[!] Execucao cancelada." -ForegroundColor $c.Red }
-        }
-        "2" {
-            Remove-Item $shutupPath -Force -ErrorAction SilentlyContinue
-            Write-Host "[+] Baixando novamente..." -ForegroundColor $c.Yellow
-            try {
-                Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $shutupPath -UseBasicParsing -ErrorAction Stop
-                Write-Host "[OK] Download concluido." -ForegroundColor $c.Green
-                if (Confirm-Assinatura -FilePath $shutupPath -Origem "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe") {
-                    Write-Host "Abrindo..." -ForegroundColor $c.Green
-                    Start-Process $shutupPath -ErrorAction SilentlyContinue
-                } else { Write-Host "[!] Execucao cancelada." -ForegroundColor $c.Red }
-            } catch { Write-Host "[ERRO] Falha no download: $_" -ForegroundColor $c.Red }
-        }
-    }
-    Wait-Key
-}
-
 # === PRIVACIDADE (INTERATIVO COM SHOW-GENERICOSUBMENU) ===
-function Run-Privacidade {
-    param([switch]$SkipMenu)
-
-    $itens = @(
-        @{Nome = "DisableTelemetry";        Desc = "Desativar Telemetria";       Selected = $true;  Detalhe = "Impede o Microsoft de coletar dados de uso. Seguro para todos, melhora privacidade sem quebrar nada."}
-        @{Nome = "DisableCortana";          Desc = "Desativar Cortana";          Selected = $true;  Detalhe = "Desliga a assistente virtual. Seguro, libera RAM e CPU. Alguns recursos de busca podem ficar mais lentos."}
-        @{Nome = "DisableLocation";         Desc = "Desativar Localizacao";      Selected = $true;  Detalhe = "Impede apps de rastrear sua localizacao. Seguro, a menos que use Mapas ou Clima com localizacao."}
-        @{Nome = "BlockAdvertisingID";      Desc = "Bloquear Anuncios (ID)";     Selected = $true;  Detalhe = "Remove o ID de publicidade do Windows. Seguro, para de receber anuncios personalizados da Microsoft."}
-        @{Nome = "DisableWiFiSense";        Desc = "Desativar Wi-Fi Sense";      Selected = $true;  Detalhe = "Impede compartilhamento automatico de senhas Wi-Fi. Seguro, recomendado para todos."}
-        @{Nome = "DisableVoiceActivation";  Desc = "Desativar Ativ. Voz";        Selected = $false; Detalhe = "Desliga ativacao por voz (OK Google, Cortana). Pode afetar integracao com assistentes de voz."}
-        @{Nome = "BlockTelemetryHosts";     Desc = "Bloquear Telemetria (Hosts)";Selected = $false; Detalhe = "Adiciona servidores da Microsoft ao arquivo hosts. Pode afetar alguns updates e servicos online."}
-        @{Nome = "DisableWindowsUpdate";    Desc = "Desativar Windows Update";   Selected = $false; Detalhe = "Para completamente as atualizacoes. So para maquinas isoladas. Voce perde patches de seguranca importantes."}
-        @{Nome = "RemoveMicrosoftAccount";  Desc = "Remover Microsoft Account";  Selected = $false; Detalhe = "Forca login local. Perde sincronizacao de configuracao entre dispositivos e acesso a Store."}
-        @{Nome = "DisableDefender";         Desc = "Desativar Windows Defender"; Selected = $false; Detalhe = "Desliga o antivirus nativo. So faca se tiver outro antivirus instalado. Risco real de seguranca."}
-    )
-
-    if ($SkipMenu) { $selecionados = $itens }
-    else { $selecionados = Show-GenericoSubmenu -Itens $itens -Titulo "PRIVACIDADE" }
-    if ($selecionados -eq $null) { return }
-
-    Show-Banner
-    Write-Host ">>> APLICANDO AJUSTES DE PRIVACIDADE <<<" -ForegroundColor $script:c.Magenta
-    Write-Host ""; Backup-Privacidade
-
-    $paraAplicar = $selecionados | Where-Object { $_.Selected }
-    foreach ($item in $paraAplicar) {
-        switch ($item.Nome) {
-            "DisableTelemetry" {
-                Write-Host "[Desativando Telemetria]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-Service -Name DiagTrack -StartupType Disabled -ErrorAction SilentlyContinue
-                Stop-Service -Name DiagTrack -Force -ErrorAction SilentlyContinue
-                Set-Service -Name dmwappushservice -StartupType Disabled -ErrorAction SilentlyContinue
-                Stop-Service -Name dmwappushservice -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableCortana" {
-                Write-Host "[Desativando Cortana]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableLocation" {
-                Write-Host "[Desativando Localizacao]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "BlockAdvertisingID" {
-                Write-Host "[Bloqueando ID de Publicidade]..." -NoNewline
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableWiFiSense" {
-                Write-Host "[Desativando Wi-Fi Sense]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiSense" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedOEM" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedUser" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableVoiceActivation" {
-                Write-Host "[Desativando Ativacao por Voz]..." -NoNewline
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Speech\Preferences" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "BlockTelemetryHosts" {
-                Write-Host "[Bloqueando Telemetria via Hosts]..." -NoNewline
-                $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-                $telemetryHosts = @(
-                    "0.0.0.0 vortex-win.data.microsoft.com",
-                    "0.0.0.0 settings-win.data.microsoft.com",
-                    "0.0.0.0 telemetry.microsoft.com",
-                    "0.0.0.0 telemetry.appex.bing.net",
-                    "0.0.0.0 telemetry.urs.microsoft.com",
-                    "0.0.0.0 df.telemetry.microsoft.com",
-                    "0.0.0.0 oca.telemetry.microsoft.com",
-                    "0.0.0.0 sqm.telemetry.microsoft.com",
-                    "0.0.0.0 watson.telemetry.microsoft.com",
-                    "0.0.0.0 vortex-sandbox.data.microsoft.com",
-                    "0.0.0.0 v10.vortex-win.data.microsoft.com",
-                    "0.0.0.0 watson.microsoft.com",
-                    "0.0.0.0 watson.live.com",
-                    "0.0.0.0 watson.ppe.telemetry.microsoft.com",
-                    "0.0.0.0 vortex.data.microsoft.com",
-                    "0.0.0.0 preview.msn.com",
-                    "0.0.0.0 reports.wes.df.telemetry.microsoft.com",
-                    "0.0.0.0 services.wes.df.telemetry.microsoft.com"
-                )
-                $content = Get-Content $hostsPath -Raw -ErrorAction SilentlyContinue
-                foreach ($entry in $telemetryHosts) {
-                    if ($content -notmatch [regex]::Escape($entry)) {
-                        Add-Content -Path $hostsPath -Value $entry -Force -ErrorAction SilentlyContinue
-                    }
-                }
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableWindowsUpdate" {
-                Write-Host "[Desativando Windows Update]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-Service -Name wuauserv -StartupType Disabled -ErrorAction SilentlyContinue
-                Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "RemoveMicrosoftAccount" {
-                Write-Host "[Removendo opcao Microsoft Account]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "BlockDomainPicture" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DontDisplayLastUsername" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-            "DisableDefender" {
-                Write-Host "[Desativando Windows Defender]..." -NoNewline
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-Service -Name WinDefend -StartupType Disabled -ErrorAction SilentlyContinue
-                Stop-Service -Name WinDefend -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green
-            }
-        }
-    }
-
-    Write-Host ""; Write-Host "Privacidade ajustada! Use [52], [53], [54] no menu para desfazer outras categorias." -ForegroundColor $script:c.Green
-    Wait-Key
-}
-
-function Backup-Privacidade {
-    $dados = @{}
-    $keys = @(
-        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"; Name="AllowTelemetry"},
-        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"; Name="AllowTelemetry"},
-        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"; Name="AllowCortana"},
-        @{Path="HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search"; Name="CortanaEnabled"},
-        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"; Name="Value"},
-        @{Path="HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location"; Name="Value"},
-        @{Path="HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo"; Name="Enabled"},
-        @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"; Name="Enabled"},
-        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"; Name="NoAutoUpdate"},
-        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"; Name="DisableAntiSpyware"},
-        @{Path="HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection"; Name="DisableRealtimeMonitoring"}
-    )
-    foreach ($k in $keys) {
-        $val = Get-ItemProperty -Path $k.Path -Name $k.Name -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $k.Name -ErrorAction SilentlyContinue
-        if ($val -ne $null) { $dados[$k.Path + "\" + $k.Name] = $val }
-    }
-    $dados | ConvertTo-Json | Set-Content "$backupDir\privacidade_backup.json" -Force
-    Write-Host "Backup da privacidade salvo." -ForegroundColor $script:c.Gray
-}
-
-function Show-Gaming {
-    Show-Banner
-    $p = Pad-W 44
-    Write-Host "$p  GAMING" -ForegroundColor $script:c.Cyan
-    Write-Host ""
-    Write-Host "$p  1. Game Mode - Ativar" -ForegroundColor $script:c.White
-    Write-Host "$p  2. Game Bar - Desativar" -ForegroundColor $script:c.White
-    Write-Host "$p  3. GPU Scheduling - Ativar" -ForegroundColor $script:c.White
-    Write-Host "$p  4. Prioridade Processo - Alta" -ForegroundColor $script:c.White
-    Write-Host "$p  5. Power Plan - High Performance" -ForegroundColor $script:c.White
-    Write-Host "$p  6. Desativar Nagle Algorithm" -ForegroundColor $script:c.White
-    Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red
-    Write-Host ""
-    $escolha = Read-Host "Escolha"
-    switch ($escolha) {
-        "1" {
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-            Write-Host "[OK] Game Mode ativado" -ForegroundColor $script:c.Green
-        }
-        "2" {
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameBarEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-            Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Name "AppCaptureEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-            Write-Host "[OK] Game Bar desativado" -ForegroundColor $script:c.Green
-        }
-        "3" {
-            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue
-            Write-Host "[OK] GPU Scheduling ativado (reinicie)" -ForegroundColor $script:c.Green
-        }
-        "4" {
-            $proc = Read-Host "Nome do processo (ex: chrome.exe)"
-            if ($proc) {
-                $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$proc"
-                New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null
-                Set-ItemProperty -Path $regPath -Name "Priority" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host "[OK] Prioridade alta definida para $proc" -ForegroundColor $script:c.Green
-            }
-        }
-        "5" {
-            powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
-            Write-Host "[OK] Power Plan: High Performance" -ForegroundColor $script:c.Green
-        }
-        "6" {
-            $adapters = Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -ErrorAction SilentlyContinue
-            foreach ($adapter in $adapters) {
-                Set-ItemProperty -Path $adapter.PSPath -Name "TcpAckFrequency" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path $adapter.PSPath -Name "TCPNoDelay" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-            }
-            Write-Host "[OK] Nagle Algorithm desativado" -ForegroundColor $script:c.Green
-        }
-    }
-    Wait-Key
-}
-
 function Show-BootSequence {
     Show-Banner -Cor $script:c.Green
     $c = $script:c
@@ -2912,82 +2655,6 @@ function Show-Sobre {
 }
 
 # === SUBMENU: TWEAKS ESSENCIAIS (SLOT 9) ===
-function Show-TweaksEssenciais {
-    do {
-        Clear-Host; Show-Banner
-        $p = Pad-W 44
-        Write-Host "$p  TWEAKS ESSENCIAIS" -ForegroundColor $script:c.Cyan; Write-Host ""
-        Write-Host "$p  1. End Task on Taskbar (clicar direito finalizar)" -ForegroundColor $script:c.White
-        Write-Host "$p  2. Menu Contexto Classico (Win10)" -ForegroundColor $script:c.White
-        Write-Host "$p  3. Remover Home/Gallery do Explorer" -ForegroundColor $script:c.White
-        Write-Host "$p  4. WPBT - Desativar (seguranca)" -ForegroundColor $script:c.White
-        Write-Host "$p  5. Device Companion Apps (impedir instalacao)" -ForegroundColor $script:c.White
-        Write-Host "$p  6. Notificacoes & Calendario - Desativar" -ForegroundColor $script:c.White
-        Write-Host "$p  7. Storage Sense - Desativar" -ForegroundColor $script:c.White
-        Write-Host "$p  8. Isolamento de Nucleo - Desativar" -ForegroundColor $script:c.Yellow
-        Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red; Write-Host ""
-        switch (Read-Host "$p> ") {
-            "1" {
-                Show-Banner; Write-Host "[+] Ativando End Task on Taskbar..." -NoNewline -ForegroundColor $script:c.Yellow
-                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Force -ErrorAction SilentlyContinue | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Name "TaskbarEndTask" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Ativou" "End Task"; Wait-Key
-            }
-            "2" {
-                Show-Banner; Write-Host "[+] Ativando Menu Contexto Classico..." -NoNewline -ForegroundColor $script:c.Yellow
-                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -ErrorAction SilentlyContinue | Out-Null
-                Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Ativou" "Classic Menu"; Wait-Key
-            }
-            "3" {
-                Show-Banner; Write-Host "[+] Removendo Home/Gallery do Explorer..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Removeu" "Home/Gallery"; Wait-Key
-            }
-            "4" {
-                Show-Banner; Write-Host "[+] Desativando WPBT..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "DisableWpbtExecution" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "WPBT"; Wait-Key
-            }
-            "5" {
-                Show-Banner; Write-Host "[+] Bloqueando Device Companion Apps..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Bloqueou" "Device Companion"; Wait-Key
-            }
-            "6" {
-                Show-Banner; Write-Host "[+] Desativando Notificacoes & Calendario..." -NoNewline -ForegroundColor $script:c.Yellow
-                New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Force -ErrorAction SilentlyContinue | Out-Null
-                Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "Notificacoes"; Wait-Key
-            }
-            "7" {
-                Show-Banner; Write-Host "[+] Desativando Storage Sense..." -NoNewline -ForegroundColor $script:c.Yellow
-                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -ErrorAction SilentlyContinue | Out-Null
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "Storage Sense"; Wait-Key
-            }
-            "8" {
-                Show-Banner; Write-Host "[+] Desativando Isolamento de Nucleo (Memory Integrity)..." -ForegroundColor $script:c.Yellow
-                Write-Host "[!] Isso desliga a virtualizacao de seguranca do Windows." -ForegroundColor $script:c.Red
-                Write-Host "[!] Pode melhorar performance em jogos, mas REDUZ a seguranca." -ForegroundColor $script:c.Yellow
-                $conf = Read-Host "Confirmar desativacao? (S/N)"
-                if ($conf -eq "S" -or $conf -eq "s") {
-                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "VirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                    Write-Host "[OK] Isolamento de Nucleo desativado (reinicie o PC)" -ForegroundColor $script:c.Green
-                    Log-Tweak "Tweak" "Desativou" "Core Isolation"
-                } else { Write-Host "[--] Cancelado" -ForegroundColor $script:c.DarkGray }
-                Wait-Key
-            }
-            "0" { return }
-        }
-    } while ($true)
-}
-
 # === SUBMENU: REDE AVANCADA (SLOT 37) ===
 function Run-RedeAvancada {
     do {
@@ -3015,69 +2682,6 @@ function Run-RedeAvancada {
 }
 
 # === SUBMENU: TWEAKS VISUAIS (SLOT 47) ===
-function Show-TweaksVisuais {
-    do {
-        Clear-Host; Show-Banner
-        $p = Pad-W 44
-        Write-Host "$p  TWEAKS VISUAIS" -ForegroundColor $script:c.Cyan; Write-Host ""
-        Write-Host "$p  1. Dark Mode (tema escuro)" -ForegroundColor $script:c.White
-        Write-Host "$p  2. Mostrar Extensoes de Arquivo" -ForegroundColor $script:c.White
-        Write-Host "$p  3. Mostrar Arquivos Ocultos" -ForegroundColor $script:c.White
-        Write-Host "$p  4. BSoD Verbose Mode (detalhes na tela azul)" -ForegroundColor $script:c.White
-        Write-Host "$p  5. Percentual da Bateria (system tray)" -ForegroundColor $script:c.White
-        Write-Host "$p  6. Scrollbars Sempre Visiveis" -ForegroundColor $script:c.White
-        Write-Host "$p  7. Logon Verbose Mode (detalhes na inicializacao)" -ForegroundColor $script:c.White
-        Write-Host "$p  8. Multiplane Overlay - Desativar (fix GPU)" -ForegroundColor $script:c.White
-        Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red; Write-Host ""
-        switch (Read-Host "$p> ") {
-            "1" {
-                Show-Banner; Write-Host "[+] Ativando Dark Mode..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Dark Mode"; Wait-Key
-            }
-            "2" {
-                Show-Banner; Write-Host "[+] Mostrando extensoes de arquivo..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK (reinicie o Explorer)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Mostra" "Extensoes"; Wait-Key
-            }
-            "3" {
-                Show-Banner; Write-Host "[+] Mostrando arquivos ocultos..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK (reinicie o Explorer)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Mostra" "Ocultos"; Wait-Key
-            }
-            "4" {
-                Show-Banner; Write-Host "[+] Ativando BSoD Verbose Mode..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisplayParameters" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisableEmoticon" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "BSoD Verbose"; Wait-Key
-            }
-            "5" {
-                Show-Banner; Write-Host "[+] Ativando percentual da bateria..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "IsBatteryPercentageEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Battery %"; Wait-Key
-            }
-            "6" {
-                Show-Banner; Write-Host "[+] Ativando scrollbars sempre visiveis..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Scrollbars"; Wait-Key
-            }
-            "7" {
-                Show-Banner; Write-Host "[+] Ativando Logon Verbose Mode..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "VerboseStatus" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Logon Verbose"; Wait-Key
-            }
-            "8" {
-                Show-Banner; Write-Host "[+] Desativando Multiplane Overlay..." -NoNewline -ForegroundColor $script:c.Yellow
-                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Dwm" -Name "OverlayTestMode" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "PlatformSupportMiracast" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
-                Write-Host " OK (reinicie o PC para aplicar)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Desativou" "MPO"; Wait-Key
-            }
-            "0" { return }
-        }
-    } while ($true)
-}
-
 # === WELCOME (modo portatil via iex) ===
 if (-not $PSCommandPath) {
     do {
@@ -3109,7 +2713,14 @@ do {
         "6" { Show-Banner; Tweak-Updates2077; Log-Tweak "Tweak" "Pausou" "Updates 2077"; Wait-Key }
         "7" { Show-Banner; Tweak-CompactLZX; Log-Tweak "Tweak" "Aplicou" "Compact/LZX"; Wait-Key }
         "8" { Show-Banner; Tweak-RemoverUWP; Log-Tweak "Tweak" "Removeu" "UWP Apps"; Wait-Key }
-        "9" { Show-TweaksEssenciais }
+        "18" { Show-Banner; New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Force -ErrorAction SilentlyContinue | Out-Null; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Name "TaskbarEndTask" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Ativou" "End Task"; Wait-Key }
+        "19" { Show-Banner; New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -ErrorAction SilentlyContinue | Out-Null; Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Ativou" "Classic Menu"; Wait-Key }
+        "24" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Removeu" "Home/Gallery"; Wait-Key }
+        "25" { Show-Banner; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "DisableWpbtExecution" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Desativou" "WPBT"; Wait-Key }
+        "26" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Bloqueou" "Device Companion"; Wait-Key }
+        "27" { Show-Banner; New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Force -ErrorAction SilentlyContinue | Out-Null; Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Desativou" "Notificacoes"; Wait-Key }
+        "28" { Show-Banner; New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -ErrorAction SilentlyContinue | Out-Null; Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output ""; Log-Tweak "Tweak" "Desativou" "Storage Sense"; Wait-Key }
+        "29" { Show-Banner; Write-Output ""; Write-Output "[!] Isso desliga a virtualizacao de seguranca do Windows."; Write-Output "[!] Pode melhorar performance em jogos, mas REDUZ a seguranca."; $conf = Read-Host "Confirmar desativacao? (S/N)"; if ($conf -eq "S" -or $conf -eq "s") { Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "VirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Write-Output "[OK] Isolamento de Nucleo desativado (reinicie o PC)"; Log-Tweak "Tweak" "Desativou" "Core Isolation" } else { Write-Output "[--] Cancelado" }; Wait-Key }
         "10" { Show-Banner; Clear-EventLogs; Log-Tweak "Limpeza" "Limpou" "Event Logs"; Wait-Key }
         "11" { Show-Banner; Clear-CacheWindows; Log-Tweak "Limpeza" "Limpou" "Cache Windows"; Wait-Key }
         "12" { Show-Banner; Clear-DNSCache; Log-Tweak "Limpeza" "Limpou" "DNS Cache"; Wait-Key }
@@ -3133,22 +2744,46 @@ do {
         "41" { Set-UltimatePerformance }
         "42" { Show-Banner; Run-EdicoesWindows; Wait-Key }
         "43" { Show-Banner; Run-WindowsUpdate; Wait-Key }
-        "44" { Show-Gaming }
+
         "45" { EscolherTema }
         "46" { Show-Banner; Show-Sobre; Wait-Key }
-        "47" { Show-TweaksVisuais }
-        "50" { Show-ShutUp10 }
-        "51" { Run-Privacidade }
+        "48" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AllowAutoGameMode" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "AutoGameModeEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Tweak" "Ativou" "Game Mode"; Wait-Key }
+        "49" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\GameBar" -Name "UseNexusForGameBarEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Name "AppCaptureEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Tweak" "Desativou" "Game Bar"; Wait-Key }
+        "56" { Show-Banner; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Value 2 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Tweak" "Ativou" "GPU Scheduling"; Wait-Key }
+        "57" { Show-Banner; $proc = Read-Host "Nome do processo (ex: chrome.exe)"; if ($proc) { $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$proc"; New-Item -Path $regPath -Force -ErrorAction SilentlyContinue | Out-Null; Set-ItemProperty -Path $regPath -Name "Priority" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue }; Log-Tweak "Tweak" "Definiu" "Prioridade $proc"; Wait-Key }
+        "58" { Show-Banner; powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null; Log-Tweak "Tweak" "Ativou" "High Perf Power"; Wait-Key }
+        "59" { Show-Banner; $adapters = Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" -ErrorAction SilentlyContinue; foreach ($adapter in $adapters) { Set-ItemProperty -Path $adapter.PSPath -Name "TcpAckFrequency" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path $adapter.PSPath -Name "TCPNoDelay" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue }; Log-Tweak "Tweak" "Desativou" "Nagle"; Wait-Key }
         "52" { Undo-Servicos }
         "53" { Undo-Rede }
         "54" { Undo-Visual }
         "55" { Undo-Privacidade }
+        "70" { Show-Banner; Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Ativou" "Dark Mode"; Wait-Key }
+        "71" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Mostra" "Extensoes"; Wait-Key }
+        "72" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Mostra" "Ocultos"; Wait-Key }
+        "73" { Show-Banner; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisplayParameters" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisableEmoticon" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Ativou" "BSoD Verbose"; Wait-Key }
+        "74" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "IsBatteryPercentageEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Ativou" "Battery %"; Wait-Key }
+        "75" { Show-Banner; Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Ativou" "Scrollbars"; Wait-Key }
+        "76" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "VerboseStatus" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Ativou" "Logon Verbose"; Wait-Key }
+        "77" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Dwm" -Name "OverlayTestMode" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "PlatformSupportMiracast" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Visual" "Desativou" "MPO"; Wait-Key }
+        "80" { Show-Banner; Export-Preset; Wait-Key }
+        "81" { Show-Banner; Import-Preset; Wait-Key }
+        "84" { Show-Banner; $shutupPath = "$backupDir\OOSU10.exe"; if (-not (Test-Path $shutupPath)) { try { Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $shutupPath -UseBasicParsing -ErrorAction Stop } catch { } }; if (Confirm-Assinatura -FilePath $shutupPath -Origem "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe") { Start-Process $shutupPath -ErrorAction SilentlyContinue }; Wait-Key }
+        "85" { Show-Banner; $shutupPath = "$backupDir\OOSU10.exe"; Remove-Item $shutupPath -Force -ErrorAction SilentlyContinue; try { Invoke-WebRequest -Uri "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -OutFile $shutupPath -UseBasicParsing -ErrorAction Stop; if (Confirm-Assinatura -FilePath $shutupPath -Origem "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe") { Start-Process $shutupPath -ErrorAction SilentlyContinue } } catch { }; Wait-Key }
+        "86" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-Service -Name DiagTrack -StartupType Disabled -ErrorAction SilentlyContinue; Stop-Service -Name DiagTrack -Force -ErrorAction SilentlyContinue; Set-Service -Name dmwappushservice -StartupType Disabled -ErrorAction SilentlyContinue; Stop-Service -Name dmwappushservice -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Telemetria"; Wait-Key }
+        "87" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Cortana"; Wait-Key }
+        "88" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Localizacao"; Wait-Key }
+        "89" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Bloqueou" "Anuncios"; Wait-Key }
+        "90" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiSense" -Name "value" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedOEM" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config" -Name "AutoConnectAllowedUser" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Wi-Fi Sense"; Wait-Key }
+        "91" { Show-Banner; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Speech\Preferences" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Holographic" -Name "VoiceActivationEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Ativ. Voz"; Wait-Key }
+        "92" { Show-Banner; $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"; $telemetryHosts = @("0.0.0.0 vortex-win.data.microsoft.com","0.0.0.0 settings-win.data.microsoft.com","0.0.0.0 telemetry.microsoft.com","0.0.0.0 telemetry.appex.bing.net","0.0.0.0 telemetry.urs.microsoft.com","0.0.0.0 df.telemetry.microsoft.com","0.0.0.0 oca.telemetry.microsoft.com","0.0.0.0 sqm.telemetry.microsoft.com","0.0.0.0 watson.telemetry.microsoft.com","0.0.0.0 vortex-sandbox.data.microsoft.com","0.0.0.0 v10.vortex-win.data.microsoft.com","0.0.0.0 watson.microsoft.com","0.0.0.0 watson.live.com","0.0.0.0 watson.ppe.telemetry.microsoft.com","0.0.0.0 vortex.data.microsoft.com","0.0.0.0 preview.msn.com","0.0.0.0 reports.wes.df.telemetry.microsoft.com","0.0.0.0 services.wes.df.telemetry.microsoft.com"); $content = Get-Content $hostsPath -Raw -ErrorAction SilentlyContinue; foreach ($entry in $telemetryHosts) { if ($content -notmatch [regex]::Escape($entry)) { Add-Content -Path $hostsPath -Value $entry -Force -ErrorAction SilentlyContinue } }; Log-Tweak "Privacidade" "Bloqueou" "Hosts Telemetria"; Wait-Key }
+        "93" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-Service -Name wuauserv -StartupType Disabled -ErrorAction SilentlyContinue; Stop-Service -Name wuauserv -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Windows Update"; Wait-Key }
+        "94" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "BlockDomainPicture" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "DontDisplayLastUsername" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Removeu" "MS Account"; Wait-Key }
+        "95" { Show-Banner; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" -Name "DisableRealtimeMonitoring" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue; Set-Service -Name WinDefend -StartupType Disabled -ErrorAction SilentlyContinue; Stop-Service -Name WinDefend -Force -ErrorAction SilentlyContinue; Log-Tweak "Privacidade" "Desativou" "Defender"; Wait-Key }
         "60" { Show-Banner; Run-BackupSistema; Wait-Key }
         "61" { Show-Banner; Run-RestaurarSistema; Wait-Key }
         "62" { Show-Banner; Run-Usuarios; Wait-Key }
         "63" { Show-Banner; Run-CmdCores; Wait-Key }
         "64" { Show-Banner; Run-SomMod; Wait-Key }
-        "65" { Show-PresetMenu }
         "66" { Show-UndoLog }
         "67" { Show-Banner; Run-Tudo; Wait-Key }
         "?" { Show-Help; Wait-Key }
