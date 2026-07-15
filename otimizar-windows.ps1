@@ -358,19 +358,22 @@ function Show-Menu {
         Write-Host ""
     }
 
-    $t1 = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("",""), @("7","Compact/LZX"), @("8","Remover UWP") )
+    $t1 = @( @("1","Central de Acao"), @("2","Cache Updates"), @("3","Hibernacao"), @("4","Pagefile"), @("5","Take Ownership"), @("6","Updates 2077"), @("7","Compact/LZX"), @("8","Remover UWP"), @("9","Tweaks Essenciais") )
     $t2 = @( @("10","Logs Eventos"), @("11","Cache Windows"), @("12","DNS Cache"), @("13","Temporarios"), @("14","Limpeza Extrema"), @("15","CleanMgr"), @("16","DISM"), @("",""), @("",""), @("","") )
-    $t3 = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa") )
+    $t3 = @( @("20","Winget Apps"), @("22","Drivers"), @("23","Desinstalar"), @("",""), @("30","DNS Google"), @("31","DNS Cloudflare"), @("32","DNS OpenDNS"), @("33","DNS Quad9"), @("34","DNS AdGuard"), @("35","DNS DHCP"), @("36","Rede Completa"), @("37","Rede Avancada") )
 
-    $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("",""), @("",""), @("",""), @("","") )
+    $t4 = @( @("40","Windows Features"), @("41","Power Plan"), @("42","Edicoes Win"), @("43","Win Update"), @("44","Gaming"), @("45","Tema"), @("46","Sobre"), @("47","Tweaks Visuais"), @("",""), @("",""), @("","") )
     $t5 = @( @("60","Backup"), @("61","Restaurar"), @("62","Usuarios"), @("63","CMD Cores"), @("64","Som Mod"), @("65","Presets"), @("66","Undo Log"), @("67","Rotina Completa"), @("",""), @("",""), @("","") )
     $t6 = @( @("50","O&O ShutUp10++"), @("51","Privacidade"), @("52","Undo Servicos"), @("53","Undo Rede"), @("54","Undo Visual"), @("55","Undo Privacidade"), @("",""), @("",""), @("",""), @("",""), @("","") )
 
+    $t7 = @( @("17","Limpar Cache Fivem") )
+
     $hdrG1="TWEAK";$hdrG2="LIMPEZA";$hdrG3="INSTALAR + REDE"
     $hdrB1="SISTEMA";$hdrB2="FERRAMENTAS";$hdrB3="PRIVACIDADE"
+    $hdrC1="FIVEM"
 
-    $todosItens = @($t1)+@($t2)+@($t3)+@($t4)+@($t5)+@($t6)
-    $todosHdrs = @($hdrG1,$hdrG2,$hdrG3,$hdrB1,$hdrB2,$hdrB3)
+    $todosItens = @($t1)+@($t2)+@($t3)+@($t4)+@($t5)+@($t6)+@($t7)
+    $todosHdrs = @($hdrG1,$hdrG2,$hdrG3,$hdrB1,$hdrB2,$hdrB3,$hdrC1)
     $maxTexto = 0
     foreach ($item in $todosItens) {
         if ($item[1] -ne "") { $maxTexto = [Math]::Max($maxTexto, $item[1].Length) }
@@ -400,10 +403,12 @@ function Show-Menu {
 
     Show-GridRow -c1 $t1 -c2 $t2 -c3 $t3 -hdr1 $hdrG1 -hdr2 $hdrG2 -hdr3 $hdrG3 -color $script:c.Green -cw3 $cw3
     Show-GridRow -c1 $t4 -c2 $t5 -c3 $t6 -hdr1 $hdrB1 -hdr2 $hdrB2 -hdr3 $hdrB3 -color $script:c.Blue -cw3 $cw3
+    Show-GridRow -c1 $t7 -c2 @() -c3 @() -hdr1 $hdrC1 -hdr2 "" -hdr3 "" -color $script:c.Magenta -cw3 $cw3
 
     $rows1 = [Math]::Max([Math]::Max($t1.Count, $t2.Count), $t3.Count)
     $rows2 = [Math]::Max([Math]::Max($t4.Count, $t5.Count), $t6.Count)
-    $totalH = 16 + $specLines.Count + $rows1 + $rows2
+    $rows3 = $t7.Count
+    $totalH = 16 + $specLines.Count + $rows1 + $rows2 + $rows3
     Set-TermSize -Width ($boxW + 4) -Height ($totalH + 2)
 
     Write-Host "$p[0] Sair  [U] Verificar Atualizacao  [H] Ajuda  [D] Desinstalar" -ForegroundColor $script:c.Red
@@ -1840,6 +1845,34 @@ function Clear-Temporarios {
     } catch { Write-Host "[OK] Temporarios limpos" -ForegroundColor $script:c.Green }
 }
 
+# === FIVEM CACHE ===
+function Clear-FiveMCache {
+    Write-Host "`n[+] FIVEM - Limpando Cache..." -ForegroundColor $script:c.Yellow
+    $dataPath = "$env:LOCALAPPDATA\FiveM\FiveM.app\data"
+    if (-not (Test-Path $dataPath)) {
+        Write-Host "[!] FIVEM nao encontrado em: $dataPath" -ForegroundColor $script:c.Red
+        Write-Host "[!] Certifique-se de que o FIVEM esta instalado." -ForegroundColor $script:c.Yellow
+        return
+    }
+    $alvos = @("cache", "nui-storage", "server-cache", "server-cache-priv")
+    $total = 0
+    foreach ($alvo in $alvos) {
+        $itemPath = Join-Path $dataPath $alvo
+        if (Test-Path $itemPath) {
+            try {
+                $size = (Get-ChildItem $itemPath -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue).Sum
+                Remove-Item $itemPath -Recurse -Force -ErrorAction SilentlyContinue
+                $mb = [math]::Round($size / 1MB, 2)
+                Write-Host "  [OK] $alvo removido ($mb MB)" -ForegroundColor $script:c.Green
+                $total += $size
+            } catch { Write-Host "  [!] Erro ao remover $alvo" -ForegroundColor $script:c.Red }
+        } else { Write-Host "  [--] $alvo nao encontrado" -ForegroundColor $script:c.DarkGray }
+    }
+    $totalMB = [math]::Round($total / 1MB, 2)
+    Write-Host "[OK] Cache do FIVEM limpo: $totalMB MB liberados" -ForegroundColor $script:c.Cyan
+    Log-Tweak "Limpeza" "Limpou" "FIVEM Cache"
+}
+
 function Run-CleanMgr {
     Write-Host "`n[+] CleanMgr - Executando..." -ForegroundColor $script:c.Red
     try {
@@ -2878,6 +2911,173 @@ function Show-Sobre {
     Write-Host ""
 }
 
+# === SUBMENU: TWEAKS ESSENCIAIS (SLOT 9) ===
+function Show-TweaksEssenciais {
+    do {
+        Clear-Host; Show-Banner
+        $p = Pad-W 44
+        Write-Host "$p  TWEAKS ESSENCIAIS" -ForegroundColor $script:c.Cyan; Write-Host ""
+        Write-Host "$p  1. End Task on Taskbar (clicar direito finalizar)" -ForegroundColor $script:c.White
+        Write-Host "$p  2. Menu Contexto Classico (Win10)" -ForegroundColor $script:c.White
+        Write-Host "$p  3. Remover Home/Gallery do Explorer" -ForegroundColor $script:c.White
+        Write-Host "$p  4. WPBT - Desativar (seguranca)" -ForegroundColor $script:c.White
+        Write-Host "$p  5. Device Companion Apps (impedir instalacao)" -ForegroundColor $script:c.White
+        Write-Host "$p  6. Notificacoes & Calendario - Desativar" -ForegroundColor $script:c.White
+        Write-Host "$p  7. Storage Sense - Desativar" -ForegroundColor $script:c.White
+        Write-Host "$p  8. Isolamento de Nucleo - Desativar" -ForegroundColor $script:c.Yellow
+        Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red; Write-Host ""
+        switch (Read-Host "$p> ") {
+            "1" {
+                Show-Banner; Write-Host "[+] Ativando End Task on Taskbar..." -NoNewline -ForegroundColor $script:c.Yellow
+                New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Force -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings" -Name "TaskbarEndTask" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Ativou" "End Task"; Wait-Key
+            }
+            "2" {
+                Show-Banner; Write-Host "[+] Ativando Menu Contexto Classico..." -NoNewline -ForegroundColor $script:c.Yellow
+                New-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" -Force -ErrorAction SilentlyContinue | Out-Null
+                Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Ativou" "Classic Menu"; Wait-Key
+            }
+            "3" {
+                Show-Banner; Write-Host "[+] Removendo Home/Gallery do Explorer..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\Software\Classes\CLSID\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}" -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Removeu" "Home/Gallery"; Wait-Key
+            }
+            "4" {
+                Show-Banner; Write-Host "[+] Desativando WPBT..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name "DisableWpbtExecution" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "WPBT"; Wait-Key
+            }
+            "5" {
+                Show-Banner; Write-Host "[+] Bloqueando Device Companion Apps..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Bloqueou" "Device Companion"; Wait-Key
+            }
+            "6" {
+                Show-Banner; Write-Host "[+] Desativando Notificacoes & Calendario..." -NoNewline -ForegroundColor $script:c.Yellow
+                New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Force -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "DisableNotificationCenter" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "Notificacoes"; Wait-Key
+            }
+            "7" {
+                Show-Banner; Write-Host "[+] Desativando Storage Sense..." -NoNewline -ForegroundColor $script:c.Yellow
+                New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Force -ErrorAction SilentlyContinue | Out-Null
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy" -Name "01" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Tweak" "Desativou" "Storage Sense"; Wait-Key
+            }
+            "8" {
+                Show-Banner; Write-Host "[+] Desativando Isolamento de Nucleo (Memory Integrity)..." -ForegroundColor $script:c.Yellow
+                Write-Host "[!] Isso desliga a virtualizacao de seguranca do Windows." -ForegroundColor $script:c.Red
+                Write-Host "[!] Pode melhorar performance em jogos, mas REDUZ a seguranca." -ForegroundColor $script:c.Yellow
+                $conf = Read-Host "Confirmar desativacao? (S/N)"
+                if ($conf -eq "S" -or $conf -eq "s") {
+                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard" -Name "EnableVirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" -Name "Enabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "VirtualizationBasedSecurity" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                    Write-Host "[OK] Isolamento de Nucleo desativado (reinicie o PC)" -ForegroundColor $script:c.Green
+                    Log-Tweak "Tweak" "Desativou" "Core Isolation"
+                } else { Write-Host "[--] Cancelado" -ForegroundColor $script:c.DarkGray }
+                Wait-Key
+            }
+            "0" { return }
+        }
+    } while ($true)
+}
+
+# === SUBMENU: REDE AVANCADA (SLOT 37) ===
+function Run-RedeAvancada {
+    do {
+        Clear-Host; Show-Banner
+        $p = Pad-W 44
+        Write-Host "$p  REDE AVANCADA" -ForegroundColor $script:c.Cyan; Write-Host ""
+        Write-Host "$p  1. IPv4 Preferred (priorizar IPv4)" -ForegroundColor $script:c.White
+        Write-Host "$p  2. Teredo - Desativar (tunelamento IPv6)" -ForegroundColor $script:c.White
+        Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red; Write-Host ""
+        switch (Read-Host "$p> ") {
+            "1" {
+                Show-Banner; Write-Host "[+] Priorizando IPv4..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" -Name "DisabledComponents" -Value 32 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Rede" "Priorizou" "IPv4"; Wait-Key
+            }
+            "2" {
+                Show-Banner; Write-Host "[+] Desativando Teredo..." -NoNewline -ForegroundColor $script:c.Yellow
+                netsh interface teredo set state disabled 2>$null
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" -Name "DisabledComponents" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Rede" "Desativou" "Teredo"; Wait-Key
+            }
+            "0" { return }
+        }
+    } while ($true)
+}
+
+# === SUBMENU: TWEAKS VISUAIS (SLOT 47) ===
+function Show-TweaksVisuais {
+    do {
+        Clear-Host; Show-Banner
+        $p = Pad-W 44
+        Write-Host "$p  TWEAKS VISUAIS" -ForegroundColor $script:c.Cyan; Write-Host ""
+        Write-Host "$p  1. Dark Mode (tema escuro)" -ForegroundColor $script:c.White
+        Write-Host "$p  2. Mostrar Extensoes de Arquivo" -ForegroundColor $script:c.White
+        Write-Host "$p  3. Mostrar Arquivos Ocultos" -ForegroundColor $script:c.White
+        Write-Host "$p  4. BSoD Verbose Mode (detalhes na tela azul)" -ForegroundColor $script:c.White
+        Write-Host "$p  5. Percentual da Bateria (system tray)" -ForegroundColor $script:c.White
+        Write-Host "$p  6. Scrollbars Sempre Visiveis" -ForegroundColor $script:c.White
+        Write-Host "$p  7. Logon Verbose Mode (detalhes na inicializacao)" -ForegroundColor $script:c.White
+        Write-Host "$p  8. Multiplane Overlay - Desativar (fix GPU)" -ForegroundColor $script:c.White
+        Write-Host "$p  0. Voltar" -ForegroundColor $script:c.Red; Write-Host ""
+        switch (Read-Host "$p> ") {
+            "1" {
+                Show-Banner; Write-Host "[+] Ativando Dark Mode..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Dark Mode"; Wait-Key
+            }
+            "2" {
+                Show-Banner; Write-Host "[+] Mostrando extensoes de arquivo..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK (reinicie o Explorer)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Mostra" "Extensoes"; Wait-Key
+            }
+            "3" {
+                Show-Banner; Write-Host "[+] Mostrando arquivos ocultos..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK (reinicie o Explorer)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Mostra" "Ocultos"; Wait-Key
+            }
+            "4" {
+                Show-Banner; Write-Host "[+] Ativando BSoD Verbose Mode..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisplayParameters" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl" -Name "DisableEmoticon" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "BSoD Verbose"; Wait-Key
+            }
+            "5" {
+                Show-Banner; Write-Host "[+] Ativando percentual da bateria..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "IsBatteryPercentageEnabled" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Battery %"; Wait-Key
+            }
+            "6" {
+                Show-Banner; Write-Host "[+] Ativando scrollbars sempre visiveis..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKCU:\Control Panel\Accessibility" -Name "DynamicScrollbars" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Scrollbars"; Wait-Key
+            }
+            "7" {
+                Show-Banner; Write-Host "[+] Ativando Logon Verbose Mode..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "VerboseStatus" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Ativou" "Logon Verbose"; Wait-Key
+            }
+            "8" {
+                Show-Banner; Write-Host "[+] Desativando Multiplane Overlay..." -NoNewline -ForegroundColor $script:c.Yellow
+                Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\Dwm" -Name "OverlayTestMode" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "PlatformSupportMiracast" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+                Write-Host " OK (reinicie o PC para aplicar)" -ForegroundColor $script:c.Green; Log-Tweak "Visual" "Desativou" "MPO"; Wait-Key
+            }
+            "0" { return }
+        }
+    } while ($true)
+}
+
 # === WELCOME (modo portatil via iex) ===
 if (-not $PSCommandPath) {
     do {
@@ -2909,6 +3109,7 @@ do {
         "6" { Show-Banner; Tweak-Updates2077; Log-Tweak "Tweak" "Pausou" "Updates 2077"; Wait-Key }
         "7" { Show-Banner; Tweak-CompactLZX; Log-Tweak "Tweak" "Aplicou" "Compact/LZX"; Wait-Key }
         "8" { Show-Banner; Tweak-RemoverUWP; Log-Tweak "Tweak" "Removeu" "UWP Apps"; Wait-Key }
+        "9" { Show-TweaksEssenciais }
         "10" { Show-Banner; Clear-EventLogs; Log-Tweak "Limpeza" "Limpou" "Event Logs"; Wait-Key }
         "11" { Show-Banner; Clear-CacheWindows; Log-Tweak "Limpeza" "Limpou" "Cache Windows"; Wait-Key }
         "12" { Show-Banner; Clear-DNSCache; Log-Tweak "Limpeza" "Limpou" "DNS Cache"; Wait-Key }
@@ -2916,6 +3117,7 @@ do {
         "14" { Show-Banner; Run-LimpezaExtrema; Log-Tweak "Limpeza" "Extrema" "Limpeza profunda"; Wait-Key }
         "15" { Show-Banner; Run-CleanMgr; Log-Tweak "Limpeza" "Executou" "CleanMgr"; Wait-Key }
         "16" { Show-Banner; Run-DISM; Log-Tweak "Limpeza" "Executou" "DISM"; Wait-Key }
+        "17" { Show-Banner; Clear-FiveMCache; Wait-Key }
         "20" { Show-WingetInstaller }
         "22" { Show-Banner; Run-DriverUpdater }
         "23" { Show-Banner; Run-UniversalUninstaller }
@@ -2926,6 +3128,7 @@ do {
         "34" { Show-Banner; Set-DirectDNS "AdGuard"; Wait-Key }
         "35" { Show-Banner; Set-DirectDNS "Default"; Wait-Key }
         "36" { Show-Banner; Run-Rede; Wait-Key }
+        "37" { Run-RedeAvancada }
         "40" { Show-WindowsFeatures }
         "41" { Set-UltimatePerformance }
         "42" { Show-Banner; Run-EdicoesWindows; Wait-Key }
@@ -2933,6 +3136,7 @@ do {
         "44" { Show-Gaming }
         "45" { EscolherTema }
         "46" { Show-Banner; Show-Sobre; Wait-Key }
+        "47" { Show-TweaksVisuais }
         "50" { Show-ShutUp10 }
         "51" { Run-Privacidade }
         "52" { Undo-Servicos }
