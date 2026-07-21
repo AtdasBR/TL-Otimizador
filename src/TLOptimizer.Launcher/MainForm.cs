@@ -145,8 +145,6 @@ public partial class MainForm : Form
         ("FIVEM", "FiveM", new[]
         {
             ("17","Limpar Cache FiveM","Remove cache do jogo FiveM (GTA RP)","Seguro"),
-            ("96","Localizar pasta do GTA V","Localiza a pasta de instalacao do Grand Theft Auto V","Seguro"),
-            ("97","Localizar pasta do FiveM","Localiza a pasta do FiveM no computador","Seguro"),
         }),
     };
 
@@ -668,7 +666,7 @@ public partial class MainForm : Form
         var found = _menu.FirstOrDefault(m => m.Cat == cat);
         if (found.Cat == null) { _title.Text = cat; _subtitle.Text = "0 ações"; return; }
         _title.Text = cat;
-        _subtitle.Text = cat == "FiveM" ? "Diagnóstico + 3 ações" : $"{found.Itens.Length} ações disponíveis";
+        _subtitle.Text = cat == "FiveM" ? "Diagnóstico + 1 ação" : $"{found.Itens.Length} ações disponíveis";
         if (_search.Text == "Buscar aplicativo...")
             _search.ForeColor = _txtDim;
         _search.Text = "Buscar ação...";
@@ -836,9 +834,6 @@ public partial class MainForm : Form
 
     private Panel CreateCard(string id, string nome, string desc, string risco, int w, int h)
     {
-        if (id is "96" or "97")
-            return CreateLocationCard(id, nome, w, h);
-
         var info = ActionData.Get(id, nome, desc, risco);
         var state = ActionStateManager.GetState(id);
         bool isOn = state.IsOn;
@@ -873,40 +868,6 @@ public partial class MainForm : Form
         card.Click += (s, e) => MostrarDialogEAcao(id, nome, desc, risco);
         foreach (Control child in card.Controls)
             child.Click += (s, e) => MostrarDialogEAcao(id, nome, desc, risco);
-
-        return card;
-    }
-
-    private Panel CreateLocationCard(string id, string nome, int w, int h)
-    {
-        var cache = LocationDialog.Cache;
-        string desc;
-        if (cache.TryGetValue(id, out var path))
-            desc = path != null ? "\u2713 Localizado: " + path : "\u2717 Nao encontrado";
-        else
-            desc = "Clique para localizar";
-
-        var card = new Panel
-        {
-            Size = new Size(w, h),
-            Margin = new Padding(0, 0, 16, 16),
-            Tag = id,
-            BackColor = _cardBg,
-            Cursor = Cursors.Hand,
-        };
-
-        AddCardText(card, w, h, null, nome, desc, null, null, null, null);
-        StyleCardContainer(card);
-
-        void AbrirDialog()
-        {
-            using var dlg = new LocationDialog(id, nome);
-            dlg.ShowDialog(this);
-            RenderCards(_categoriaAtiva, _search.Text);
-        }
-        card.Click += (_, _) => AbrirDialog();
-        foreach (Control child in card.Controls)
-            child.Click += (_, _) => AbrirDialog();
 
         return card;
     }
