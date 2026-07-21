@@ -1386,35 +1386,62 @@ public partial class MainForm : Form
         if (_diagCache != null) return _diagCache;
 
         var d = new DiagData();
+
+        // RAM via C# (zero PowerShell, mesma fonte do RefreshSysInfo)
+        try { d.TotalRam = (long)new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory; } catch { }
+
+        // CPU + GPU num unico PowerShell isolado (NADA de disco misturado)
         try
         {
-            var script = "$cpu=Get-CimInstance Win32_Processor|Select-Object -First 1;$gpu=Get-CimInstance Win32_VideoController|Select-Object -First 1;$ram=[long](Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory;$cpuName=if($cpu){$cpu.Name}else{''};$cpuClock=if($cpu){[int]$cpu.MaxClockSpeed}else{0};$cpuCores=if($cpu){[int]$cpu.NumberOfCores}else{0};$cpuThreads=if($cpu){[int]$cpu.NumberOfLogicalProcessors}else{0};$gpuName=if($gpu){$gpu.Name}else{''};$gpuVRAM=if($gpu.AdapterRAM){[long]$gpu.AdapterRAM}else{0};$gta='';try{$gta=(Get-ItemProperty 'HKLM:\\SOFTWARE\\WOW6432Node\\Rockstar Games\\Grand Theft Auto V' -Name InstallFolder -ErrorAction Stop).InstallFolder}catch{};if(!$gta){foreach($p in 'C:\\Program Files\\Rockstar Games\\Grand Theft Auto V','C:\\Program Files (x86)\\Steam\\steamapps\\common\\Grand Theft Auto V','C:\\Program Files\\Epic Games\\GTAV'){if(Test-Path $p){$gta=$p;break}}};$dt=-1;$db=-1;if($gta){try{$dl=[System.IO.Path]::GetPathRoot($gta).TrimEnd(':').TrimEnd('\\');$dn=(Get-Partition -DriveLetter $dl|Get-Disk -ErrorAction Stop).Number;$ph=Get-PhysicalDisk|Where-Object DeviceID -eq $dn;if($ph){$dt=[int]$ph.MediaType;$db=[int]$ph.BusType}}catch{}};Write-Output ('{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}' -f $cpuName,$cpuClock,$cpuCores,$cpuThreads,$ram,$gpuName,$gpuVRAM,$gta,$dt,$db)";
-
+            var script = "$ErrorActionPreference='SilentlyContinue';$cpu=Get-CimInstance Win32_Processor|Select-Object -First 1;$gpu=Get-CimInstance Win32_VideoController|Select-Object -First 1;$n=if($cpu){$cpu.Name}else{''};$c=if($cpu){[int]$cpu.MaxClockSpeed}else{0};$r=if($cpu){[int]$cpu.NumberOfCores}else{0};$t=if($cpu){[int]$cpu.NumberOfLogicalProcessors}else{0};$gn=if($gpu){$gpu.Name}else{''};$gv=if($gpu.AdapterRAM){[long]$gpu.AdapterRAM}else{0};Write-Output ('{0}|{1}|{2}|{3}|{4}|{5}' -f $n,$c,$r,$t,$gn,$gv)";
             var psi = new ProcessStartInfo("powershell",
                 "-NoProfile -Command \"" + script + "\"")
             { RedirectStandardOutput = true, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
-
             using var p = Process.Start(psi);
             if (p != null)
             {
                 var output = p.StandardOutput.ReadToEnd().Trim();
                 var parts = output.Split('|');
-                if (parts.Length >= 10)
+                if (parts.Length >= 6)
                 {
                     d.CpuName = parts[0];
                     int.TryParse(parts[1], out d.CpuClock);
                     int.TryParse(parts[2], out d.CpuCores);
                     int.TryParse(parts[3], out d.CpuThreads);
-                    long.TryParse(parts[4], out d.TotalRam);
-                    d.GpuName = parts[5];
-                    long.TryParse(parts[6], out d.GpuVram);
-                    d.GtaPath = parts[7];
-                    int.TryParse(parts[8], out d.DiskMediaType);
-                    int.TryParse(parts[9], out d.DiskBusType);
+                    d.GpuName = parts[4];
+                    long.TryParse(parts[5], out d.GpuVram);
                 }
             }
         }
         catch { }
+
+        // Caminho do GTA V ja' detectado por DetectarPastas()
+        if (_detectedGtaVPath != null)
+        {
+            d.GtaPath = _detectedGtaVPath;
+
+            // Disco: PowerShell isolado, com erro silenciado
+            try
+            {
+                var dl = _detectedGtaVPath.Length >= 2 ? _detectedGtaVPath[0].ToString() : "C";
+                var ds = "$ErrorActionPreference='SilentlyContinue';$dl='" + dl + "';try{$dn=(Get-Partition -DriveLetter $dl -ErrorAction SilentlyContinue|Get-Disk -ErrorAction SilentlyContinue).Number -as [int];if($dn){$ph=Get-PhysicalDisk -ErrorAction SilentlyContinue|Where-Object DeviceID -eq $dn;if($ph){Write-Output ('{0}|{1}' -f [int]$ph.MediaType,[int]$ph.BusType);exit}};Write-Output '-1|-1'}catch{Write-Output '-1|-1'}";
+                var p2 = new ProcessStartInfo("powershell",
+                    "-NoProfile -Command \"" + ds + "\"")
+                { RedirectStandardOutput = true, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
+                using var p = Process.Start(p2);
+                if (p != null)
+                {
+                    var o = p.StandardOutput.ReadToEnd().Trim();
+                    var ps = o.Split('|');
+                    if (ps.Length >= 2)
+                    {
+                        int.TryParse(ps[0], out d.DiskMediaType);
+                        int.TryParse(ps[1], out d.DiskBusType);
+                    }
+                }
+            }
+            catch { }
+        }
 
         _diagCache = d;
         return d;
@@ -1608,9 +1635,11 @@ public partial class MainForm : Form
     private static (string value, string desc, string status) AvaliarCPU(DiagData data)
     {
         if (string.IsNullOrEmpty(data.CpuName))
-            return ("N/A", "Não foi possível detectar o processador", "Mediano");
+            return ("N/A", "Não foi possível detectar o processador", "Erro");
 
-        var label = $"{data.CpuName} @ {data.CpuClock} MHz";
+        var label = data.CpuClock > 0
+            ? $"{data.CpuName} @ {data.CpuClock} MHz"
+            : data.CpuName;
         if (data.CpuCores >= 6)
             return (label, "Processador atende bem aos requisitos do FiveM", "OK");
         if (data.CpuCores >= 4 && data.CpuClock >= 3000)
@@ -1623,6 +1652,9 @@ public partial class MainForm : Form
 
     private static (string value, string desc, string status) AvaliarRAM(DiagData data)
     {
+        if (data.TotalRam <= 0)
+            return ("N/A", "Não foi possível detectar a memória RAM", "Erro");
+
         var ramGb = data.TotalRam / (1024.0 * 1024 * 1024);
         var label = $"{ramGb:F1} GB";
         if (ramGb >= 16)
@@ -1636,16 +1668,28 @@ public partial class MainForm : Form
     private static (string value, string desc, string status) AvaliarGPU(DiagData data)
     {
         if (string.IsNullOrEmpty(data.GpuName))
-            return ("N/A", "Não foi possível detectar a placa de vídeo", "Mediano");
+            return ("N/A", "Não foi possível detectar a placa de vídeo", "Erro");
 
-        var vramGb = data.GpuVram / (1024.0 * 1024 * 1024);
-        var label = vramGb > 0 ? $"{data.GpuName} ({vramGb:F1} GB)" : data.GpuName;
+        var vramBytes = data.GpuVram;
+        var vramMb = vramBytes / (1024.0 * 1024);
+        var vramGb = vramBytes / (1024.0 * 1024 * 1024);
+
+        string label;
+        if (vramGb >= 1)
+            label = $"{data.GpuName} ({vramGb:F1} GB)";
+        else if (vramMb >= 1)
+            label = $"{data.GpuName} ({vramMb:F0} MB)";
+        else
+            label = data.GpuName + " (VRAM n\u00e3o detectada)";
+
         if (vramGb >= 2)
             return (label, "VRAM suficiente para texturas no FiveM", "OK");
         if (vramGb >= 1)
             return (label, "VRAM limitada — pode causar travamentos ao carregar texturas", "Mediano");
+        if (vramMb > 0)
+            return (label, "VRAM muito baixa — FiveM pode ficar injogável", "Gargalo");
 
-        return (label, "VRAM muito baixa — FiveM pode ficar injogável", "Gargalo");
+        return (label, "VRAM n\u00e3o detectada — poss\u00edvel placa integrada", "Mediano");
     }
 
     private static (string value, string desc, string status) AvaliarArmazenamento(DiagData data)
@@ -1672,6 +1716,7 @@ public partial class MainForm : Form
             "OK" => Color.FromArgb(60, 190, 90),
             "Mediano" => Color.FromArgb(230, 190, 60),
             "Gargalo" => Color.FromArgb(220, 70, 70),
+            "Erro" => _txtDim,
             _ => _txtDim
         };
 
