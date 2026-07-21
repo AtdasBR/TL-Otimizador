@@ -420,6 +420,12 @@ public partial class MainForm : Form
             _sysTimer.Tick += (_, _) => RefreshSysInfo();
             _sysTimer.Start();
             BeginInvoke(CheckUpdatesBackground);
+            // Pré-coleta dados de diagnóstico em background para evitar stutter no FiveM
+            Task.Run(() =>
+            {
+                DetectarPastas();
+                ColetarDadosDiagnostico();
+            });
         };
     }
 
@@ -643,6 +649,7 @@ public partial class MainForm : Form
 
     private void SelectCategory(string cat)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         _categoriaAtiva = cat;
         foreach (Control c in _sidebar.Controls)
             if (c is Label l && l.Tag != null)
@@ -661,7 +668,8 @@ public partial class MainForm : Form
             return;
         }
 
-        if (cat == "FiveM") _diagCache = null;
+        // Cache persiste por sessão — sem limpar aqui. A coleta em background no startup evita stutter.
+        // if (cat == "FiveM") _diagCache = null;
 
         var found = _menu.FirstOrDefault(m => m.Cat == cat);
         if (found.Cat == null) { _title.Text = cat; _subtitle.Text = "0 ações"; return; }
@@ -671,16 +679,23 @@ public partial class MainForm : Form
             _search.ForeColor = _txtDim;
         _search.Text = "Buscar ação...";
         RenderCards(cat, "");
+        sw.Stop();
+        if (sw.ElapsedMilliseconds > 50)
+            AppendLog($"[TIMING] SelectCategory({cat}): {sw.ElapsedMilliseconds}ms");
     }
 
     private void RenderCards(string cat, string filtro)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         _grid.SuspendLayout();
         _grid.Controls.Clear();
 
         if (cat == "FiveM")
         {
+            var sw5 = System.Diagnostics.Stopwatch.StartNew();
             RenderStatusPastasEAcoes();
+            sw5.Stop();
+            AppendLog($"[TIMING] RenderStatusPastasEAcoes: {sw5.ElapsedMilliseconds}ms");
             RenderDiagnosticoGargalos();
         }
 
@@ -712,6 +727,9 @@ public partial class MainForm : Form
         }
 
         _grid.ResumeLayout(true);
+        sw.Stop();
+        if (sw.ElapsedMilliseconds > 20)
+            AppendLog($"[TIMING] RenderCards({cat}): {sw.ElapsedMilliseconds}ms");
     }
 
     // ======================= CARD PADRÃO =======================
@@ -1048,6 +1066,7 @@ public partial class MainForm : Form
 
     private void RenderInstaller()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         if (_installerGrid is null) return;
 
         var filtro = _installerFilter.SelectedItem?.ToString() ?? "Todos";
@@ -1094,6 +1113,9 @@ public partial class MainForm : Form
 
         _installerGrid.ResumeLayout(true);
         _status.Text = $"{apps.Length} aplicativos | gerenciador: {_installerGerenciador}";
+        sw.Stop();
+        if (sw.ElapsedMilliseconds > 30)
+            AppendLog($"[TIMING] RenderInstaller ({apps.Length} apps): {sw.ElapsedMilliseconds}ms");
     }
 
     // Apenas mostra/oculta os cards já criados quando o estado de instalação muda
@@ -1383,6 +1405,7 @@ public partial class MainForm : Form
 
     private DiagData ColetarDadosDiagnostico()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         if (_diagCache != null) return _diagCache;
 
         var d = new DiagData();
@@ -1393,6 +1416,7 @@ public partial class MainForm : Form
         // CPU + GPU num unico PowerShell isolado (NADA de disco misturado)
         try
         {
+            var swPs = System.Diagnostics.Stopwatch.StartNew();
             var script = "$ErrorActionPreference='SilentlyContinue';$cpu=Get-CimInstance Win32_Processor|Select-Object -First 1;$gpu=Get-CimInstance Win32_VideoController|Select-Object -First 1;$n=if($cpu){$cpu.Name}else{''};$c=if($cpu){[int]$cpu.MaxClockSpeed}else{0};$r=if($cpu){[int]$cpu.NumberOfCores}else{0};$t=if($cpu){[int]$cpu.NumberOfLogicalProcessors}else{0};$gn=if($gpu){$gpu.Name}else{''};$gv=if($gpu.AdapterRAM){[long]$gpu.AdapterRAM}else{0};Write-Output ('{0}|{1}|{2}|{3}|{4}|{5}' -f $n,$c,$r,$t,$gn,$gv)";
             var psi = new ProcessStartInfo("powershell",
                 "-NoProfile -Command \"" + script + "\"")
@@ -1412,6 +1436,8 @@ public partial class MainForm : Form
                     long.TryParse(parts[5], out d.GpuVram);
                 }
             }
+            swPs.Stop();
+            AppendLog($"[TIMING] ColetarDadosDiagnostico PS(CPU+GPU): {swPs.ElapsedMilliseconds}ms");
         }
         catch { }
 
@@ -1423,6 +1449,7 @@ public partial class MainForm : Form
             // Disco: PowerShell isolado, com erro silenciado
             try
             {
+                var swPs = System.Diagnostics.Stopwatch.StartNew();
                 var dl = _detectedGtaVPath.Length >= 2 ? _detectedGtaVPath[0].ToString() : "C";
                 var ds = "$ErrorActionPreference='SilentlyContinue';$dl='" + dl + "';try{$dn=(Get-Partition -DriveLetter $dl -ErrorAction SilentlyContinue|Get-Disk -ErrorAction SilentlyContinue).Number -as [int];if($dn){$ph=Get-PhysicalDisk -ErrorAction SilentlyContinue|Where-Object DeviceID -eq $dn;if($ph){Write-Output ('{0}|{1}' -f [int]$ph.MediaType,[int]$ph.BusType);exit}};Write-Output '-1|-1'}catch{Write-Output '-1|-1'}";
                 var p2 = new ProcessStartInfo("powershell",
@@ -1439,11 +1466,16 @@ public partial class MainForm : Form
                         int.TryParse(ps[1], out d.DiskBusType);
                     }
                 }
+                swPs.Stop();
+                AppendLog($"[TIMING] ColetarDadosDiagnostico PS(DISCO): {swPs.ElapsedMilliseconds}ms");
             }
             catch { }
         }
 
         _diagCache = d;
+        sw.Stop();
+        var isCache = _diagCache != null ? " (cache)" : "";
+        AppendLog($"[TIMING] ColetarDadosDiagnostico{isCache}: {sw.ElapsedMilliseconds}ms");
         return d;
     }
 
@@ -1597,6 +1629,7 @@ public partial class MainForm : Form
 
     private void RenderDiagnosticoGargalos()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         int availW = Math.Max(_grid.ClientSize.Width - _grid.Padding.Left - _grid.Padding.Right, 600);
         var header = new Panel
         {
@@ -1630,6 +1663,8 @@ public partial class MainForm : Form
         _grid.Controls.Add(CriarCardDiagnostico("Memória RAM", AvaliarRAM(data), cw, ch));
         _grid.Controls.Add(CriarCardDiagnostico("Placa de Vídeo (VRAM)", AvaliarGPU(data), cw, ch));
         _grid.Controls.Add(CriarCardDiagnostico("Armazenamento do GTA V", AvaliarArmazenamento(data), cw, ch));
+        sw.Stop();
+        AppendLog($"[TIMING] RenderDiagnosticoGargalos: {sw.ElapsedMilliseconds}ms");
     }
 
     private static (string value, string desc, string status) AvaliarCPU(DiagData data)
