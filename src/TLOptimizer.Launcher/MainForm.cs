@@ -781,6 +781,7 @@ public partial class MainForm : Form
 
         var lblValue = new Label
         {
+            Text = value,
             Location = new Point(x, y),
             Size = new Size(innerW - (badgeText != null ? 64 : 0), 20),
             ForeColor = _txt,
@@ -808,6 +809,7 @@ public partial class MainForm : Form
         int descMaxY = h - pad - (statusText != null ? 18 + sp : 0);
         var lblDesc = new Label
         {
+            Text = description,
             Location = new Point(x, y),
             Size = new Size(innerW, Math.Max(descMaxY - y, 14)),
             ForeColor = _txtDim,
@@ -1583,7 +1585,7 @@ public partial class MainForm : Form
             Cursor = Cursors.Default
         };
 
-        var (lblValue, lblDesc) = AddCardText(card, w, h, null, value, desc);
+        var (lblValue, lblDesc) = AddCardText(card, w, h, nome, value, desc);
         lblValue.ForeColor = cor;
 
         if (encontrada)
@@ -1721,7 +1723,7 @@ public partial class MainForm : Form
             Cursor = Cursors.Default
         };
 
-        var (lblValue, _) = AddCardText(card, w, h, null, info.value, info.desc,
+        var (lblValue, _) = AddCardText(card, w, h, nome, info.value, info.desc,
             badgeText: info.status, badgeColor: statusCor);
         lblValue.ForeColor = statusCor;
 
