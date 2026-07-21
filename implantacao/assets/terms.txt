@@ -1,0 +1,61 @@
+TERMOS DE USO E RESPONSABILIDADE — TL OPTIMIZER
+
+1. CIÊNCIA DO USUÁRIO
+   Ao utilizar este software, você declara estar ciente de
+   que ele realiza alterações no sistema operacional Windows,
+   incluindo modificações em configurações do registro, serviços,
+   permissões e aplicações instaladas.
+
+2. CLASSIFICAÇÃO DAS AÇÕES
+   Todas as ações disponíveis no TL Optimizer são classificadas
+   por nível de impacto:
+
+   • RECOMENDADAS (verde)  — Alterações seguras e recomendadas
+     para o dia a dia. Baixo risco.
+
+   • MEDIANAS (amarelo)    — Alterações que podem afetar a
+     experiência do usuário. Impacto moderado. Leia a descrição
+     antes de aplicar.
+
+   • CRÍTICAS (vermelho)   — Alterações avançadas que modificam
+     partes sensíveis do sistema. Podem causar instabilidade se
+     mal utilizadas. Apenas para usuários experientes.
+
+3. ISENÇÃO DE RESPONSABILIDADE
+   O TL Optimizer é fornecido "como está", sem garantias de
+   qualquer tipo, expressas ou implícitas. O usuário assume
+   TOTAL responsabilidade por qualquer dano, perda de dados,
+   instabilidade do sistema ou mau funcionamento decorrente
+   do uso deste software.
+
+4. RECOMENDAÇÕES OBRIGATÓRIAS
+   • Faça backup completo do sistema antes de executar ações
+     críticas.
+   • Crie um ponto de restauração do Windows antes de usar.
+   • Leia atentamente a descrição de cada ação antes de ativá-la.
+   • Não utilize o programa em máquinas de terceiros sem
+     autorização explícita.
+   • A execução requer privilégios de administrador.
+
+5. PROTEÇÃO DE DADOS
+   Este software NÃO coleta, armazena ou transmite dados
+   pessoais do usuário. Todas as alterações são executadas
+   localmente na máquina do usuário.
+
+6. USO EM AMBIENTES CORPORATIVOS
+   Consulte o departamento de TI antes de utilizar o TL
+   Optimizer em máquinas corporativas ou gerenciadas por
+   políticas de grupo (GPO).
+
+7. ATUALIZAÇÕES
+   O software pode verificar e baixar atualizações
+   automaticamente para garantir o correto funcionamento.
+   As atualizações incluem melhorias, correções e novas
+   ações de otimização.
+
+8. CONTATO E SUPORTE
+   Para reportar problemas ou sugerir melhorias, acesse:
+   https://github.com/AtdasBR/TL-Otimizador
+
+Ao clicar em "Aceitar" abaixo, você confirma que leu,
+compreendeu e concorda com todos os termos acima.

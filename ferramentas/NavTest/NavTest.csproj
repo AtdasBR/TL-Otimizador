@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>NavTest</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="TLOptimizer">
+      <HintPath>C:\Users\Administrator\.gemini\antigravity\scratch\TL-Otimizador\src\TLOptimizer.Launcher\bin\Debug\net8.0-windows\win-x64\TLOptimizer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

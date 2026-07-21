@@ -6,3 +6,14 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# .NET build artifacts
+**/bin/
+**/obj/
+dist/publicacao/
+dist/instalador/
+
+# Keep the installer source, ignore generated output only
+!implantacao/tloptimizer.iss
+!implantacao/update-manifest.json
+!implantacao/icon.ico

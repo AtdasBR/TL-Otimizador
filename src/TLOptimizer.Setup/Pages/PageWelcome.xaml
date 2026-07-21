@@ -1,0 +1,65 @@
+<UserControl x:Class="TLOptimizer.Setup.PageWelcome"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackPanel VerticalAlignment="Center">
+    <TextBlock x:Name="Titulo" Text="Bem-vindo ao assistente de instalação"
+               FontSize="16" FontWeight="SemiBold"
+               Foreground="White" />
+    <TextBlock x:Name="Descricao"
+               Text="Este assistente vai instalar o TL Optimizer no seu computador."
+               Foreground="{StaticResource TxtDimBrush}" FontSize="13"
+               TextWrapping="Wrap" Margin="0,8,0,0" />
+    <Border x:Name="BoxRecursos" Background="{StaticResource PanelBrush}" CornerRadius="8"
+            Padding="20" Margin="0,24,0,0">
+      <StackPanel>
+        <TextBlock Text="Recursos incluídos:" Foreground="{StaticResource TxtDimBrush}"
+                   FontSize="12" Margin="0,0,0,8" />
+        <BulletDecorator Margin="0,3,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock Text="Otimização completa do Windows com um clique"
+                     Foreground="{StaticResource TxtBrush}" FontSize="12" />
+        </BulletDecorator>
+        <BulletDecorator Margin="0,3,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock Text="Gerenciador de aplicativos com 250+ programas"
+                     Foreground="{StaticResource TxtBrush}" FontSize="12" />
+        </BulletDecorator>
+        <BulletDecorator Margin="0,3,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock Text="Remoção de bloatware e ajustes de privacidade"
+                     Foreground="{StaticResource TxtBrush}" FontSize="12" />
+        </BulletDecorator>
+        <BulletDecorator Margin="0,3,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock Text="Dashboard com métricas de hardware em tempo real"
+                     Foreground="{StaticResource TxtBrush}" FontSize="12" />
+        </BulletDecorator>
+      </StackPanel>
+    </Border>
+    <!-- Opções quando já instalado -->
+    <Border x:Name="BoxInstalado" Background="{StaticResource PanelBrush}" CornerRadius="8"
+            Padding="20" Margin="0,24,0,0" Visibility="Collapsed">
+      <StackPanel>
+        <TextBlock Text="TL Optimizer já está instalado. O que deseja fazer?"
+                   Foreground="{StaticResource TxtBrush}" FontSize="13"
+                   FontWeight="SemiBold" Margin="0,0,0,12" />
+        <RadioButton x:Name="OptReparar" GroupName="Acao" IsChecked="True"
+                     Content="Reparar instalação — mantém configurações e atalhos"
+                     Foreground="{StaticResource TxtDimBrush}" FontSize="12"
+                     Checked="OnModoChanged" />
+        <RadioButton x:Name="OptDesinstalar" GroupName="Acao" Margin="0,8,0,0"
+                     Content="Remover completamente o TL Optimizer"
+                     Foreground="{StaticResource TxtDimBrush}" FontSize="12"
+                     Checked="OnModoChanged" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -72,3 +72,21 @@ Função sem entrada completa = erro visível de desenvolvimento, nunca fallback
 5. Nenhuma linha estourando a largura de 120 colunas sem passar pela ordem de resolução acima.
 6. Simulação de navegação confirmando que a opção nova não quebra o submenu onde foi inserida.
 7. Relatório indicando explicitamente se algum item acima não pôde ser cumprido, e por quê — nunca omitir.
+
+## Regra de sincronização do projeto (sempre aplicar em qualquer atualização)
+Sempre que fizer qualquer mudança (código C#, script PS1, tema, UI, etc.), atualize TUDO na pasta do projeto de forma consistente:
+1. `dotnet publish` → `build/publish` (binário novo do launcher).
+2. Copiar `scripts/otimizar-windows.ps1` para `build/publish/scripts/`.
+3. Regerar o instalador Inno Setup (`deploy/tloptimizer.iss`) → `build/installer/TLOptimizer-Setup-X.Y.Z.exe`.
+4. Subir a versão em `deploy/tloptimizer.iss` (#define MyAppVersion) e em `deploy/update-manifest.json` ("version") juntos, e manter o changelog/notes coerente.
+5. Só então o update automático (via GitHub) funcionará de forma consistente. Nunca deixar o exe de `build/publish` dessincronizado do instalador gerado.
+6. O programa NÃO se atualiza sozinho ao rodar o .exe direto de `build/publish`; a atualização automática só existe quando instalado via Inno Setup e aponta para o repositório remoto.
+
+## Organização de pastas
+- MANTER `dist/` sempre limpo: apenas `instalador/` (instalador single-file + pacote/) e `publicacao/` (launcher).
+- NUNCA criar pastas temporárias como `instalador_v2`, `instalador_novo` etc. em `dist/`. Usar diretório temporário em `%TEMP%` e depois sobrescrever `dist/instalador/`.
+- Remover arquivos residuais (.pdb, .old, etc.) imediatamente.
+- Limpar pastas temporárias (instalador_v2, v3, v4, v5, instalador_novo, instalador_single) ao final de cada sessão.
+- SEMPRE verificar que o programa continua funcionando após qualquer alteração: build sem erros/avisos, publicar o binário, e executar o setup para confirmar que abre sem crash.
+- Nunca remover guards de null/IsLoaded em event handlers de XAML sem entender exatamente quando o evento dispara — eventos `Checked`/`Loaded` disparam durante `InitializeComponent()`, antes de todos os controles existirem.
+- APÓS qualquer alteração no código do setup, automaticamente publicar single-file e copiar para `dist/instalador/` (nunca esperar o usuário pedir). O usuário testa diretamente o executável em `dist/instalador/`.

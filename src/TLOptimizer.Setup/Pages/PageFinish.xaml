@@ -1,0 +1,41 @@
+<UserControl x:Class="TLOptimizer.Setup.PageFinish"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+    <TextBlock x:Name="LblIcon" Text="✓" FontSize="48" Foreground="{StaticResource BlueBrush}"
+               HorizontalAlignment="Center" />
+    <TextBlock x:Name="LblTitle" Text="Instalação concluída!" FontSize="20" FontWeight="Bold"
+               Foreground="White" HorizontalAlignment="Center"
+               Margin="0,12,0,0" />
+    <TextBlock x:Name="LblDesc" Text="O TL Optimizer foi instalado com sucesso."
+               Foreground="{StaticResource TxtDimBrush}" FontSize="13"
+               HorizontalAlignment="Center" Margin="0,8,0,0"
+               TextWrapping="Wrap" />
+    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+            Padding="20" Margin="0,24,0,0" MaxWidth="320">
+      <StackPanel>
+        <TextBlock x:Name="LblOQueFazer" Text="O que fazer agora:"
+                   Foreground="{StaticResource TxtBrush}" FontSize="12"
+                   FontWeight="Bold" />
+        <BulletDecorator Margin="0,8,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock x:Name="TxtItem1" Text="Execute otimizações com um clique"
+                     Foreground="{StaticResource TxtDimBrush}" FontSize="12" />
+        </BulletDecorator>
+        <BulletDecorator Margin="0,4,0,0">
+          <BulletDecorator.Bullet>
+            <TextBlock Text="•" Foreground="{StaticResource BlueBrush}" />
+          </BulletDecorator.Bullet>
+          <TextBlock x:Name="TxtItem2" Text="Gerencie seus aplicativos pelo Instalador"
+                     Foreground="{StaticResource TxtDimBrush}" FontSize="12" />
+        </BulletDecorator>
+        <CheckBox x:Name="ChkLaunch" Margin="0,12,0,0"
+                  Content="Iniciar TL Optimizer após fechar"
+                  Foreground="{StaticResource TxtDimBrush}" FontSize="12"
+                  IsChecked="True" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,96 @@
+<Window x:Class="TLOptimizer.Setup.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TL Optimizer — Instalação"
+        Width="680" Height="480"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize"
+        Background="{StaticResource BgBrush}"
+        FontFamily="Segoe UI"
+        Foreground="{StaticResource TxtBrush}"
+        WindowStyle="SingleBorderWindow"
+        AllowsTransparency="False">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="220" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Sidebar com gradiente azul escuro mesh -->
+    <Border Grid.Column="0">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+          <GradientStop Color="#0F0F1A" Offset="0.0" />
+          <GradientStop Color="#0F1A2E" Offset="0.4" />
+          <GradientStop Color="#0C1C36" Offset="0.7" />
+          <GradientStop Color="#0A1828" Offset="1.0" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <!-- Linha de separação sutil na borda direita -->
+      <Border.BorderBrush>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+          <GradientStop Color="#1A2A4A" Offset="0.0" />
+          <GradientStop Color="#2A3A5A" Offset="0.5" />
+          <GradientStop Color="#1A2A4A" Offset="1.0" />
+        </LinearGradientBrush>
+      </Border.BorderBrush>
+      <Border.BorderThickness>0,0,1,0</Border.BorderThickness>
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Image Source="icon.ico" Width="56" Height="56" />
+        <TextBlock Text="TL" FontSize="22" FontWeight="Bold"
+                   Foreground="White" HorizontalAlignment="Center" Margin="0,12,0,0" />
+        <TextBlock Text="OPTIMIZER" FontSize="14" FontWeight="Bold"
+                   Foreground="{StaticResource TxtDimBrush}"
+                   HorizontalAlignment="Center" />
+        <TextBlock Text="Otimizador de Windows" FontSize="10"
+                   Foreground="{StaticResource TxtDimBrush}"
+                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+        <TextBlock Text="{Binding CurrentStep, RelativeSource={RelativeSource AncestorType=Window}}"
+                   FontSize="11" Foreground="#4A5A7A"
+                   HorizontalAlignment="Center" Margin="0,30,0,0" />
+      </StackPanel>
+    </Border>
+
+    <!-- Content area -->
+    <Border Grid.Column="1" Background="{StaticResource BgBrush}" Padding="36,32,36,20">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Page content -->
+        <ContentControl x:Name="PageContent" Grid.Row="0" Grid.RowSpan="2" />
+
+        <!-- Bottom bar -->
+        <Border Grid.Row="2" Height="48" Margin="0,12,0,0">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BtnBack" Grid.Column="0"
+                    Style="{StaticResource SecondaryButton}"
+                    Content="← Voltar" Visibility="Collapsed"
+                    Click="BtnBack_Click" />
+            <TextBlock x:Name="LblStatus" Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource TxtDimBrush}"
+                       FontSize="11" Margin="12,0,0,0"
+                       TextTrimming="CharacterEllipsis" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+              <Button x:Name="BtnCancel" Style="{StaticResource SecondaryButton}"
+                      Content="Cancelar" Margin="0,0,8,0"
+                      Click="BtnCancel_Click" />
+              <Button x:Name="BtnNext" Style="{StaticResource PrimaryButton}"
+                      Content="Prosseguir →"
+                      Click="BtnNext_Click" />
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>
