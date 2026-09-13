@@ -1,0 +1,71 @@
+name: Build & Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish Launcher
+        run: |
+          dotnet publish src/TLOptimizer.Launcher/TLOptimizer.Launcher.csproj `
+            -c Release `
+            -p:PublishSingleFile=true `
+            -p:SelfContained=true `
+            -p:RuntimeIdentifier=win-x64 `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -o dist/publicacao
+
+      - name: Publish Installer (WPF)
+        run: |
+          dotnet publish src/TLOptimizer.Setup/TLOptimizer.Setup.csproj `
+            -c Release `
+            -p:PublishSingleFile=true `
+            -p:SelfContained=true `
+            -p:RuntimeIdentifier=win-x64 `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -o dist/instalador
+
+      - name: Copy scripts and assets
+        run: |
+          New-Item -ItemType Directory -Path "dist/publicacao/scripts" -Force
+          Copy-Item "scripts/otimizar-windows.ps1" "dist/publicacao/scripts/"
+
+          if (Test-Path "recursos/logos") {
+            New-Item -ItemType Directory -Path "dist/publicacao/assets/logos" -Force
+            Copy-Item "recursos/logos/*.png" "dist/publicacao/assets/logos/" -ErrorAction SilentlyContinue
+          }
+
+          New-Item -ItemType Directory -Path "dist/instalador/pacote" -Force
+          Get-ChildItem "dist/publicacao" -Exclude "*Setup*","*.pdb" |
+            Copy-Item -Destination "dist/instalador/pacote" -Recurse -Force
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: TL Optimizer v${{ steps.version.outputs.VERSION }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            dist/publicacao/TLOptimizer.exe
+            dist/instalador/TLOptimizer.Setup.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

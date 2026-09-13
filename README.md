@@ -1,12 +1,20 @@
-# TL Optimizer — Arquitetura
+# TL Optimizer
+
+> Otimização, manutenção e gerenciamento de apps do Windows com um clique.
+
+## Download
+
+Baixe a última versão em [Releases](https://github.com/AtdasBR/TL-Otimizador/releases/latest) —
+escolha `TLOptimizer.exe` (launcher standalone) ou `TLOptimizer.Setup.exe` (instalador completo).
 
 Projeto profissional no estilo Chris Titus WinUtil, composto por 3 camadas
 bem separadas para facilitar manutenção e atualizações sem reinstalar.
 
 ```
 TL-Otimizador/
-├── scripts/                       # Arquivos do OTIMIZADOR (PowerShell)
-│   └── otimizar-windows.ps1       #   Script principal (já existente, ~2990 linhas)
+├── scripts/
+│   ├── otimizar-windows.ps1       #   Script principal (~2990 linhas)
+│   └── build-all.ps1             #   Script de build automatizado
 ├── src/TLOptimizer.Launcher/     # LAUNCHER em C# (.NET 8, WinForms)
 │   ├── TLOptimizer.Launcher.csproj
 │   ├── Program.cs                 #   Entry point / orquestração
@@ -16,21 +24,19 @@ TL-Otimizador/
 │   ├── AppConfig.cs               #   Constantes (URLs, versões, caminhos)
 │   ├── app.manifest               #   Manifesto Windows (estilo moderno)
 │   └── icon.ico                   #   Ícone do app
-├── deploy/                        # ARQUIVOS DE DISTRIBUIÇÃO
+├── implantacao/                    # ARQUIVOS DE DISTRIBUIÇÃO
 │   ├── update-manifest.json       #   Manifesto de atualização (servido no GitHub)
 │   ├── icon.ico
 │   └── tloptimizer.iss            #   Script do Inno Setup (instalador)
-├── build/
-│   ├── publish/                   #   Saída do dotnet publish (launcher + scripts)
-│   └── installer/                 #   Saída do ISCC (TLOptimizer-Setup-x.y.z.exe)
-└── build/build.bat                # Script de build automatizado
+└── build/
+    └── publish/                   #   Saída do dotnet publish (launcher + scripts)
 ```
 
 ## Fluxo de execução
 
 1. O usuário abre o atalho (Área de Trabalho / Menu Iniciar) → `TLOptimizer.exe`.
 2. O launcher mostra a **splash screen** com barra de progresso.
-3. Verifica `deploy/update-manifest.json` (remoto) e compara com a versão
+3. Verifica `implantacao/update-manifest.json` (remoto) e compara com a versão
    instalada em `%LOCALAPPDATA%\TLOptimizer\version.txt`.
 4. Se houver versão nova, baixa **apenas os arquivos alterados** (o `.ps1`)
    para `%LOCALAPPDATA%\TLOptimizer\`.
@@ -55,26 +61,31 @@ TL-Otimizador/
   Windows (futuro).
 - **Otimizador (PS):** atualizado automaticamente pelo próprio launcher em
   runtime, sem reinstalar o programa. Basta subir novo `otimizar-windows.ps1`
-  + `update-manifest.json` no repositório.
+   + `update-manifest.json` no repositório.
 
 ### Para lançar uma nova versão do otimizador
 1. Edite `scripts/otimizar-windows.ps1`.
 2. Suba para o repo (`master`).
-3. Atualize `deploy/update-manifest.json` → `"version": "X.Y"`.
+3. Atualize `implantacao/update-manifest.json` → `"version": "X.Y"`.
 4. Pronto — o launcher de todos os usuários baixa sozinho na próxima abertura.
+
+### Para lançar uma nova versão do launcher
+1. Atualize a versão em `src/TLOptimizer.Launcher/TLOptimizer.Launcher.csproj` (`<Version>`).
+2. Atualize `implantacao/tloptimizer.iss` (`#define MyAppVersion`).
+3. Atualize `implantacao/update-manifest.json` → `"launcher": {"version": "X.Y.Z"}`.
+4. Crie e envie uma tag: `git tag v1.7.3 && git push origin v1.7.3`.
+5. O GitHub Actions builda e publica os `.exe` na aba Releases automaticamente.
 
 ## Build
 
-Requer: .NET 8 SDK + Inno Setup 6.
+Requer: .NET 8 SDK + Inno Setup 6 (opcional, para gerar o instalador Inno Setup).
 
+### Local
 ```bat
-build\build.bat              :: compila o launcher (publish self-contained)
-ISCC.exe deploy\tloptimizer.iss   :: gera o instalador
+scripts\build-all.ps1              :: compila launcher + instalador WPF
+ISCC.exe implantacao\tloptimizer.iss   :: gera o instalador Inno Setup (opcional)
 ```
 
-Ou manualmente:
-```bat
-dotnet publish src\TLOptimizer.Launcher\TLOptimizer.Launcher.csproj ^
-  -c Release -o build\publish -p:PublishSingleFile=true ^
-  -p:SelfContained=true -p:RuntimeIdentifier=win-x64
-```
+### Automático (GitHub Actions)
+Ao criar uma tag `v*` e fazer push, o workflow `release.yml` builda e publica
+os `.exe` como assets da Release no GitHub.

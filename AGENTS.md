@@ -77,8 +77,8 @@ Função sem entrada completa = erro visível de desenvolvimento, nunca fallback
 Sempre que fizer qualquer mudança (código C#, script PS1, tema, UI, etc.), atualize TUDO na pasta do projeto de forma consistente:
 1. `dotnet publish` → `build/publish` (binário novo do launcher).
 2. Copiar `scripts/otimizar-windows.ps1` para `build/publish/scripts/`.
-3. Regerar o instalador Inno Setup (`deploy/tloptimizer.iss`) → `build/installer/TLOptimizer-Setup-X.Y.Z.exe`.
-4. Subir a versão em `deploy/tloptimizer.iss` (#define MyAppVersion) e em `deploy/update-manifest.json` ("version") juntos, e manter o changelog/notes coerente.
+3. Regerar o instalador Inno Setup (`implantacao/tloptimizer.iss`) → `build/installer/TLOptimizer-Setup-X.Y.Z.exe`.
+4. Subir a versão em `implantacao/tloptimizer.iss` (#define MyAppVersion) e em `implantacao/update-manifest.json` ("version") juntos, e manter o changelog/notes coerente.
 5. Só então o update automático (via GitHub) funcionará de forma consistente. Nunca deixar o exe de `build/publish` dessincronizado do instalador gerado.
 6. O programa NÃO se atualiza sozinho ao rodar o .exe direto de `build/publish`; a atualização automática só existe quando instalado via Inno Setup e aponta para o repositório remoto.
 

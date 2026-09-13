@@ -12,8 +12,3 @@ Thumbs.db
 **/obj/
 dist/publicacao/
 dist/instalador/
-
-# Keep the installer source, ignore generated output only
-!implantacao/tloptimizer.iss
-!implantacao/update-manifest.json
-!implantacao/icon.ico
