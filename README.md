@@ -5,7 +5,7 @@
 ## Download
 
 Baixe a última versão em [Releases](https://github.com/AtdasBR/TL-Otimizador/releases/latest) —
-escolha `TLOptimizer.exe` (launcher standalone) ou `TLOptimizer.Setup.exe` (instalador completo).
+escolha `TLOptimizer.exe` (launcher standalone) ou `TLOptimizer-Setup-x.y.z.exe` (instalador completo).
 
 Projeto profissional no estilo Chris Titus WinUtil, composto por 3 camadas
 bem separadas para facilitar manutenção e atualizações sem reinstalar.

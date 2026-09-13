@@ -10,5 +10,6 @@ Thumbs.db
 # .NET build artifacts
 **/bin/
 **/obj/
+/build/
 dist/publicacao/
 dist/instalador/

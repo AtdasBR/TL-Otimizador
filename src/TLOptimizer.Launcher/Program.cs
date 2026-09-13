@@ -1,3 +1,5 @@
+using TLOptimizer.Launcher.Design.Services;
+
 namespace TLOptimizer.Launcher;
 
 internal static class Program
@@ -7,6 +9,8 @@ internal static class Program
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
+        ThemeManager.Initialize();
+        IconService.PreloadCommon();
         Application.Run(new MainForm());
     }
 }

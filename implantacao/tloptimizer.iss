@@ -5,7 +5,7 @@
 ; ============================================================
 
 #define MyAppName "TL Optimizer"
-#define MyAppVersion "1.7.2"
+#define MyAppVersion "1.8.0"
 #define MyAppPublisher "AtdasBR"
 #define MyAppURL "https://github.com/AtdasBR/TL-Otimizador"
 #define MyAppExeName "TLOptimizer.exe"
@@ -46,12 +46,11 @@ Name: "portuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 [Files]
 ; Launcher principal (self-contained, já inclui o .NET).
 Source: "..\build\publish\TLOptimizer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\build\publish\*.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\build\publish\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; Script do otimizador (o launcher atualiza isto em runtime).
 Source: "..\build\publish\scripts\*"; DestDir: "{localappdata}\TLOptimizer"; Flags: ignoreversion uninsneveruninstall
 ; Logos dos aplicativos do gerenciador de instalacao
-Source: "..\build\publish\assets\logos\*"; DestDir: "{app}\assets\logos"; Flags: ignoreversion
+Source: "..\build\publish\recursos\logos\*"; DestDir: "{app}\recursos\logos"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"

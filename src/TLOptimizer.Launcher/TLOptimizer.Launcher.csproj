@@ -10,9 +10,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.7.2</Version>
-    <AssemblyVersion>1.7.2.0</AssemblyVersion>
-    <FileVersion>1.7.2.0</FileVersion>
+    <Version>1.8.0</Version>
+    <AssemblyVersion>1.8.0.0</AssemblyVersion>
+    <FileVersion>1.8.0.0</FileVersion>
     <Product>TLOptimizer</Product>
     <Company>AtdasBR</Company>
     <Copyright>© AtdasBR</Copyright>
@@ -34,6 +34,9 @@
     <None Include="app.manifest" />
   </ItemGroup>
 
-
+  <ItemGroup>
+    <EmbeddedResource Include="Design\Resources\Fonts\FluentSystemIcons-Regular.ttf" />
+    <EmbeddedResource Include="Design\Resources\Fonts\FluentSystemIcons-Filled.ttf" />
+  </ItemGroup>
 
 </Project>

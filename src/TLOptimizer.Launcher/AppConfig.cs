@@ -7,7 +7,7 @@ namespace TLOptimizer.Launcher;
 internal static class AppConfig
 {
     /// <summary>Versão atual do launcher (deve bater com o .csproj).</summary>
-    public const string LauncherVersion = "1.7.2";
+    public const string LauncherVersion = "1.8.0";
 
     /// <summary>Versão mínima aceita do otimizador.</summary>
     public const string OptimizerMinVersion = "1.4";

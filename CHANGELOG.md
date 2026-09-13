@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.0 — Rework do launcher sobre o Design System
+- MainForm totalmente reescrito sobre o novo Design System (tokens, bordas,
+  tipografia escalada e componentes TL*): TLModal, TLToggleSwitch, TLButton,
+  TLBadge, TLComboBox, TLSearchBox, TLProgressRing, TLAvatar, TLCard.
+- ActionDialog reconstruído sobre TLModal + TLToggleSwitch (detalhes, risco,
+  toggle e confirmação), preservando o fluxo de execução por risco.
+- Correções de build (FontStyle, System.Drawing qualificado, Timer ambíguo,
+  ComboBox owner-draw, focus ring) e de inicialização do TLSearchBox.
+- Logos unificadas em `recursos/logos` em todos os pacotes (launcher lê
+  `recursos/logos`; instaladores e dist sincronizados).
+- Launcher e instaladores publicados single-file self-contained (1.8.0.0).
+
 ## 1.7.2 — Auto-atualização do launcher
 - Ao abrir, o app verifica se há versão nova do **próprio programa** (bloco
   `launcher` do `update-manifest.json`).

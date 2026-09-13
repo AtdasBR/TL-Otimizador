@@ -18,7 +18,15 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Publish Launcher
+      - name: Install Inno Setup 6
+        run: choco install innosetup -y --no-progress
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish Launcher (staging)
         run: |
           dotnet publish src/TLOptimizer.Launcher/TLOptimizer.Launcher.csproj `
             -c Release `
@@ -27,37 +35,52 @@ jobs:
             -p:RuntimeIdentifier=win-x64 `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:EnableCompressionInSingleFile=true `
-            -o dist/publicacao
+            -o build/publish
 
-      - name: Publish Installer (WPF)
+      - name: Copy scripts and assets to staging
         run: |
-          dotnet publish src/TLOptimizer.Setup/TLOptimizer.Setup.csproj `
-            -c Release `
-            -p:PublishSingleFile=true `
-            -p:SelfContained=true `
-            -p:RuntimeIdentifier=win-x64 `
-            -p:IncludeNativeLibrariesForSelfExtract=true `
-            -p:EnableCompressionInSingleFile=true `
-            -o dist/instalador
-
-      - name: Copy scripts and assets
-        run: |
-          New-Item -ItemType Directory -Path "dist/publicacao/scripts" -Force
-          Copy-Item "scripts/otimizar-windows.ps1" "dist/publicacao/scripts/"
-
+          Copy-Item "src/TLOptimizer.Launcher/icon.ico" "build/publish/" -Force
+          New-Item -ItemType Directory -Path "build/publish/scripts" -Force
+          Copy-Item "scripts/otimizar-windows.ps1" "build/publish/scripts/" -Force
           if (Test-Path "recursos/logos") {
-            New-Item -ItemType Directory -Path "dist/publicacao/assets/logos" -Force
-            Copy-Item "recursos/logos/*.png" "dist/publicacao/assets/logos/" -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Path "build/publish/recursos/logos" -Force
+            Copy-Item "recursos/logos/*.png" "build/publish/recursos/logos/" -ErrorAction SilentlyContinue
           }
 
-          New-Item -ItemType Directory -Path "dist/instalador/pacote" -Force
-          Get-ChildItem "dist/publicacao" -Exclude "*Setup*","*.pdb" |
-            Copy-Item -Destination "dist/instalador/pacote" -Recurse -Force
+      - name: Sync dist/publicacao
+        run: |
+          New-Item -ItemType Directory -Path "dist/publicacao" -Force
+          Get-ChildItem "build/publish" -Exclude "*.pdb" |
+            Copy-Item -Destination "dist/publicacao" -Recurse -Force
 
-      - name: Extract version from tag
-        id: version
-        shell: bash
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+      - name: Compile Inno Setup installer
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.VERSION }}
+        run: |
+          $iss = Get-Content "implantacao/tloptimizer.iss" -Raw
+          $iss = $iss -replace '(#define MyAppVersion ")[^"]*(")', "`$1$env:VERSION`$2"
+          Set-Content "implantacao/tloptimizer.iss" -Value $iss -NoNewline
+
+          $iscc = Get-Command "ISCC.exe" -ErrorAction SilentlyContinue
+          if ($iscc) { $isccPath = $iscc.Source }
+          else {
+            $candidates = @(
+              "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+              "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+            )
+            $isccPath = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          }
+          if (-not $isccPath) { throw "ISCC.exe nao encontrado" }
+          & $isccPath "implantacao/tloptimizer.iss"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $setup = Get-ChildItem "build/installer/TLOptimizer-Setup-*.exe" |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $setup) { throw "Instalador Inno nao gerado" }
+          New-Item -ItemType Directory -Path "dist/instalador" -Force
+          Copy-Item $setup.FullName ("dist/instalador/" + $setup.Name)
+          Write-Output ("SETUP=" + $setup.Name)
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -67,7 +90,7 @@ jobs:
           generate_release_notes: true
           files: |
             dist/publicacao/TLOptimizer.exe
-            dist/instalador/TLOptimizer.Setup.exe
+            dist/instalador/TLOptimizer-Setup-${{ steps.version.outputs.VERSION }}.exe
           draft: false
           prerelease: false
         env:
